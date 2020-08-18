@@ -4,6 +4,7 @@ variable names {
 
 variable machine_type {
 }
+
 variable create_instance_group {
   type    = bool
   default = false
