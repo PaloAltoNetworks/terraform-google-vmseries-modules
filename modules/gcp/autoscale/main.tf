@@ -79,8 +79,7 @@ resource "google_compute_instance_template" "this" {
 
 
 resource "google_compute_region_instance_group_manager" "this" {
-  name = "${var.prefix}-igm"
-
+  name                      = "${var.prefix}-igm-${var.region}"
   base_instance_name        = "${var.prefix}-fw"
   region                    = var.region
   distribution_policy_zones = var.zones
@@ -90,7 +89,7 @@ resource "google_compute_region_instance_group_manager" "this" {
   }
 
   target_pools = [var.pool]
-  target_size  = 1 // FIXME not for autoscaler
+  // target_size  = 1 // not set because we have an autoscaler
 
   named_port {
     name = "custom"
@@ -101,4 +100,25 @@ resource "google_compute_region_instance_group_manager" "this" {
   #   health_check      = google_compute_health_check.autohealing.id
   #   initial_delay_sec = 300
   # }
+}
+
+resource "google_compute_region_autoscaler" "this" {
+  name   = "${var.prefix}-autoscaler"
+  region = var.region
+  target = google_compute_region_instance_group_manager.this.id
+
+  autoscaling_policy {
+    max_replicas    = 1
+    min_replicas    = 1
+    cooldown_period = 30
+
+    cpu_utilization {
+      target = 0.5
+    }
+  }
+
+  # TODO: not possible to change the name of igm, this didn't help:
+  # depends_on = [
+  #   google_compute_region_instance_group_manager.this
+  # ]
 }
