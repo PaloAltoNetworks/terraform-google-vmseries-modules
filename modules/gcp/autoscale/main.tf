@@ -5,7 +5,7 @@ resource "null_resource" "dependency_getter" {
 }
 
 resource "google_compute_instance_template" "this" {
-  name             = "${var.prefix}-template"
+  name_prefix      = "${var.prefix}-template"
   machine_type     = var.machine_type
   min_cpu_platform = var.cpu_platform
   can_ip_forward   = true
