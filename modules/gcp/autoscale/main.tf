@@ -51,14 +51,9 @@ resource "google_compute_instance_template" "this" {
     subnetwork = var.subnetworks[2]
   }
 
-  #  FIXME boot_disk {
-  #     initialize_params {
-  #       image = 
-  #     }
-  #   }
   disk {
     source_image = var.image
-    type         = var.disk_type
+    disk_type    = var.disk_type
     auto_delete  = true
     boot         = true
   }
