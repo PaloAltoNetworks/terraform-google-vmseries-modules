@@ -1,6 +1,14 @@
+terraform {
+  required_providers {
+    null   = { version = "~> 2.1" }
+    random = { version = "~> 2.3" }
+  }
+}
+
 locals {
   bucket_name = join("", [var.bucket_name, random_string.randomstring.result])
 }
+
 resource "random_string" "randomstring" {
   length      = 25
   min_lower   = 15
