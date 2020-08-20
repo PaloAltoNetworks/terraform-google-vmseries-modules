@@ -112,8 +112,17 @@ resource "google_compute_region_instance_group_manager" "this" {
   # }
 }
 
+resource "random_id" "autoscaler" {
+  keepers = {
+    # Re-randomize on igm change. It forcibly recreates all users of this random_id.
+    google_compute_region_instance_group_manager = google_compute_region_instance_group_manager.this.id
+  }
+  byte_length = 3
+}
+
+
 resource "google_compute_region_autoscaler" "this" {
-  name   = "${var.prefix}-autoscaler"
+  name   = "${var.prefix}-${random_id.autoscaler.hex}-autoscaler"
   region = var.region
   target = google_compute_region_instance_group_manager.this.id
 
