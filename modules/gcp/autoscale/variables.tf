@@ -109,3 +109,12 @@ variable nic2_public_ip {
 variable pool {
   description = "The self_link of google_compute_target_pool where the instances will be placed for healtchecking"
 }
+
+variable autoscaler_metric_name {
+}
+
+variable autoscaler_metric_type {
+}
+
+variable autoscaler_metric_target {
+}

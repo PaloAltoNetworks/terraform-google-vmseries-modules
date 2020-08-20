@@ -128,14 +128,12 @@ resource "google_compute_region_autoscaler" "this" {
     # cpu_utilization { target = 0.7 }
 
     metric {
-      # TODO: vars
-      name   = "custom.googleapis.com/VMSeries/panSessionActive"
-      type   = "GAUGE"
-      target = 100
+      name   = var.autoscaler_metric_name
+      type   = var.autoscaler_metric_type
+      target = var.autoscaler_metric_target
     }
 
   }
-
   # TODO: not possible to change the name of igm, this didn't help:
   # depends_on = [
   #   google_compute_region_instance_group_manager.this
