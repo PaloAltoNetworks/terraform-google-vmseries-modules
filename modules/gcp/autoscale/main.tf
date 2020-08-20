@@ -76,20 +76,17 @@ resource "google_compute_instance_template" "this" {
   }
 }
 
-# resource "google_compute_region_instance_group" "this" {
-#   count     = var.create_instance_group ? length(var.names) : 0
-#   name      = "${element(var.names, count.index)}-${element(var.zones, count.index)}-ig"
-#   zone      = element(var.zones, count.index)
-#   instances = [google_compute_instance.vmseries[count.index].self_link]
-#   named_port {
-#     name = "http"
-#     port = "80"
-#   }
-# }
-
+resource "random_id" "igm" {
+  keepers = {
+    # Re-randomize on igm change. It forcibly recreates all users of this random_id.
+    google_compute_instance_template_id = google_compute_instance_template.this.id
+  }
+  byte_length = 3
+}
 
 resource "google_compute_region_instance_group_manager" "this" {
-  name                      = "${var.prefix}-igm-${var.region}"
+  # the '-igm-' is allegedly a magic string for Panorama
+  name                      = "${var.prefix}-${random_id.igm.hex}-igm-${var.region}"
   base_instance_name        = "${var.prefix}-fw"
   region                    = var.region
   distribution_policy_zones = var.zones
