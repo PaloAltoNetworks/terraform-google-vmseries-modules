@@ -8,9 +8,11 @@ variable subnetworks {
 }
 
 variable machine_type {
+  type = string
 }
 
 variable region {
+  type = string
 }
 
 variable zones {
@@ -18,23 +20,23 @@ variable zones {
 }
 
 variable cpu_platform {
+  type    = string
   default = "Intel Broadwell"
 }
 
 variable disk_type {
+  type    = string
   default = "pd-ssd"
 }
 
 variable bootstrap_bucket {
+  type    = string
   default = ""
 }
 
 variable ssh_key {
+  type    = string
   default = ""
-}
-
-variable public_lb_create {
-  default = false
 }
 
 variable scopes {
@@ -50,21 +52,12 @@ variable scopes {
 }
 
 variable image {
+  type = string
 }
 
 variable tags {
   type    = list(string)
   default = []
-}
-
-variable create_instance_group {
-  type    = bool
-  default = false
-}
-
-variable instance_group_names {
-  type    = list(string)
-  default = ["vmseries-instance-group"]
 }
 
 variable dependencies {
@@ -108,12 +101,15 @@ variable nic2_public_ip {
 
 variable pool {
   description = "The self_link of google_compute_target_pool where the instances will be placed for healtchecking"
+  type        = string
 }
 
 variable autoscaler_metric_name {
+  type = string
 }
 
 variable autoscaler_metric_type {
+  type = string
 }
 
 variable autoscaler_metric_target {
