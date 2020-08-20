@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    null   = { version = "~> 2.1" }
+    random = { version = "~> 2.3" }
+    google = { version = "~> 3.35" }
+  }
+}
+
+
 resource "null_resource" "dependency_getter" {
   provisioner "local-exec" {
     command = "echo ${length(var.dependencies)}"
@@ -61,6 +70,10 @@ resource "google_compute_instance_template" "this" {
   depends_on = [
     null_resource.dependency_getter
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # resource "google_compute_region_instance_group" "this" {
@@ -71,9 +84,6 @@ resource "google_compute_instance_template" "this" {
 #   named_port {
 #     name = "http"
 #     port = "80"
-#   }
-#   lifecycle {
-#     create_before_destroy = true
 #   }
 # }
 
