@@ -54,7 +54,7 @@ resource "google_compute_instance_template" "this" {
   disk {
     source_image = var.image
     disk_type    = var.disk_type
-    auto_delete  = true
+    auto_delete  = false # FIXME true # needed for de-registration
     boot         = true
   }
 
