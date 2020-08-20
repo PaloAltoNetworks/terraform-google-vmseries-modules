@@ -114,3 +114,18 @@ variable autoscaler_metric_type {
 
 variable autoscaler_metric_target {
 }
+
+variable "zoning" {
+  description = "Map of Zones to support single zone IGMs"
+  default = {}
+}
+
+variable "deployment_name" {
+  description = "Deployment Name that matches what is specified in Panorama GCP Plugin"
+  type = string
+}
+
+variable "project" {
+  description = "Project ID/Name"
+  type = string
+}
