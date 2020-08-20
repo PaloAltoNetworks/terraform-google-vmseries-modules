@@ -112,8 +112,8 @@ resource "google_compute_region_autoscaler" "this" {
   target = google_compute_region_instance_group_manager.this.id
 
   autoscaling_policy {
-    max_replicas = 1
-    min_replicas = 1
+    max_replicas = 2
+    min_replicas = 2
     # FIXME
     # Given that it takes 7 minutes for a PA-VM to become functional, we need a cool down time
     # period of 10 minutes (600 seconds) for a new autoscale event to kick in.
