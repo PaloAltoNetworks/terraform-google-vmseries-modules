@@ -6,7 +6,6 @@ terraform {
   }
 }
 
-
 resource "null_resource" "dependency_getter" {
   provisioner "local-exec" {
     command = "echo ${length(var.dependencies)}"
@@ -18,8 +17,7 @@ resource "google_compute_instance_template" "this" {
   machine_type     = var.machine_type
   min_cpu_platform = var.cpu_platform
   can_ip_forward   = true
-  // FIXME allow_stopping_for_update = true
-  tags = var.tags
+  tags             = var.tags
 
   metadata = {
     mgmt-interface-swap                  = var.mgmt_interface_swap
@@ -96,7 +94,6 @@ resource "google_compute_region_instance_group_manager" "this" {
   }
 
   target_pools = [var.pool]
-  // target_size  = 1 // not set because we have an autoscaler
 
   named_port {
     name = "custom"
@@ -140,8 +137,4 @@ resource "google_compute_region_autoscaler" "this" {
     }
 
   }
-  # TODO: not possible to change the name of igm, this didn't help:
-  # depends_on = [
-  #   google_compute_region_instance_group_manager.this
-  # ]
 }
