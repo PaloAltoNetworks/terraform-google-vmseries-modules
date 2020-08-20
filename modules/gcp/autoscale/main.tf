@@ -74,17 +74,9 @@ resource "google_compute_instance_template" "this" {
   }
 }
 
-resource "random_id" "igm" {
-  keepers = {
-    # Re-randomize on igm change. It forcibly recreates all users of this random_id.
-    google_compute_instance_template_id = google_compute_instance_template.this.id
-  }
-  byte_length = 3
-}
-
 resource "google_compute_region_instance_group_manager" "this" {
   # the '-igm-' is allegedly a magic string for Panorama
-  name                      = "${var.prefix}-${random_id.igm.hex}-igm-${var.region}"
+  name                      = "${var.prefix}-igm-${var.region}"
   base_instance_name        = "${var.prefix}-fw"
   region                    = var.region
   distribution_policy_zones = var.zones
@@ -113,7 +105,6 @@ resource "random_id" "autoscaler" {
   }
   byte_length = 3
 }
-
 
 resource "google_compute_region_autoscaler" "this" {
   name   = "${var.prefix}-${random_id.autoscaler.hex}-autoscaler"
