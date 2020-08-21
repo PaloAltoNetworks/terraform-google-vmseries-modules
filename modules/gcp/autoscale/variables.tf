@@ -126,3 +126,21 @@ variable autoscaler_metric_type {
 
 variable autoscaler_metric_target {
 }
+
+variable max_replicas_per_zone {
+  description = "Maximum number of VM-series instances per *each* of the zones"
+  default     = 1
+  type        = number
+}
+
+variable min_replicas_per_zone {
+  description = "Minimum number of VM-series instances per *each* of the zones"
+  default     = 1
+  type        = number
+}
+
+variable cooldown_period {
+  description = "How much tame does it take for a spawned PA-VM to become functional on the initialization boot"
+  default     = 720
+  type        = number
+}

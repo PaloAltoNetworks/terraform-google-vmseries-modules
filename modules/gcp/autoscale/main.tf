@@ -105,11 +105,9 @@ resource "google_compute_autoscaler" "this" {
   zone     = each.value
 
   autoscaling_policy {
-    max_replicas = 1
-    min_replicas = 1
-
-    # It takes time for a spawned PA-VM to become functional.
-    cooldown_period = 720
+    max_replicas    = var.max_replicas_per_zone
+    min_replicas    = var.min_replicas_per_zone
+    cooldown_period = var.cooldown_period
 
     # cpu_utilization { target = 0.7 }
 
