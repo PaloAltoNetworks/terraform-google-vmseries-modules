@@ -107,10 +107,9 @@ resource "google_compute_autoscaler" "this" {
   autoscaling_policy {
     max_replicas = 1
     min_replicas = 1
-    # FIXME
-    # Given that it takes 7 minutes for a PA-VM to become functional, we need a cool down time
-    # period of 10 minutes (600 seconds) for a new autoscale event to kick in.
-    cooldown_period = 30
+
+    # It takes time for a spawned PA-VM to become functional.
+    cooldown_period = 720
 
     # cpu_utilization { target = 0.7 }
 
