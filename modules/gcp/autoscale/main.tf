@@ -89,7 +89,7 @@ resource "google_compute_instance_group_manager" "this" {
   }
 }
 
-resource "random_id" "autoscaler-single" {
+resource "random_id" "autoscaler" {
   for_each = var.zoning
   keepers = {
     # Re-randomize on igm change. It forcibly recreates all users of this random_id.
@@ -100,7 +100,7 @@ resource "random_id" "autoscaler-single" {
 
 resource "google_compute_autoscaler" "this" {
   for_each = var.zoning
-  name     = "${var.prefix}-${random_id.autoscaler-single[each.key].hex}-autoscaler-${each.value}"
+  name     = "${var.prefix}-${random_id.autoscaler[each.key].hex}-as-${each.value}"
   target   = google_compute_instance_group_manager.this[each.key].id
   zone     = each.value
 
