@@ -42,6 +42,16 @@ resource "google_compute_disk" "panorama-log-disk" {
   size  = "2000"
 }
 
+resource "google_compute_disk" "panorama-log-disk2" {
+  count = length(var.names)
+  name  = "${element(var.names, count.index)}-log-disk2"
+  zone  = element(var.zones, count.index)
+  type  = "pd-standard"
+  size  = "2000"
+}
+
+
+
 # --- create panorama instances ---
 resource "google_compute_instance" "panorama" {
   count                     = length(var.names)
@@ -83,6 +93,10 @@ resource "google_compute_instance" "panorama" {
 
   attached_disk {
       source = "${element(var.names, count.index)}-log-disk"
+  }
+
+  attached_disk {
+      source = "${element(var.names, count.index)}-log-disk2"
   }
 
   depends_on = [
