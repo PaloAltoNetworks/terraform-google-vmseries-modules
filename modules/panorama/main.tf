@@ -33,6 +33,15 @@ resource "google_compute_address" "nic0" {
   region = var.region
 }
 
+# --- create additional disk for Panorama ---
+resource "google_compute_disk" "panorama-log-disk" {
+  count = length(var.names)
+  name  = "${element(var.names, count.index)}-log-disk"
+  zone  = element(var.zones, count.index)
+  type  = "pd-standard"
+  size  = "2000"
+}
+
 # --- create panorama instances ---
 resource "google_compute_instance" "panorama" {
   count                     = length(var.names)
@@ -71,7 +80,11 @@ resource "google_compute_instance" "panorama" {
       type  = var.disk_type
     }
   }
-  
+
+  attached_disk {
+      source = "${element(var.names, count.index)}-log-disk"
+  }
+
   depends_on = [
       google_compute_image.panorama-image
   ]
