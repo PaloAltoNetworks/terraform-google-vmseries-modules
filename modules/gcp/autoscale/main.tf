@@ -122,11 +122,11 @@ resource "google_compute_autoscaler" "this" {
   }
 }
 resource "google_pubsub_topic" "this" {
-  name = "${var.deployment_name}-${var.project}-panorama-apps-deployment"
+  name = "${var.deployment_name}-${var.project_id}-panorama-apps-deployment"
 }
 
 
 resource "google_pubsub_subscription" "this" {
-  name  = "${var.deployment_name}-${var.project}-panorama-plugin-subscription"
+  name  = "${var.deployment_name}-${var.project_id}-panorama-plugin-subscription"
   topic = google_pubsub_topic.this.id
 }

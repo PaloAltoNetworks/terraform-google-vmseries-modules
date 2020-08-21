@@ -15,8 +15,20 @@ variable region {
   type = string
 }
 
-variable zones {
-  type = list(string)
+variable "zoning" {
+  description = "Map of Zones to support single zone IGMs"
+  default     = {}
+  # FIXME type = list(string)
+}
+
+variable project_id {
+  description = "Project ID/Name"
+  type        = string
+}
+
+variable deployment_name {
+  description = "Deployment Name that matches what is specified in Panorama GCP Plugin"
+  type        = string
 }
 
 variable cpu_platform {
@@ -113,19 +125,4 @@ variable autoscaler_metric_type {
 }
 
 variable autoscaler_metric_target {
-}
-
-variable "zoning" {
-  description = "Map of Zones to support single zone IGMs"
-  default = {}
-}
-
-variable "deployment_name" {
-  description = "Deployment Name that matches what is specified in Panorama GCP Plugin"
-  type = string
-}
-
-variable "project" {
-  description = "Project ID/Name"
-  type = string
 }
