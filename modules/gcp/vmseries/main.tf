@@ -65,6 +65,7 @@ resource "google_compute_instance" "vmseries" {
   ]
 }
 
+// The Deployment Guide Jan 2020 recommends per-zone instance groups (instead of regional IGMs).
 resource "google_compute_instance_group" "vmseries" {
   count     = var.create_instance_group ? length(var.names) : 0
   name      = "${element(var.names, count.index)}-${element(var.zones, count.index)}-ig"
