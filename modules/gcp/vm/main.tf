@@ -14,6 +14,10 @@ resource "google_compute_instance" "default" {
 
   network_interface {
     subnetwork = element(var.subnetworks, count.index)
+
+    access_config {
+      nat_ip = google_compute_address.this[count.index].address
+    }
   }
 
   boot_disk {
@@ -27,6 +31,10 @@ resource "google_compute_instance" "default" {
   }
 }
 
+resource "google_compute_address" "this" {
+  count = length(var.names)
+  name  = element(var.names, count.index)
+}
 
 resource "google_compute_instance_group" "default" {
   count     = var.create_instance_group ? length(var.names) : 0
