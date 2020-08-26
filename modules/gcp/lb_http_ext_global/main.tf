@@ -77,14 +77,17 @@ resource "google_compute_backend_service" "default" {
     }
   }
   health_checks = [
-  google_compute_http_health_check.default[count.index].self_link]
-  security_policy = var.security_policy
-  enable_cdn      = var.cdn
+  google_compute_health_check.default[count.index].self_link]
+  # global # security_policy = var.security_policy
+  # global # enable_cdn      = var.cdn
 }
 
-resource "google_compute_http_health_check" "default" {
-  count        = length(var.backend_params)
-  name         = "${var.name}-check-${count.index}"
-  request_path = split(",", var.backend_params[count.index])[0]
-  port         = split(",", var.backend_params[count.index])[2]
+resource "google_compute_health_check" "default" {
+  count = length(var.backend_params)
+  name  = "${var.name}-check-${count.index}"
+  tcp_health_check {
+    port = "22"
+  }
+  # request_path = split(",", var.backend_params[count.index])[0]
+  # port         = split(",", var.backend_params[count.index])[2]
 }
