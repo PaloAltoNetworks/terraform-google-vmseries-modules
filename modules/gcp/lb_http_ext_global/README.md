@@ -40,3 +40,18 @@ module "glb" {
 }
 
 ```
+
+
+## Instance Group (IG) re-use
+
+IG that backs an ILB has to be in mode balancing_mode=CONNECTIONS:
+
+```ini
+Invalid value for field 'resource.backends[0].balancingMode': 'UTILIZATION'. Balancing mode must be CONNECTION for an INTERNAL backend service
+```
+
+Thus, it cannot be reused for this module (GLB), as it is incompatible with balancing_mode=CONNECTIONS:
+
+```ini
+CONNECTION balancing mode is not supported for protocol HTTP
+```
