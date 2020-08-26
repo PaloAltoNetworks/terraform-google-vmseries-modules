@@ -5,6 +5,7 @@ resource "google_compute_health_check" "default" {
     port = var.health_check_port
   }
 }
+
 resource "google_compute_region_backend_service" "default" {
   count         = length(var.backends)
   name          = "${var.name}-${count.index}"

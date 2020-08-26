@@ -28,7 +28,8 @@ resource "google_compute_target_http_proxy" "default" {
     var.url_map], google_compute_url_map.default.*.self_link),
   )[0]
 }
-# HTTPS proxy  when ssl is true
+
+# HTTPS proxy when ssl is true
 resource "google_compute_target_https_proxy" "default" {
   count = var.ssl ? 1 : 0
   name  = "${var.name}-https-proxy"
@@ -67,7 +68,6 @@ resource "google_compute_backend_service" "default" {
       balancing_mode               = lookup(backend.value, "balancing_mode")
       capacity_scaler              = lookup(backend.value, "capacity_scaler")
       description                  = lookup(backend.value, "description")
-      failover                     = lookup(backend.value, "failover")
       group                        = lookup(backend.value, "group")
       max_connections              = lookup(backend.value, "max_connections")
       max_connections_per_instance = lookup(backend.value, "max_connections_per_instance")
@@ -78,8 +78,8 @@ resource "google_compute_backend_service" "default" {
   }
   health_checks = [
   google_compute_health_check.default[count.index].self_link]
-  # global # security_policy = var.security_policy
-  # global # enable_cdn      = var.cdn
+  security_policy = var.security_policy
+  enable_cdn      = var.cdn
 }
 
 resource "google_compute_health_check" "default" {

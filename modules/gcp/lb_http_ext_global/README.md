@@ -1,6 +1,6 @@
 # Google Cloud HTTP/HTTPS External Global Load Balancer
 
-Example:
+## Example
 
 ```terraform
 
@@ -41,6 +41,9 @@ module "glb" {
 
 ```
 
+## Caveat emptor
+
+Currently Google Cloud GLB can *only* send traffic to the primary network interface (`nic0`) of a backend instance.
 
 ## Instance Group (IG) re-use
 
