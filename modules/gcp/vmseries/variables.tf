@@ -1,16 +1,18 @@
+variable firewalls {
+  type = map(object({
+    name    = string
+    zone    = string
+    nic0_ip = string
+    nic1_ip = string
+    nic2_ip = string
+  }))
+}
+
 variable subnetworks {
   type = list(string)
 }
 
-variable names {
-  type = list(string)
-}
-
 variable machine_type {
-}
-
-variable zones {
-  type = list(string)
 }
 
 variable cpu_platform {
@@ -65,21 +67,6 @@ variable instance_group_names {
 variable dependencies {
   type    = list(string)
   default = []
-}
-
-variable nic0_ip {
-  type    = list(string)
-  default = [""]
-}
-
-variable nic1_ip {
-  type    = list(string)
-  default = [""]
-}
-
-variable nic2_ip {
-  type    = list(string)
-  default = [""]
 }
 
 variable mgmt_interface_swap {
