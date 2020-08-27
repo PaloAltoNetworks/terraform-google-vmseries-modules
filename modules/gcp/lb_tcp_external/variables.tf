@@ -16,8 +16,7 @@ variable name {
 }
 
 variable service_port {
-  type        = number
-  description = "TCP port your service is listening on."
+  description = "TCP port your service is listening on. Can be a number or a range like 8080-8089."
 }
 
 variable session_affinity {
@@ -65,6 +64,6 @@ variable ip_protocol {
 }
 
 variable instances {
-  type        = list(string)
-  default     = null
+  type    = list(string)
+  default = null
 }
