@@ -1,4 +1,5 @@
 variable firewalls {
+  description = "Definition of firewalls that will be deployed"
   type = map(object({
     name    = string
     zone    = string
