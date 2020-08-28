@@ -22,6 +22,7 @@ resource "google_compute_instance" "vmseries" {
   }
 
   service_account {
+    email  = var.service_account
     scopes = var.scopes
   }
 

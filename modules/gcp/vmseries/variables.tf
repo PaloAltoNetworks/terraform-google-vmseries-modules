@@ -88,3 +88,9 @@ variable nic2_public_ip {
   type    = bool
   default = false
 }
+
+variable service_account {
+  description = "IAM Service Account for running firewall instance (just the email)"
+  default     = null
+  type        = string
+}

@@ -17,8 +17,9 @@ resource "random_string" "randomstring" {
 }
 
 resource "google_storage_bucket" "bootstrap" {
-  name          = local.bucket_name
-  force_destroy = true
+  name               = local.bucket_name
+  force_destroy      = true
+  bucket_policy_only = true
 }
 
 resource "google_storage_bucket_object" "config_full" {
