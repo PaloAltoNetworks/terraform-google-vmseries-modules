@@ -22,3 +22,9 @@ variable license {
 variable software {
   default = []
 }
+
+variable service_account {
+  description = "Optional IAM Service Account (just an email) that will be granted read-only access to this bucket"
+  default     = null
+  type        = string
+}

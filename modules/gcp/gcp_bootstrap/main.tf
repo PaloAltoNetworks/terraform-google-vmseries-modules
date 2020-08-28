@@ -92,3 +92,10 @@ resource "null_resource" "dependency_setter" {
   ]
 }
 
+resource "google_storage_bucket_iam_member" "member" {
+  count  = var.service_account == null ? 0 : 1
+  bucket = google_storage_bucket.bootstrap.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${var.service_account}"
+}
+
