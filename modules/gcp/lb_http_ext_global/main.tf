@@ -52,21 +52,18 @@ resource "google_compute_url_map" "default" {
 
 resource "google_compute_backend_service" "default" {
   name        = "${var.name}-0"
-  port_name   = split(",", var.backend_params[0])[1]
+  port_name   = var.backend_port_name
   protocol    = var.backend_protocol
-  timeout_sec = split(",", var.backend_params[0])[3]
+  timeout_sec = var.timeout_sec
   dynamic "backend" {
-    for_each = var.backends[0]
+    for_each = var.backend_groups
     content {
-      balancing_mode               = lookup(backend.value, "balancing_mode")
-      capacity_scaler              = lookup(backend.value, "capacity_scaler")
-      description                  = lookup(backend.value, "description")
-      group                        = lookup(backend.value, "group")
-      max_connections              = lookup(backend.value, "max_connections")
-      max_connections_per_instance = lookup(backend.value, "max_connections_per_instance")
-      max_rate                     = lookup(backend.value, "max_rate")
-      max_rate_per_instance        = lookup(backend.value, "max_rate_per_instance")
-      max_utilization              = lookup(backend.value, "max_utilization")
+      group                        = backend.value
+      balancing_mode               = var.balancing_mode
+      capacity_scaler              = var.capacity_scaler
+      max_connections_per_instance = var.max_connections_per_instance
+      max_rate_per_instance        = var.max_rate_per_instance
+      max_utilization              = var.max_utilization
     }
   }
   health_checks   = [google_compute_health_check.default.self_link]

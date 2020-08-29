@@ -9,29 +9,57 @@ variable "name" {
   type        = string
 }
 
-variable "backends" {
-  description = "Map backend indices to list of backend maps."
-  type        = map(list(object({
-    group                        = string
-    balancing_mode               = string
-    capacity_scaler              = number
-    description                  = string
-    max_connections              = number
-    max_connections_per_instance = number
-    max_rate                     = number
-    max_rate_per_instance        = number
-    max_utilization              = number
-  })))
-}
-
-variable "backend_params" {
-  description = "Comma-separated encoded list of parameters in order: health check path, service port name, service port, backend timeout seconds"
-  type        = list(string)
-}
-
 variable "backend_protocol" {
   description = "The protocol with which to talk to the backend service"
   default     = "HTTP"
+}
+
+variable backend_port_name {
+  description = "The port_name of the backend group that this load balancer will serve"
+  default     = "http"
+  type        = string
+}
+
+variable timeout_sec {
+  description = "Timeout to consider a connection dead, in seconds (default 30)"
+  default     = null
+  type        = number
+}
+
+variable backend_groups {
+  description = "You can add these later."
+  default     = []
+  type        = list(string)
+}
+
+variable balancing_mode {
+  description = ""
+  default     = "RATE"
+  type        = string
+}
+
+variable capacity_scaler {
+  description = ""
+  default     = null
+  type        = number
+}
+
+variable max_connections_per_instance {
+  description = ""
+  default     = null
+  type        = number
+}
+
+variable max_rate_per_instance {
+  description = ""
+  default     = null
+  type        = number
+}
+
+variable max_utilization {
+  description = ""
+  default     = null
+  type        = number
 }
 
 variable "url_map" {

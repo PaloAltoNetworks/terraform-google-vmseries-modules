@@ -1,5 +1,8 @@
 # Google Cloud HTTP/HTTPS External Global Load Balancer
 
+A simplified GLB, which assumes that all participating instances are equally capable and that all
+participating groups are equally capable as well.
+
 ## Example
 
 ```terraform
@@ -7,36 +10,8 @@
 module "glb" {
   source = "../modules/gcp/lb_http_ext_global"
   name   = "my-glb"
-  backends = {
-    "0" = [
-      {
-        group                        = module.fw_inbound.instance_group[0]
-        balancing_mode               = null
-        capacity_scaler              = null
-        description                  = null
-        max_connections              = null
-        max_connections_per_instance = null
-        max_rate                     = null
-        max_rate_per_instance        = null
-        max_utilization              = null
-      },
-      {
-        group                        = module.fw_inbound.instance_group[1]
-        balancing_mode               = null
-        capacity_scaler              = null
-        description                  = null
-        max_connections              = null
-        max_connections_per_instance = null
-        max_rate                     = null
-        max_rate_per_instance        = null
-        max_utilization              = null
-      }
-    ]
-  }
-  backend_params = [
-    // health check path, port name, port number, timeout seconds.
-    "/,http,80,10"
-  ]
+  backend_groups        = module.vm.instance_group
+  max_rate_per_instance = 50000
 }
 
 ```

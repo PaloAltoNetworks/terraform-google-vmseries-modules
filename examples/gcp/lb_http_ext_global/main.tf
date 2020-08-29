@@ -2,38 +2,10 @@
 # Global HTTP Load Balancer
 
 module "glb" {
-  source = "../../../modules/gcp/lb_http_ext_global"
-  name   = "my-glb"
-  backends = {
-    "0" = [
-      {
-        group                        = module.vm.instance_group[0]
-        balancing_mode               = "RATE"
-        capacity_scaler              = null
-        description                  = null
-        max_connections              = null
-        max_connections_per_instance = null
-        max_rate                     = null
-        max_rate_per_instance        = 50000
-        max_utilization              = null
-      },
-      {
-        group                        = module.vm.instance_group[1]
-        balancing_mode               = "RATE"
-        capacity_scaler              = null
-        description                  = null
-        max_connections              = null
-        max_connections_per_instance = null
-        max_rate                     = null
-        max_rate_per_instance        = 50000
-        max_utilization              = null
-      }
-    ]
-  }
-  backend_params = [
-    // health check path, port name, port number, timeout seconds.
-    "/,http,80,10"
-  ]
+  source                = "../../../modules/gcp/lb_http_ext_global"
+  name                  = "my-glb"
+  backend_groups        = module.vm.instance_group
+  max_rate_per_instance = 50000
 }
 
 output "global_url" {
