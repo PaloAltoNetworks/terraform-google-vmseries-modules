@@ -47,17 +47,16 @@ resource "google_compute_ssl_certificate" "default" {
 
 resource "google_compute_url_map" "default" {
   name            = var.name
-  default_service = google_compute_backend_service.default[0].self_link
+  default_service = google_compute_backend_service.default.self_link
 }
 
 resource "google_compute_backend_service" "default" {
-  count       = length(var.backend_params)
-  name        = "${var.name}-${count.index}"
-  port_name   = split(",", var.backend_params[count.index])[1]
+  name        = "${var.name}-0"
+  port_name   = split(",", var.backend_params[0])[1]
   protocol    = var.backend_protocol
-  timeout_sec = split(",", var.backend_params[count.index])[3]
+  timeout_sec = split(",", var.backend_params[0])[3]
   dynamic "backend" {
-    for_each = var.backends[count.index]
+    for_each = var.backends[0]
     content {
       balancing_mode               = lookup(backend.value, "balancing_mode")
       capacity_scaler              = lookup(backend.value, "capacity_scaler")
@@ -70,18 +69,16 @@ resource "google_compute_backend_service" "default" {
       max_utilization              = lookup(backend.value, "max_utilization")
     }
   }
-  health_checks = [
-  google_compute_health_check.default[count.index].self_link]
+  health_checks   = [google_compute_health_check.default.self_link]
   security_policy = var.security_policy
   enable_cdn      = var.cdn
 }
 
 resource "google_compute_health_check" "default" {
-  count = length(var.backend_params)
-  name  = "${var.name}-check-${count.index}"
+  name = "${var.name}-check-0"
   tcp_health_check {
     port = "22"
   }
-  # request_path = split(",", var.backend_params[count.index])[0]
-  # port         = split(",", var.backend_params[count.index])[2]
+  # request_path = split(",", var.backend_params[0])[0]
+  # port         = split(",", var.backend_params[0])[2]
 }
