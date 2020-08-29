@@ -21,21 +21,16 @@ resource "google_compute_global_address" "default" {
 
 # HTTP proxy when ssl is false
 resource "google_compute_target_http_proxy" "default" {
-  count = var.http_forward ? 1 : 0
-  name  = "${var.name}-http-proxy"
-  url_map = compact(
-    concat([
-    var.url_map], google_compute_url_map.default.*.self_link),
-  )[0]
+  count   = var.http_forward ? 1 : 0
+  name    = "${var.name}-http-proxy"
+  url_map = (var.url_map != null ? var.url_map : google_compute_url_map.default.self_link)
 }
 
 # HTTPS proxy when ssl is true
 resource "google_compute_target_https_proxy" "default" {
-  count = var.ssl ? 1 : 0
-  name  = "${var.name}-https-proxy"
-  url_map = compact(
-    concat([
-  var.url_map], google_compute_url_map.default.*.self_link), )[0]
+  count            = var.ssl ? 1 : 0
+  name             = "${var.name}-https-proxy"
+  url_map          = (var.url_map != null ? var.url_map : google_compute_url_map.default.self_link)
   ssl_certificates = compact(concat(var.ssl_certificates, google_compute_ssl_certificate.default.*.self_link, ), )
 }
 
@@ -51,7 +46,6 @@ resource "google_compute_ssl_certificate" "default" {
 }
 
 resource "google_compute_url_map" "default" {
-  count           = var.create_url_map ? 1 : 0
   name            = var.name
   default_service = google_compute_backend_service.default[0].self_link
 }
