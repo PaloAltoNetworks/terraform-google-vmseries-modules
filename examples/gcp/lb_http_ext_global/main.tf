@@ -59,3 +59,25 @@ module "ilb" {
 # output "internal_url" {
 #   value = "http://${module.ilb.address}"   FIXME undefined
 # }
+
+#########################################################################
+# External Regional TCP Load Balancer
+#
+# It's optional, just showing it can co-exist with other load balancers.
+
+module "extlb" {
+  source       = "../../../modules/gcp/lb_tcp_external/"
+  name         = "my-extlb"
+  service_port = 80
+  region       = "europe-west4"
+  instances    = module.vm.vm_self_link
+  health_check = {
+    check_interval_sec  = 10
+    healthy_threshold   = 2
+    timeout_sec         = 5
+    unhealthy_threshold = 3
+    port                = 80
+    request_path        = "/"
+    host                = "anything"
+  }
+}
