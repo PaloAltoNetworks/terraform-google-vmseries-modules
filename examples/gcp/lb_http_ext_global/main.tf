@@ -56,9 +56,9 @@ module "ilb" {
   }
 }
 
-# output "internal_url" {
-#   value = "http://${module.ilb.address}"   FIXME undefined
-# }
+output "internal_url" {
+  value = "http://${module.ilb.address}"
+}
 
 #########################################################################
 # External Regional TCP Load Balancer
@@ -80,4 +80,8 @@ module "extlb" {
     request_path        = "/"
     host                = "anything"
   }
+}
+
+output "regional_url" {
+  value = "http://${module.extlb.address}"
 }
