@@ -40,7 +40,7 @@ module "ilb" {
   subnetwork        = local.my_subnet
   all_ports         = true
   ports             = []
-  health_check_port = "22"
+  health_check_port = 22
 
   backends = [
     {

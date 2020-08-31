@@ -2,7 +2,9 @@ variable name {
 }
 
 variable health_check_port {
-  default = "22"
+  description = "Port number for TCP healthchecking."
+  default     = 22
+  type        = number
 }
 
 variable backends {
