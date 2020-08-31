@@ -31,7 +31,7 @@ module "vpc" {
 #  Google's own health checkers use a set of known address ranges
 resource "google_compute_firewall" "builtin_healthchecks" {
   name          = "my-vpc-builtin-healthchecks"
-  network       = "my-vpc"
+  network       = module.vpc.vpc_self_link
   direction     = "INGRESS"
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
   # The "169.254.169.254/32" is also used, but it is always allowed anyway.
@@ -40,4 +40,9 @@ resource "google_compute_firewall" "builtin_healthchecks" {
     protocol = "all"
     ports    = []
   }
+}
+
+locals {
+  my_vpc    = module.vpc.vpc_self_link
+  my_subnet = module.vpc.subnetwork_name[0]
 }

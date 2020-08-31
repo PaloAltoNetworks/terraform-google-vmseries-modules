@@ -2,7 +2,7 @@ module "vm" {
   source      = "../../../modules/gcp/vm/"
   names       = ["my-vm01", "my-vm02"]
   zones       = [data.google_compute_zones.available.names[0], data.google_compute_zones.available.names[1]]
-  subnetworks = ["my-subnet", "my-subnet"]
+  subnetworks = [local.my_subnet, local.my_subnet]
 
   ## Any image will do, if only it exposes on port 80 the http url `/`:
   image        = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
@@ -36,8 +36,8 @@ output "global_url" {
 module "ilb" {
   source            = "../../../modules/gcp/lb_tcp_internal"
   name              = "my-ilb"
-  network           = "my-vpc"
-  subnetworks       = ["my-subnet"]
+  network           = local.my_vpc
+  subnetwork        = local.my_subnet
   all_ports         = true
   ports             = []
   health_check_port = "22"
