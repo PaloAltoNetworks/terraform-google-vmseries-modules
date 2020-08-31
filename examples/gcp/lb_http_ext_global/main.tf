@@ -31,9 +31,7 @@ output "global_url" {
 #########################################################################
 # Internal TCP Load Balancer
 # 
-# It's optional, just showing it can co-exist with a Global one.
-# It is using secondary network interfaces, while the Global LB uses
-# primary network interfaces.
+# It's optional, just showing it can co-exist with the Global one.
 
 module "ilb" {
   source            = "../../../modules/gcp/lb_tcp_internal"
