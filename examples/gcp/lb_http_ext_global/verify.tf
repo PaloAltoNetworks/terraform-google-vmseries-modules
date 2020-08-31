@@ -28,8 +28,9 @@ resource "null_resource" "verify_with_curl" {
     }
 
     inline = [
-      "curl -sSi http://${module.glb.address} | head -1",
-      "curl -sSi http://${module.extlb.forwarding_rule_ip_address} | head -1",
+      "printf 'glb:   '  &&  curl -m5 -sSi http://${module.glb.address} | head -1",
+      "printf 'ilb:   '  &&  curl -m5 -sSi http://${module.ilb.address} | head -1",
+      "printf 'extlb: '  &&  curl -m5 -sSi http://${module.extlb.address} | head -1",
     ]
   }
 
