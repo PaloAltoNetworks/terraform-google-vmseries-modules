@@ -27,7 +27,9 @@ variable ip_protocol {
   default = "TCP"
 }
 variable all_ports {
-  type = bool
+  description = "Load balance all ports of the ip_protocol. Needs to be null if ports are set."
+  default     = null
+  type        = bool
 }
 variable ports {
   description = "A single frontend port or a comma separated list of ports (up to 5 ports)."
