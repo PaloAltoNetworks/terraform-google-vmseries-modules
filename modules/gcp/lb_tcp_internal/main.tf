@@ -7,13 +7,12 @@ resource "google_compute_health_check" "default" {
 }
 
 resource "google_compute_region_backend_service" "default" {
-  count         = length(var.backends)
-  name          = "${var.name}-${count.index}"
+  name          = var.name
   health_checks = [google_compute_health_check.default.self_link]
   network       = var.network
 
   dynamic "backend" {
-    for_each = var.backends[count.index]
+    for_each = var.backends
     content {
       group    = lookup(backend.value, "group")
       failover = lookup(backend.value, "failover")
@@ -23,13 +22,12 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  count                 = length(var.backends)
-  name                  = "${var.name}-all-${count.index}"
+  name                  = var.name
   load_balancing_scheme = "INTERNAL"
   ip_address            = var.ip_address
   ip_protocol           = var.ip_protocol
   all_ports             = var.all_ports
   ports                 = var.ports
-  subnetwork            = var.subnetworks[0]
-  backend_service       = google_compute_region_backend_service.default[count.index].self_link
+  subnetwork            = var.subnetwork
+  backend_service       = google_compute_region_backend_service.default.self_link
 }

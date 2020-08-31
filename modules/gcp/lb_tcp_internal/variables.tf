@@ -7,14 +7,14 @@ variable health_check_port {
 
 variable backends {
   description = "Map backend indices to list of backend maps."
-  type = map(list(object({
+  type = list(object({
     group    = string
     failover = bool
-  })))
+  }))
 }
 
-variable subnetworks {
-  type = list(string)
+variable subnetwork {
+  type = string
 }
 
 variable ip_address {
@@ -28,8 +28,9 @@ variable all_ports {
   type = bool
 }
 variable ports {
-  type    = list(string)
-  default = []
+  description = "A single frontend port or a comma separated list of ports (up to 5 ports)."
+  default     = []
+  type        = list(string)
 }
 
 variable network {

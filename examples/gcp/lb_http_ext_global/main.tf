@@ -37,23 +37,21 @@ module "ilb" {
   source            = "../../../modules/gcp/lb_tcp_internal"
   name              = "my-ilb"
   network           = local.my_vpc
-  subnetworks       = [local.my_subnet]
+  subnetwork        = local.my_subnet
   all_ports         = true
   ports             = []
   health_check_port = "22"
 
-  backends = {
-    "0" = [
-      {
-        group    = module.vm.instance_group[0],
-        failover = false
-      },
-      {
-        group    = module.vm.instance_group[1],
-        failover = false
-      }
-    ]
-  }
+  backends = [
+    {
+      group    = module.vm.instance_group[0],
+      failover = false
+    },
+    {
+      group    = module.vm.instance_group[1],
+      failover = false
+    }
+  ]
 }
 
 output "internal_url" {
