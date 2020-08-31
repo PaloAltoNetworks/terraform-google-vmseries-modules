@@ -14,11 +14,25 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "backend" {
     for_each = var.backends
     content {
-      group    = lookup(backend.value, "group")
-      failover = lookup(backend.value, "failover")
+      group    = backend.value
+      failover = false
     }
   }
+
+  dynamic "backend" {
+    for_each = var.failover_backends
+    content {
+      group    = backend.value
+      failover = true
+    }
+  }
+
   session_affinity = "NONE"
+  failover_policy {
+    disable_connection_drain_on_failover = var.disable_connection_drain_on_failover
+    drop_traffic_if_unhealthy            = var.drop_traffic_if_unhealthy
+    failover_ratio                       = var.failover_ratio
+  }
 }
 
 resource "google_compute_forwarding_rule" "default" {

@@ -42,16 +42,7 @@ module "ilb" {
   ports             = []
   health_check_port = 22
 
-  backends = [
-    {
-      group    = module.vm.instance_group[0],
-      failover = false
-    },
-    {
-      group    = module.vm.instance_group[1],
-      failover = false
-    }
-  ]
+  backends = module.vm.instance_group
 }
 
 output "internal_url" {
