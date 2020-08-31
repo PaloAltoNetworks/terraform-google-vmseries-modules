@@ -1,5 +1,5 @@
-
-resource "null_resource" "delay_60s" {
+# TODO: unfeasible to have it 3-4 minutes, see README.md
+resource "null_resource" "delay_actual_use" {
   for_each = module.vm.nic0_public_ip
 
   provisioner "remote-exec" {
@@ -11,9 +11,10 @@ resource "null_resource" "delay_60s" {
     }
 
     inline = [
-      "sleep 60   # allow first healthchecks to succeed",
+      "sleep 5",
     ]
   }
+  depends_on = [module.glb.all]
 }
 
 resource "null_resource" "verify_with_curl" {
@@ -38,5 +39,5 @@ resource "null_resource" "verify_with_curl" {
     run_me_every_time = "${timestamp()}"
   }
 
-  depends_on = [null_resource.delay_60s]
+  depends_on = [null_resource.delay_actual_use]
 }
