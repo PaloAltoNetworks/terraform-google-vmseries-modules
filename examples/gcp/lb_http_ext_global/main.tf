@@ -37,7 +37,7 @@ module "ilb" {
   source            = "../../../modules/gcp/lb_tcp_internal"
   name              = "my-ilb"
   network           = local.my_vpc
-  subnetwork        = local.my_subnet
+  subnetworks       = [local.my_subnet]
   all_ports         = true
   ports             = []
   health_check_port = "22"
