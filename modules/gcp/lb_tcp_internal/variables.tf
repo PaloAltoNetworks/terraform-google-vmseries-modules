@@ -52,7 +52,7 @@ variable disable_connection_drain_on_failover {
 
 variable drop_traffic_if_unhealthy {
   description = "(Optional) Used only when no healthy VMs are detected in the primary and backup instance groups. When set to true, traffic is dropped. When set to false, new connections are sent across all VMs in the primary group. The default is false."
-  default     = false
+  default     = null
   type        = bool
 }
 

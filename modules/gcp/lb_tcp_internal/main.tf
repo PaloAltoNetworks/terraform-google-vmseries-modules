@@ -28,10 +28,14 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   session_affinity = "NONE"
-  failover_policy {
-    disable_connection_drain_on_failover = var.disable_connection_drain_on_failover
-    drop_traffic_if_unhealthy            = var.drop_traffic_if_unhealthy
-    failover_ratio                       = var.failover_ratio
+  dynamic failover_policy {
+    for_each = var.disable_connection_drain_on_failover != null || var.drop_traffic_if_unhealthy != null || var.failover_ratio != null ? ["yay"] : []
+
+    content {
+      disable_connection_drain_on_failover = var.disable_connection_drain_on_failover
+      drop_traffic_if_unhealthy            = var.drop_traffic_if_unhealthy
+      failover_ratio                       = var.failover_ratio
+    }
   }
 }
 
