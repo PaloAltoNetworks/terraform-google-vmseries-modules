@@ -1,10 +1,18 @@
 variable name {
+  description = "Name of the load balancer (that is, both the forwarding rule and the backend service)"
+  type        = string
 }
 
 variable health_check_port {
-  description = "Port number for TCP healthchecking."
+  description = "(Optional) Port number for TCP healthchecking, default 22. This setting is ignored when `health_check` is provided."
   default     = 22
   type        = number
+}
+
+variable health_check {
+  description = "(Optional) Name of either the global google_compute_health_check or google_compute_region_health_check to use. Conflicts with health_check_port."
+  default     = null
+  type        = string
 }
 
 variable backends {
@@ -29,19 +37,34 @@ variable ip_address {
 variable ip_protocol {
   default = "TCP"
 }
+
 variable all_ports {
-  description = "Load balance all ports of the ip_protocol. Needs to be null if ports are set."
+  description = "Forward all ports of the ip_protocol from the frontend to the backends. Needs to be null if `ports` are provided."
   default     = null
   type        = bool
 }
+
 variable ports {
-  description = "A single frontend port or a comma separated list of ports (up to 5 ports)."
+  description = "Which port numbers are forwarded to the backends (up to 5 ports). Conflicts with all_ports."
   default     = []
-  type        = list(string)
+  type        = list(number)
 }
 
 variable network {
   default = null
+}
+
+variable session_affinity {
+  description = "(Optional, TCP only) Try to direct sessions to the same backend, can be: CLIENT_IP, CLIENT_IP_PORT_PROTO, CLIENT_IP_PROTO, NONE (default is NONE)."
+  default     = null
+  type        = string
+}
+
+
+variable timeout_sec {
+  description = "(Optional) How many seconds to wait for the backend before dropping the connection. Default is 30 seconds. Valid range is [1, 86400]."
+  default     = null
+  type        = number
 }
 
 variable disable_connection_drain_on_failover {
