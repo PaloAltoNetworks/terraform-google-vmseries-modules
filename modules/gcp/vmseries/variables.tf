@@ -60,11 +60,6 @@ variable create_instance_group {
   default = false
 }
 
-variable instance_group_names {
-  type    = list(string)
-  default = ["vmseries-instance-group"]
-}
-
 variable dependencies {
   type    = list(string)
   default = []

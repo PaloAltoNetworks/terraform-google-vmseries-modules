@@ -1,8 +1,18 @@
 module "vm" {
-  source      = "../../../modules/gcp/vm/"
-  names       = ["my-vm01", "my-vm02"]
-  zones       = [data.google_compute_zones.available.names[0], data.google_compute_zones.available.names[1]]
-  subnetworks = [local.my_subnet, local.my_subnet]
+  source = "../../../modules/gcp/vm/"
+
+  instances = {
+    "a" = {
+      name       = "my-vm01"
+      zone       = data.google_compute_zones.available.names[0]
+      subnetwork = local.my_subnet
+    }
+    "b" = {
+      name       = "my-vm02"
+      zone       = data.google_compute_zones.available.names[1]
+      subnetwork = local.my_subnet
+    }
+  }
 
   ## Any image will do, if only it exposes on port 80 the http url `/`:
   image        = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
@@ -59,7 +69,7 @@ module "extlb" {
   name         = "my-extlb"
   service_port = 80
   region       = "europe-west4"
-  instances    = module.vm.vm_self_link
+  instances    = module.vm.vm_self_link_list
   health_check = {
     check_interval_sec  = 10
     healthy_threshold   = 2

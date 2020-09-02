@@ -10,12 +10,12 @@ variable "name" {
 }
 
 variable "backend_protocol" {
-  description = "The protocol with which to talk to the backend service"
+  description = "The protocol used to talk to the backend service"
   default     = "HTTP"
 }
 
 variable backend_port_name {
-  description = "The port_name of the backend group that this load balancer will serve"
+  description = "The port_name of the backend groups that this load balancer will serve (default is 'http')"
   default     = "http"
   type        = string
 }
@@ -27,9 +27,9 @@ variable timeout_sec {
 }
 
 variable backend_groups {
-  description = "You can add these later."
-  default     = []
-  type        = list(string)
+  description = "The map containing the names of instance groups (IGs) or network endpoint groups (NEGs) to serve. The IGs can be managed or unmanaged or a mix of both. All IGs must handle named port `backend_port_name`. The NEGs just handle unnamed port."
+  default     = {}
+  type        = map(string)
 }
 
 variable balancing_mode {

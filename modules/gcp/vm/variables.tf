@@ -1,5 +1,9 @@
-variable names {
-  type = list(string)
+variable instances {
+  type = map(object({
+    name       = string,
+    zone       = string,
+    subnetwork = string
+  }))
 }
 
 variable machine_type {
@@ -10,21 +14,11 @@ variable create_instance_group {
   default = false
 }
 
-variable instance_group_names {
-  type    = list(string)
-  default = ["vmseries-instance-group"]
-}
-variable zones {
-  type = list(string)
-}
 variable ssh_key {
   default = ""
 }
-variable image {
-}
 
-variable subnetworks {
-  type = list(string)
+variable image {
 }
 
 variable scopes {
