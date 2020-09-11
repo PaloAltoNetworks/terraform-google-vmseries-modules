@@ -144,3 +144,9 @@ variable cooldown_period {
   default     = 720
   type        = number
 }
+
+variable service_account {
+  description = "IAM Service Account for running firewall instance (just the email)"
+  default     = null
+  type        = string
+}

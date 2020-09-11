@@ -34,6 +34,7 @@ resource "google_compute_instance_template" "this" {
 
   service_account {
     scopes = var.scopes
+    email  = var.service_account
   }
 
   network_interface {
@@ -125,6 +126,11 @@ resource "google_compute_autoscaler" "this" {
 
   }
 }
+
+#---------------------------------------------------------------------------------
+# Pub-Sub is intended to be used by various cloud applications to register
+# new ip/port from applications that would be consumed by Panorama.
+
 resource "google_pubsub_topic" "this" {
   name = "${var.deployment_name}-${var.project_id}-panorama-apps-deployment"
 }
