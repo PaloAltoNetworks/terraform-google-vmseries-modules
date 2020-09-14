@@ -4,7 +4,6 @@ terraform {
 
 provider "google" {
   version = "= 3.35"
-  region  = var.region
 }
 
 data "google_project" "this" {}
@@ -27,7 +26,6 @@ module "bootstrap" {
 
 module "autoscale" {
   source          = "../../../modules/gcp/autoscale"
-  region          = var.region
   prefix          = var.prefix
   deployment_name = var.prefix
   project_id      = data.google_project.this.name
@@ -100,14 +98,12 @@ resource "google_compute_forwarding_rule" "this" {
   name                  = var.extlb_name
   target                = google_compute_target_pool.this.self_link
   load_balancing_scheme = "EXTERNAL"
-  region                = var.region
   ip_protocol           = "TCP"
   port_range            = "80"
 }
 
 resource "google_compute_target_pool" "this" {
   name             = var.extlb_name
-  region           = var.region
   session_affinity = "NONE" // Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`
   health_checks    = [google_compute_http_health_check.this.self_link]
 }

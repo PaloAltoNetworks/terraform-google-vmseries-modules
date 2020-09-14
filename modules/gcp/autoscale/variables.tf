@@ -12,7 +12,9 @@ variable machine_type {
 }
 
 variable region {
-  type = string
+  description = "GCP region to deploy to, if not set the default provider region is used."
+  default     = null
+  type        = string
 }
 
 variable "zoning" {

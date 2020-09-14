@@ -8,11 +8,11 @@
 #   type        = string
 # }
 
-variable region {
-  description = "GCP Region"
-  default     = "europe-west4"
-  type        = string
-}
+# variable region {
+#   description = "GCP Region"
+#   default     = "europe-west4"
+#   type        = string
+# }
 
 variable public_key_path {
   description = "Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin`"
