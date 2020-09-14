@@ -64,6 +64,7 @@ variable ip_protocol {
 }
 
 variable instances {
-  type    = list(string)
-  default = null
+  description = "Links to the instances (nic0 of each instance gets the traffic). Even when this list is shifted or re-ordered, it doesn't cause re-create and such modifications often proceed without any noticeable downtime."
+  default     = null
+  type        = list(string)
 }
