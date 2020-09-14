@@ -15,10 +15,6 @@ output instance_group {
   value = { for k, v in google_compute_instance_group.default : k => v.self_link }
 }
 
-output instance_group_list {
-  value = sort([for k, v in google_compute_instance_group.default : v.self_link])
-}
-
 output nic0_public_ip {
   value = { for k, v in google_compute_instance.default : k => v.network_interface.0.access_config.0.nat_ip }
 }
