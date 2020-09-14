@@ -17,10 +17,10 @@ variable region {
   type        = string
 }
 
-variable "zoning" {
-  description = "Map of Zones to support single zone IGMs"
+variable zones {
+  description = "Map of zone names for the zonal IGMs"
   default     = {}
-  # FIXME type = list(string)
+  type = map(string)
 }
 
 variable project_id {
