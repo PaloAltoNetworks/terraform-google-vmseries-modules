@@ -8,7 +8,7 @@ resource "google_compute_subnetwork" "default" {
   count         = length(var.subnets)
   name          = element(var.subnets, count.index)
   ip_cidr_range = element(var.cidrs, count.index)
-  region        = element(var.regions, count.index)
+  region        = count.index < length(var.regions) ? element(var.regions, count.index) : null
   network       = google_compute_network.default.self_link
 }
 

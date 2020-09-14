@@ -10,7 +10,8 @@ variable cidrs {
 }
 
 variable regions {
-  type = list(string)
+  type    = list(string)
+  default = []
 }
 
 variable allowed_sources {

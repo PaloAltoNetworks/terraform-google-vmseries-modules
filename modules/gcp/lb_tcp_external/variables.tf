@@ -6,8 +6,9 @@ variable project {
 }
 
 variable region {
+  description = "GCP region to deploy to, if not set the default provider region is used."
+  default     = null
   type        = string
-  description = "Region used for GCP resources."
 }
 
 variable name {
