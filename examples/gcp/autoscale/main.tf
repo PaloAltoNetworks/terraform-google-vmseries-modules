@@ -62,8 +62,10 @@ module "autoscale" {
 }
 
 #-----------------------------------------------------------------------------------------------
-# The Internal LB is not strictly required part of this example.
-# It just shows how to integrate with auto-scaling.
+# Regional Internal TCP Load Balancer
+#
+# It is not strictly required part of this example.
+# It's here just to show how to integrate it with auto-scaling.
 
 module "intlb" {
   source            = "../../../modules/gcp/lb_tcp_internal/"
@@ -89,9 +91,10 @@ module "intlb" {
 }
 
 #-----------------------------------------------------------------------------------------------
-# The External TCP Load Balancer
+# Regional External TCP Network Load Balancer
+#
 # It is not strictly required part of this example.
-# It just shows how to integrate with auto-scaling.
+# It's here just to show how to integrate it with auto-scaling.
 
 resource "google_compute_forwarding_rule" "this" {
   name                  = var.extlb_name

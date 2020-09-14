@@ -129,7 +129,7 @@ resource "google_compute_autoscaler" "this" {
 
 #---------------------------------------------------------------------------------
 # Pub-Sub is intended to be used by various cloud applications to register
-# new ip/port from applications that would be consumed by Panorama.
+# new ip/port that would be consumed by Panorama and automatically onboarded.
 
 resource "google_pubsub_topic" "this" {
   name = "${var.deployment_name}-${var.project_id}-panorama-apps-deployment"
