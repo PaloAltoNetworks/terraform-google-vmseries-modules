@@ -66,26 +66,12 @@ module "autoscale" {
 # It's here just to show how to integrate it with auto-scaling.
 
 module "intlb" {
-  source            = "../../../modules/gcp/lb_tcp_internal/"
-  name              = var.intlb_name
-  network           = var.trust_vpc
-  subnetworks       = var.trust_subnet
-  all_ports         = true
-  ports             = []
-  health_check_port = "22"
-
-  backends = {
-    "0" = [
-      {
-        group    = module.autoscale.instance_group_manager["zone1"].instance_group
-        failover = false
-      },
-      {
-        group    = module.autoscale.instance_group_manager["zone2"].instance_group
-        failover = false
-      }
-    ]
-  }
+  source     = "../../../modules/gcp/lb_tcp_internal/"
+  name       = var.intlb_name
+  network    = var.trust_vpc
+  subnetwork = var.trust_subnet[0]
+  all_ports  = true
+  backends   = module.autoscale.backends
 }
 
 #-----------------------------------------------------------------------------------------------
