@@ -29,8 +29,8 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic failover_policy {
-    for_each = var.disable_connection_drain_on_failover != null || var.drop_traffic_if_unhealthy != null || var.failover_ratio != null ? ["yay"] : []
+  dynamic "failover_policy" {
+    for_each = var.disable_connection_drain_on_failover != null || var.drop_traffic_if_unhealthy != null || var.failover_ratio != null ? ["one"] : []
 
     content {
       disable_connection_drain_on_failover = var.disable_connection_drain_on_failover

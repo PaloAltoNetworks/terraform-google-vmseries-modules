@@ -16,14 +16,14 @@ variable health_check {
 }
 
 variable backends {
-  description = "Names of primary backend groups (IGs or IGMs)."
-  type        = list(string)
+  description = "Names of primary backend groups (IGs or IGMs). Typically use `module.vmseries.instance_group` here."
+  type        = map(string)
 }
 
 variable failover_backends {
   description = "Names of failover backend groups (IGs or IGMs). Failover groups are ignored unless the primary groups do not meet collective health threshold."
-  default     = []
-  type        = list(string)
+  default     = {}
+  type        = map(string)
 }
 
 variable subnetwork {
