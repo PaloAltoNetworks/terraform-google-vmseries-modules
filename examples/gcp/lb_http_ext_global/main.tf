@@ -44,15 +44,13 @@ output "global_url" {
 # It's optional, just showing it can co-exist with the Global one.
 
 module "ilb" {
-  source            = "../../../modules/gcp/lb_tcp_internal"
-  name              = "my-ilb"
-  network           = local.my_vpc
-  subnetwork        = local.my_subnet
-  all_ports         = true
-  ports             = []
-  health_check_port = 22
-
-  backends = module.vm.instance_group
+  source     = "../../../modules/gcp/lb_tcp_internal"
+  name       = "my-ilb"
+  network    = local.my_vpc
+  subnetwork = local.my_subnet
+  all_ports  = true
+  ports      = []
+  backends   = module.vm.instance_group
 }
 
 output "internal_url" {
