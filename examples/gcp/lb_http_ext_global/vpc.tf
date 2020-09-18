@@ -10,12 +10,7 @@ variable mgmt_sources {
   default = ["0.0.0.0/0"]
 }
 
-variable region {
-  default = "europe-west4"
-}
-
 data "google_compute_zones" "available" {
-  region = var.region
 }
 
 module "vpc" {
@@ -24,7 +19,6 @@ module "vpc" {
   vpc             = "my-vpc"
   subnets         = ["my-subnet"]
   cidrs           = ["192.168.1.0/24"]
-  regions         = [var.region]
   allowed_sources = var.mgmt_sources
 }
 

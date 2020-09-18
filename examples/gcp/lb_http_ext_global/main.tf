@@ -41,7 +41,7 @@ output "global_url" {
 #########################################################################
 # Internal TCP Load Balancer
 # 
-# It's optional, just showing it can co-exist with the Global one.
+# It's optional, just showing it can co-exist with a Global one.
 
 module "ilb" {
   source     = "../../../modules/gcp/lb_tcp_internal"
@@ -66,7 +66,6 @@ module "extlb" {
   source       = "../../../modules/gcp/lb_tcp_external/"
   name         = "my-extlb"
   service_port = 80
-  region       = "europe-west4"
   instances    = module.vm.vm_self_link_list
   health_check = {
     check_interval_sec  = 10
