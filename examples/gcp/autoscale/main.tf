@@ -45,7 +45,7 @@ module "autoscale" {
   nic0_public_ip           = true
   nic1_public_ip           = true
   nic2_public_ip           = false
-  pool                     = google_compute_target_pool.this.self_link
+  pool                     = module.extlb.target_pool
   bootstrap_bucket         = module.bootstrap.bucket_name
   scopes                   = ["https://www.googleapis.com/auth/cloud-platform"]
   service_account          = var.service_account
@@ -80,29 +80,18 @@ module "intlb" {
 # It is not strictly required part of this example.
 # It's here just to show how to integrate it with auto-scaling.
 
-resource "google_compute_forwarding_rule" "this" {
-  name                  = var.extlb_name
-  target                = google_compute_target_pool.this.self_link
-  load_balancing_scheme = "EXTERNAL"
-  ip_protocol           = "TCP"
-  port_range            = "80"
-}
-
-resource "google_compute_target_pool" "this" {
-  name             = var.extlb_name
-  session_affinity = "NONE" // Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`
-  health_checks    = [google_compute_http_health_check.this.self_link]
-}
-
-resource "google_compute_http_health_check" "this" {
-  name = "${var.prefix}-hc"
-
-  check_interval_sec  = 10
-  timeout_sec         = 5
-  unhealthy_threshold = 3
-  healthy_threshold   = 2
-
-  port = var.extlb_healthcheck_port
-  # request_path        = var.health_check["request_path"]
-  # host                = var.health_check["host"]
+module "extlb" {
+  source       = "../../../modules/gcp/lb_tcp_external/"
+  name         = var.extlb_name
+  service_port = 80
+  health_check = {
+    # null means to use a default value
+    check_interval_sec  = null
+    timeout_sec         = null
+    healthy_threshold   = null
+    unhealthy_threshold = 3
+    port                = 80
+    request_path        = "/"
+    host                = null
+  }
 }
