@@ -1,4 +1,4 @@
-resource "google_compute_health_check" "default" {
+resource "google_compute_health_check" "this" {
   name = "${var.name}-check-tcp${var.health_check_port}"
 
   tcp_health_check {
@@ -6,9 +6,9 @@ resource "google_compute_health_check" "default" {
   }
 }
 
-resource "google_compute_region_backend_service" "default" {
+resource "google_compute_region_backend_service" "this" {
   name             = var.name
-  health_checks    = [var.health_check != null ? var.health_check : google_compute_health_check.default.self_link]
+  health_checks    = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
   network          = var.network
   session_affinity = var.session_affinity
   timeout_sec      = var.timeout_sec
@@ -40,7 +40,7 @@ resource "google_compute_region_backend_service" "default" {
   }
 }
 
-resource "google_compute_forwarding_rule" "default" {
+resource "google_compute_forwarding_rule" "this" {
   name                  = var.name
   load_balancing_scheme = "INTERNAL"
   ip_address            = var.ip_address
@@ -48,5 +48,5 @@ resource "google_compute_forwarding_rule" "default" {
   all_ports             = var.all_ports
   ports                 = var.ports
   subnetwork            = var.subnetwork
-  backend_service       = google_compute_region_backend_service.default.self_link
+  backend_service       = google_compute_region_backend_service.this.self_link
 }
