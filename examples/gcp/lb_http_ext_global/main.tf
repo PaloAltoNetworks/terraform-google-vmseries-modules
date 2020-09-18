@@ -49,7 +49,6 @@ module "ilb" {
   network    = local.my_vpc
   subnetwork = local.my_subnet
   all_ports  = true
-  ports      = []
   backends   = module.vm.instance_group
 }
 
