@@ -9,7 +9,7 @@ resource "google_compute_instance" "vmseries" {
   name                      = each.value.name
   zone                      = each.value.zone
   machine_type              = var.machine_type
-  min_cpu_platform          = var.cpu_platform
+  min_cpu_platform          = var.min_cpu_platform
   tags                      = var.tags
   can_ip_forward            = true
   allow_stopping_for_update = true

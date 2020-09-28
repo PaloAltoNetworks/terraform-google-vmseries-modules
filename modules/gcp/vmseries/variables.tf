@@ -16,9 +16,11 @@ variable subnetworks {
 variable machine_type {
 }
 
-variable cpu_platform {
+variable min_cpu_platform {
   default = "Intel Broadwell"
+  type    = string
 }
+
 variable disk_type {
   default = "pd-ssd"
   #default = "pd-standard"

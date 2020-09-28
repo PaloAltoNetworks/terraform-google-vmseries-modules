@@ -33,7 +33,7 @@ variable deployment_name {
   type        = string
 }
 
-variable cpu_platform {
+variable min_cpu_platform {
   type    = string
   default = "Intel Broadwell"
 }
