@@ -6,7 +6,6 @@ provider "google" {
   version = "= 3.35"
 }
 
-data "google_project" "this" {}
 data "google_compute_zones" "this" {}
 
 #-----------------------------------------------------------------------------------------------
