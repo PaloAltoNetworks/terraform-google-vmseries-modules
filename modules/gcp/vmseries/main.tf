@@ -15,7 +15,7 @@ resource "google_compute_instance" "vmseries" {
   allow_stopping_for_update = true
 
   metadata = {
-    mgmt-interface-swap                  = var.mgmt_interface_swap
+    mgmt-interface-swap                  = "enable"
     vmseries-bootstrap-gce-storagebucket = var.bootstrap_bucket
     serial-port-enable                   = true
     ssh-keys                             = var.ssh_key

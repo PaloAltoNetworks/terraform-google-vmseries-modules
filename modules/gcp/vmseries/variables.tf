@@ -68,10 +68,6 @@ variable dependencies {
   type    = list(string)
 }
 
-variable mgmt_interface_swap {
-  default = ""
-}
-
 variable nic0_public_ip {
   type    = bool
   default = false
