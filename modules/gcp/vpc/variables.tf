@@ -1,17 +1,9 @@
-variable vpc {
+variable name {
+  type = string
 }
 
-variable subnets {
-  type = list(string)
-}
-
-variable cidrs {
-  type = list(string)
-}
-
-variable regions {
-  type    = list(string)
-  default = []
+variable subnetworks {
+  type = map(any)
 }
 
 variable allowed_sources {
@@ -28,7 +20,7 @@ variable allowed_ports {
   default = []
 }
 
-variable delete_default_route {
-  default = "false"
+variable delete_default_routes_on_create {
+  default = null
+  type    = bool
 }
-

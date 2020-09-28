@@ -16,9 +16,14 @@ data "google_compute_zones" "available" {
 module "vpc" {
   source = "../../../modules/gcp/vpc/"
 
-  vpc             = "my-vpc"
-  subnets         = ["my-subnet"]
-  cidrs           = ["192.168.1.0/24"]
+  name = "my-vpc"
+  subnetworks = {
+    "my-subnet" = {
+      name          = "my-subnet"
+      ip_cidr_range = "192.168.1.0/24"
+    }
+  }
+
   allowed_sources = var.mgmt_sources
 }
 
@@ -38,5 +43,5 @@ resource "google_compute_firewall" "builtin_healthchecks" {
 
 locals {
   my_vpc    = module.vpc.vpc_self_link
-  my_subnet = module.vpc.subnetwork_name[0]
+  my_subnet = module.vpc.subnetwork["my-subnet"].name
 }
