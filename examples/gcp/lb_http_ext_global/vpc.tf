@@ -43,5 +43,5 @@ resource "google_compute_firewall" "builtin_healthchecks" {
 
 locals {
   my_vpc    = module.vpc.vpc_self_link
-  my_subnet = module.vpc.subnetwork["my-subnet"].name
+  my_subnet = try(module.vpc.subnetwork["my-subnet"].name, null)
 }
