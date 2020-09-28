@@ -127,16 +127,24 @@ resource "google_compute_autoscaler" "this" {
   }
 }
 
+data "google_project" "this" {}
+
+locals {
+  // Bug: `terraform plan` fails on an empty tfstate, because it says google_project.this.project_id is null
+  // Workaround: use this.id instead
+  project_id = replace(data.google_project.this.id, "projects/", "")
+}
+
 #---------------------------------------------------------------------------------
 # Pub-Sub is intended to be used by various cloud applications to register
 # new ip/port that would be consumed by Panorama and automatically onboarded.
 
 resource "google_pubsub_topic" "this" {
-  name = "${var.deployment_name}-${var.project_id}-panorama-apps-deployment"
+  name = "${var.deployment_name}-${local.project_id}-panorama-apps-deployment"
 }
 
 
 resource "google_pubsub_subscription" "this" {
-  name  = "${var.deployment_name}-${var.project_id}-panorama-plugin-subscription"
+  name  = "${var.deployment_name}-${local.project_id}-panorama-plugin-subscription"
   topic = google_pubsub_topic.this.id
 }

@@ -20,12 +20,7 @@ variable region {
 variable zones {
   description = "Map of zone names for the zonal IGMs"
   default     = {}
-  type = map(string)
-}
-
-variable project_id {
-  description = "Project ID/Name"
-  type        = string
+  type        = map(string)
 }
 
 variable deployment_name {

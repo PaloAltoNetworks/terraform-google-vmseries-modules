@@ -28,7 +28,7 @@ module "autoscale" {
   source          = "../../../modules/gcp/autoscale"
   prefix          = var.prefix
   deployment_name = var.prefix
-  project_id      = data.google_project.this.name
+
   zones = {
     zone1 = data.google_compute_zones.this.names[0]
     zone2 = data.google_compute_zones.this.names[1]
