@@ -10,10 +10,13 @@ variable firewalls {
 }
 
 variable subnetworks {
-  type = list(string)
+  description = "The ordered list of subnetworks. All the instances connect their interfaces to the same list of respective subnetworks."
+  type        = list(string)
 }
 
 variable machine_type {
+  default = "n1-standard-4"
+  type    = string
 }
 
 variable min_cpu_platform {
@@ -22,24 +25,21 @@ variable min_cpu_platform {
 }
 
 variable disk_type {
-  default = "pd-ssd"
-  #default = "pd-standard"
+  description = "Default is pd-ssd, alternative is pd-balanced."
+  default     = "pd-ssd"
 }
+
 variable bootstrap_bucket {
   default = ""
+  type    = string
 }
 
 variable ssh_key {
   default = ""
-}
-
-variable public_lb_create {
-  default = false
+  type    = string
 }
 
 variable scopes {
-  type = list(string)
-
   default = [
     "https://www.googleapis.com/auth/compute.readonly",
     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -47,24 +47,25 @@ variable scopes {
     "https://www.googleapis.com/auth/logging.write",
     "https://www.googleapis.com/auth/monitoring.write",
   ]
+  type = list(string)
 }
 
 variable image {
 }
 
 variable tags {
-  type    = list(string)
   default = []
+  type    = list(string)
 }
 
 variable create_instance_group {
-  type    = bool
   default = false
+  type    = bool
 }
 
 variable dependencies {
-  type    = list(string)
   default = []
+  type    = list(string)
 }
 
 variable mgmt_interface_swap {
