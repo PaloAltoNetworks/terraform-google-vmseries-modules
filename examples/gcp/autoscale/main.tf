@@ -33,11 +33,13 @@ module "autoscale" {
     zone1 = data.google_compute_zones.this.names[0]
     zone2 = data.google_compute_zones.this.names[1]
   }
+
   subnetworks = [
     var.untrust_subnet[0],
     var.mgmt_subnet[0],
     var.trust_subnet[0],
   ]
+
   machine_type             = var.fw_machine_type
   mgmt_interface_swap      = "enable"
   ssh_key                  = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""

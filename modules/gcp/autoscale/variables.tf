@@ -1,5 +1,5 @@
 variable prefix {
-  description = "Prefix to GCP resource names"
+  description = "Prefix to various GCP resource names"
   type        = string
 }
 

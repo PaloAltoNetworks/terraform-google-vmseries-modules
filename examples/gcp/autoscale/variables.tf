@@ -20,7 +20,7 @@ variable public_key_path {
 }
 
 variable fw_panos {
-  description = "VM-Series license and PAN-OS (ie: bundle1-814, bundle2-814, or byol-814)"
+  description = "VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814)"
   default     = "byol-913"
 }
 
