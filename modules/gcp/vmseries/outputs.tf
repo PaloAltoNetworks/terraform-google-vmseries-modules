@@ -1,24 +1,33 @@
-output vm_names {
-  value = [for v in google_compute_instance.vmseries : v.name]
+output name {
+  value = { for k, v in google_compute_instance.this : k => v.name }
 }
 
-output vm_self_link {
-  value = [for v in google_compute_instance.vmseries : v.self_link]
+output self_link {
+  value = { for k, v in google_compute_instance.this : k => v.self_link }
 }
 
-output instance_group {
-  value = [for v in google_compute_instance_group.vmseries : v.self_link]
+output public_ip {
+  value = { for k, v in google_compute_instance.this :
+    k => [
+      for nic in v.network_interface :
+      try(nic.access_config.0.nat_ip, null)
+  ] }
 }
 
 output nic0_public_ip {
-  value = var.nic0_public_ip ? [for v in google_compute_instance.vmseries : v.network_interface.0.access_config.0.nat_ip] : []
+  value = { for k, v in google_compute_instance.this :
+    k => v.network_interface.0.access_config.0.nat_ip
+    if try(v.network_interface.0.access_config.0.nat_ip, null) != null
+  }
 }
 
 output nic1_public_ip {
-  value = var.nic1_public_ip ? [for v in google_compute_instance.vmseries : v.network_interface.1.access_config.0.nat_ip] : []
+  value = { for k, v in google_compute_instance.this :
+    k => v.network_interface.1.access_config.0.nat_ip
+    if try(v.network_interface.1.access_config.0.nat_ip, null) != null
+  }
 }
 
-output nic2_public_ip {
-  value = var.nic2_public_ip ? [for v in google_compute_instance.vmseries : v.network_interface.2.access_config.0.nat_ip] : []
+output instance_group {
+  value = { for k, v in google_compute_instance_group.this : k => v.self_link }
 }
-
