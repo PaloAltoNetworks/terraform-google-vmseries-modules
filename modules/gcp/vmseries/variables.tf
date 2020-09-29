@@ -1,10 +1,9 @@
 variable instances {
   description = "Definition of firewalls that will be deployed"
-  type = map(object({
-    name              = string
-    zone              = string
-    network_interface = any
-  }))
+  type        = map(any)
+  # Why `any` here: don't use object() because every element must then have exactly the same nested structure; it thus becomes unwieldy.
+  # For example you couldn't have one instance with three network interfaces and another instance with four.
+  # Another example, you couldn't add an optional attribute to one instance's network interface.
 }
 
 variable machine_type {
