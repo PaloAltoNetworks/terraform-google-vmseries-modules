@@ -6,22 +6,21 @@ resource "google_compute_network" "this" {
 }
 
 resource "google_compute_subnetwork" "this" {
-  for_each      = var.subnetworks
+  for_each      = var.network
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
-  network       = google_compute_network.this.self_link
-  region        = lookup(each.value, "region", null)
+  network       = google_compute_network.this[each.key].self_link
 }
 
 resource "google_compute_firewall" "this" {
-  count         = length(var.allowed_sources) != 0 ? 1 : 0
-  name          = "${google_compute_network.this.name}-ingress"
-  network       = google_compute_network.this.self_link
+  for_each      = { for k, v in var.network: k => v if can(v.allowed_sources) }
+  name          = "${each.value.name}-ingress"
+  network       = google_compute_network.this[each.key].self_link
   direction     = "INGRESS"
-  source_ranges = var.allowed_sources
+  source_ranges = each.value.allowed_sources
 
   allow {
-    protocol = var.allowed_protocol
-    ports    = var.allowed_ports
+    protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
+    ports    = try(each.value.allowed_ports, var.allowed_ports, null)
   }
 }

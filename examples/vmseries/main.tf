@@ -26,35 +26,20 @@ variable allowed_sources {
 # Two of them pass the actual data, we call them untrust network and trust network.
 # And one more dedicated to firewall's management traffic.
 
-module "untrust" {
+module "vpc" {
   source = "../../modules/vpc"
-  name   = "my-example3-untrust"
   network = {
-    "this" = {
-      name          = "my-example3-untrust"
-      ip_cidr_range = "192.168.1.0/24"
+    "my-example3-untrust" = {
+      name            = "my-example3-untrust"
+      ip_cidr_range   = "192.168.1.0/24"
+      allowed_sources = var.allowed_sources
     }
-  }
-  allowed_sources = var.allowed_sources
-}
-
-module "mgmt" {
-  source = "../../modules/vpc"
-  name   = "my-example3-mgmt"
-  subnetworks = {
-    "this" = {
-      name          = "my-example3-mgmt"
-      ip_cidr_range = "192.168.0.0/24"
+    "my-example3-mgmt" = {
+      name            = "my-example3-mgmt"
+      ip_cidr_range   = "192.168.0.0/24"
+      allowed_sources = var.allowed_sources
     }
-  }
-  allowed_sources = var.allowed_sources
-}
-
-module "trust" {
-  source = "../../modules/vpc"
-  name   = "my-example3-trust"
-  subnetworks = {
-    "this" = {
+    "my-example3-trust" = {
       name          = "my-example3-trust"
       ip_cidr_range = "192.168.2.0/24"
     }
@@ -69,15 +54,15 @@ module "vmseries" {
       zone = data.google_compute_zones.this.names[2]
       network_interfaces = [
         {
-          subnetwork = module.untrust.subnetwork["this"].self_link
+          subnetwork = module.vpc.subnetwork["my-example3-untrust"].self_link
           public_ip  = true
         },
         {
-          subnetwork = module.mgmt.subnetwork["this"].self_link
+          subnetwork = module.vpc.subnetwork["my-example3-mgmt"].self_link
           public_ip  = true
         },
         {
-          subnetwork = module.trust.subnetwork["this"].self_link
+          subnetwork = module.vpc.subnetwork["my-example3-trust"].self_link
         },
       ]
     }
