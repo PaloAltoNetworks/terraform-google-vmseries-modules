@@ -1,9 +1,4 @@
-variable name {
-  type = string
-}
-
-variable subnetworks {
-  type = map(any)
+variable network {
 }
 
 variable allowed_sources {
@@ -18,9 +13,4 @@ variable allowed_protocol {
 variable allowed_ports {
   type    = list(string)
   default = []
-}
-
-variable delete_default_routes_on_create {
-  default = null
-  type    = bool
 }

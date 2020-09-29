@@ -1,6 +1,7 @@
 resource "google_compute_network" "this" {
-  name                            = var.name
-  delete_default_routes_on_create = var.delete_default_routes_on_create
+  for_each                        = var.network
+  name                            = each.value.name
+  delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
 }
 
