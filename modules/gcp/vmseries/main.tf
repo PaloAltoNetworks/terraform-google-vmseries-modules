@@ -26,32 +26,22 @@ resource "google_compute_instance" "this" {
     scopes = var.scopes
   }
 
-  network_interface {
-    dynamic "access_config" {
-      for_each = var.nic0_public_ip ? [""] : []
-      content {}
+  dynamic "network_interface" {
+    for_each = each.value.network_interface
+
+    content {
+      dynamic "access_config" {
+        # the "access_config", if present, creates a public IP address
+        for_each = try(network_interface.value.public_ip, false) ? ["one"] : []
+        content {}
+      }
+
+      network_ip = try(network_interface.value.ip_address, null)
+      subnetwork = network_interface.value.subnetwork
     }
-    network_ip = each.value.nic0_ip
-    subnetwork = var.subnetworks[0]
   }
 
-  network_interface {
-    dynamic "access_config" {
-      for_each = var.nic1_public_ip ? [""] : []
-      content {}
-    }
-    network_ip = each.value.nic1_ip
-    subnetwork = var.subnetworks[1]
-  }
-
-  network_interface {
-    dynamic "access_config" {
-      for_each = var.nic2_public_ip ? [""] : []
-      content {}
-    }
-    network_ip = each.value.nic2_ip
-    subnetwork = var.subnetworks[2]
-  }
+  # TODO: var.linux_fake  -> 0.0/0 route for both nic0 and nic1 -> ip vrf add nic1 ; ip ro add 0.0.0.0/0
 
   boot_disk {
     initialize_params {

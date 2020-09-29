@@ -1,17 +1,10 @@
 variable instances {
   description = "Definition of firewalls that will be deployed"
   type = map(object({
-    name    = string
-    zone    = string
-    nic0_ip = string
-    nic1_ip = string
-    nic2_ip = string
+    name              = string
+    zone              = string
+    network_interface = any
   }))
-}
-
-variable subnetworks {
-  description = "The ordered list of subnetworks. All the instances connect their interfaces to the same list of respective subnetworks."
-  type        = list(string)
 }
 
 variable machine_type {
@@ -63,28 +56,13 @@ variable create_instance_group {
   type    = bool
 }
 
-variable dependencies {
-  default = []
-  type    = list(string)
-}
-
-variable nic0_public_ip {
-  type    = bool
-  default = false
-}
-
-variable nic1_public_ip {
-  type    = bool
-  default = false
-}
-
-variable nic2_public_ip {
-  type    = bool
-  default = false
-}
-
 variable service_account {
   description = "IAM Service Account for running firewall instance (just the email)"
   default     = null
   type        = string
+}
+
+variable dependencies {
+  default = []
+  type    = list(string)
 }
