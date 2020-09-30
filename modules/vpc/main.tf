@@ -5,15 +5,21 @@ resource "google_compute_network" "this" {
   auto_create_subnetworks         = false
 }
 
+data "google_client_config" "this" {}
+
+locals {
+  region = var.region == null || var.region == "" ? data.google_client_config.this.region : var.region
+}
+
 resource "google_compute_subnetwork" "this" {
   for_each      = var.network
-  name          = each.value.name
+  name          = "${each.value.name}-${local.region}"
   ip_cidr_range = each.value.ip_cidr_range
   network       = google_compute_network.this[each.key].self_link
 }
 
 resource "google_compute_firewall" "this" {
-  for_each      = { for k, v in var.network: k => v if can(v.allowed_sources) }
+  for_each      = { for k, v in var.network : k => v if can(v.allowed_sources) }
   name          = "${each.value.name}-ingress"
   network       = google_compute_network.this[each.key].self_link
   direction     = "INGRESS"

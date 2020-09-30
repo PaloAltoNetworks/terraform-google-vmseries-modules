@@ -1,6 +1,10 @@
 variable network {
 }
 
+variable region {
+  default = null
+}
+
 variable allowed_sources {
   type    = list(string)
   default = []
