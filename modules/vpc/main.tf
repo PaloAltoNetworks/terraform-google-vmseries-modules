@@ -28,8 +28,12 @@ locals {
   region = var.region == null || var.region == "" ? data.google_client_config.this.region : var.region
 }
 
+locals {
+  subnetworks = { for v in var.networks : "${v.name}-${local.region}" => v }
+}
+
 resource "google_compute_subnetwork" "this" {
-  for_each      = { for k, v in var.networks : k => v }
+  for_each      = local.subnetworks
   name          = "${each.value.name}-${local.region}"
   ip_cidr_range = each.value.ip_cidr_range
   network       = try(google_compute_network.this[each.value.name].self_link, data.google_compute_network.this[each.value.name].self_link)
