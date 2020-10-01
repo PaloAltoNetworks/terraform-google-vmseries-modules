@@ -28,43 +28,41 @@ variable allowed_sources {
 
 module "vpc" {
   source = "../../modules/vpc"
-  network = {
-    "my-example3-untrust" = {
+  network = [
+    {
       name            = "my-example3-untrust"
       ip_cidr_range   = "192.168.1.0/24"
       allowed_sources = var.allowed_sources
-    }
-    "my-example3-mgmt" = {
+    },
+    {
       name            = "my-example3-mgmt"
       ip_cidr_range   = "192.168.0.0/24"
       allowed_sources = var.allowed_sources
-    }
-    "my-example3-trust" = {
+    },
+    {
       name          = "my-example3-trust"
       ip_cidr_range = "192.168.2.0/24"
-    }
-  }
+    },
+  ]
+  region = "europe-west4"
+}
+
+locals {
+  subnetwork_list = module.vpc.nicspec
+  nic_attributes_list = [
+    { public_ip = true },
+    { public_ip = true },
+    { public_ip = false, ip_address = "192.168.2.15" },
+  ]
 }
 
 module "vmseries" {
   source = "../../modules/vmseries"
   instances = {
     "my-example-fw01" = {
-      name = "my-example3-fw01"
-      zone = data.google_compute_zones.this.names[2]
-      network_interfaces = [
-        {
-          subnetwork = module.vpc.subnetwork["my-example3-untrust"].self_link
-          public_ip  = true
-        },
-        {
-          subnetwork = module.vpc.subnetwork["my-example3-mgmt"].self_link
-          public_ip  = true
-        },
-        {
-          subnetwork = module.vpc.subnetwork["my-example3-trust"].self_link
-        },
-      ]
+      name               = "my-example3-fw01"
+      zone               = data.google_compute_zones.this.names[2]
+      network_interfaces = [for k, v in local.nic_attributes_list : merge(v, local.subnetwork_list[k])]
     }
   }
   ssh_key = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbUVRz+1iNWsTVly/Xou2BUe8+ZEYmWymClLmFbQXsoFLcAGlK+NuixTq6joS+svuKokrb2Cmje6OyGG2wNgb8AsEvzExd+zbNz7Dsz+beSbYaqVjz22853+uY59CSrgdQU4a5py+tDghZPe1EpoYGfhXiD9Y+zxOIhkk+RWl2UKSW7fUe23UdXC4f+YbA0+Xy2l19g/tOVFgThHJn9FFdlQqlJC6a/0mWfudRNLCaiO5IbOlXIKvkLluWZ2GIMkr8uC5wldHyutF20EdAF9A4n72FssHCvB+WhrMCLspIgMfQA3ZMEfQ+/N5sh0c8vCZXV8GumlV4rN9xhjLXtTwf"
