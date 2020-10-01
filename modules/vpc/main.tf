@@ -1,9 +1,22 @@
 locals {
   networks = { for v in var.networks : v.name => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+  networks_to_create = { for k, v in local.networks
+    : k => v
+    if ! (try(v.create_network == false, false))
+  }
+  networks_to_gather = { for k, v in local.networks
+    : k => v
+    if try(v.create_network == false, false)
+  }
+}
+
+data "google_compute_network" "this" {
+  for_each = local.networks_to_gather
+  name     = each.value.name
 }
 
 resource "google_compute_network" "this" {
-  for_each                        = local.networks
+  for_each                        = local.networks_to_create
   name                            = each.value.name
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
@@ -19,13 +32,13 @@ resource "google_compute_subnetwork" "this" {
   for_each      = { for k, v in var.networks : k => v }
   name          = "${each.value.name}-${local.region}"
   ip_cidr_range = each.value.ip_cidr_range
-  network       = google_compute_network.this[each.value.name].self_link
+  network       = try(google_compute_network.this[each.value.name].self_link, data.google_compute_network.this[each.value.name].self_link)
 }
 
 resource "google_compute_firewall" "this" {
   for_each      = { for k, v in local.networks : k => v if can(v.allowed_sources) }
   name          = "${each.value.name}-ingress"
-  network       = google_compute_network.this[each.key].self_link
+  network       = try(google_compute_network.this[each.key].self_link, data.google_compute_network.this[each.key].self_link)
   direction     = "INGRESS"
   source_ranges = each.value.allowed_sources
 
