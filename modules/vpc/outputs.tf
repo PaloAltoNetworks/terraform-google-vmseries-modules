@@ -8,6 +8,6 @@ output networks {
 
 output nicspec {
   value = [for v in var.networks : {
-    subnetwork = try(google_compute_subnetwork.this["${v.name}-${local.region}"].self_link, null)
+    subnetwork = try(google_compute_subnetwork.this["${v.name}-${var.region}"].self_link, null)
   }]
 }
