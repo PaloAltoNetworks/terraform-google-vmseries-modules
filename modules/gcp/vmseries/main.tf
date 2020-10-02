@@ -27,7 +27,7 @@ resource "google_compute_instance" "this" {
   }
 
   dynamic "network_interface" {
-    for_each = each.value.network_interface
+    for_each = each.value.network_interfaces
 
     content {
       dynamic "access_config" {
