@@ -1,9 +1,9 @@
 variable instances {
   description = "Definition of firewalls that will be deployed"
   type        = map(any)
-  # Why `any` here: don't use object() because every element must then have exactly the same nested structure; it thus becomes unwieldy.
-  # For example you couldn't have one instance with three network interfaces and another instance with four.
-  # Another example, you couldn't add an optional attribute to one instance's network interface.
+  # Why `any` here: don't use object() because then every element must then have exactly the same nested structure.
+  # It thus becomes unwieldy. There can be no optional attributes. Even if there is a non-optional attribute that
+  # is a nested list, it needs to have same number of elements for each firewall.
 }
 
 variable machine_type {
