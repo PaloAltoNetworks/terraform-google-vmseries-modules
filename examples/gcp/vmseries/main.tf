@@ -67,7 +67,7 @@ module "vmseries" {
     "my-example-fw01" = {
       name = "my-example3-fw01"
       zone = data.google_compute_zones.this.names[2]
-      network_interface = [
+      network_interfaces = [
         {
           subnetwork = module.untrust.subnetwork["this"].self_link
           public_ip  = true
@@ -92,5 +92,5 @@ module "vmseries" {
 }
 
 output ssh_command {
-  value = { for k, v in module.vmseries.nic1_public_ip : k => "ssh admin@${v}" }
+  value = { for k, v in module.vmseries.nic1_public_ips : k => "ssh admin@${v}" }
 }
