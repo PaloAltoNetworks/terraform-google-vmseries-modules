@@ -1,4 +1,4 @@
-variable network {
+variable networks {
 }
 
 variable region {
