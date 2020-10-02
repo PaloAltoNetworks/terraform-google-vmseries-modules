@@ -28,7 +28,7 @@ variable allowed_sources {
 
 module "vpc" {
   source = "../../modules/vpc"
-  network = [
+  networks = [
     {
       name            = "my-example3-untrust"
       ip_cidr_range   = "192.168.1.0/24"
