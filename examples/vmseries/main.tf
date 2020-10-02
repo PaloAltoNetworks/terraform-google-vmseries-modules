@@ -48,7 +48,6 @@ module "vpc" {
 }
 
 locals {
-  subnetwork_list = module.vpc.nicspec
   nic_attributes_list = [
     { public_ip = true },
     { public_ip = true },
@@ -62,7 +61,7 @@ module "vmseries" {
     "my-example-fw01" = {
       name               = "my-example3-fw01"
       zone               = data.google_compute_zones.this.names[2]
-      network_interfaces = [for k, v in local.nic_attributes_list : merge(v, local.subnetwork_list[k])]
+      network_interfaces = [for k, v in module.vpc.nicspec : merge(v, local.nic_attributes_list[k])]
     }
   }
   ssh_key = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbUVRz+1iNWsTVly/Xou2BUe8+ZEYmWymClLmFbQXsoFLcAGlK+NuixTq6joS+svuKokrb2Cmje6OyGG2wNgb8AsEvzExd+zbNz7Dsz+beSbYaqVjz22853+uY59CSrgdQU4a5py+tDghZPe1EpoYGfhXiD9Y+zxOIhkk+RWl2UKSW7fUe23UdXC4f+YbA0+Xy2l19g/tOVFgThHJn9FFdlQqlJC6a/0mWfudRNLCaiO5IbOlXIKvkLluWZ2GIMkr8uC5wldHyutF20EdAF9A4n72FssHCvB+WhrMCLspIgMfQA3ZMEfQ+/N5sh0c8vCZXV8GumlV4rN9xhjLXtTwf"
