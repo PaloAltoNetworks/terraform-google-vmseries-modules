@@ -1,5 +1,5 @@
 module "vm" {
-  source = "../../modules/gcp/vm/"
+  source = "../../modules/vm/"
 
   instances = {
     "a" = {
@@ -28,7 +28,7 @@ module "vm" {
 # Global HTTP Load Balancer
 
 module "glb" {
-  source                = "../../modules/gcp/lb_http_ext_global"
+  source                = "../../modules/lb_http_ext_global"
   name                  = "my-glb"
   backend_groups        = module.vm.instance_group
   max_rate_per_instance = 50000
@@ -44,7 +44,7 @@ output "global_url" {
 # It's optional, just showing it can co-exist with a Global one.
 
 module "ilb" {
-  source     = "../../modules/gcp/lb_tcp_internal"
+  source     = "../../modules/lb_tcp_internal"
   name       = "my-ilb"
   network    = local.my_vpc
   subnetwork = local.my_subnet
@@ -62,7 +62,7 @@ output "internal_url" {
 # It's optional, just showing it can co-exist with other load balancers.
 
 module "extlb" {
-  source       = "../../modules/gcp/lb_tcp_external/"
+  source       = "../../modules/lb_tcp_external/"
   name         = "my-extlb"
   service_port = 80
   instances    = module.vm.vm_self_link_list

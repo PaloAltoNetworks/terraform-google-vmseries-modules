@@ -8,7 +8,7 @@ participating groups are equally capable as well.
 ```terraform
 
 module "glb" {
-  source = "../modules/gcp/lb_http_ext_global"
+  source = "../modules/lb_http_ext_global"
   name   = "my-glb"
   backend_groups        = module.vm.instance_group
   max_rate_per_instance = 50000

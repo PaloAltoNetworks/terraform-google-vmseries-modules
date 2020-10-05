@@ -14,7 +14,7 @@ data "google_compute_zones" "available" {
 }
 
 module "vpc" {
-  source = "../../modules/gcp/vpc/"
+  source = "../../modules/vpc/"
 
   name = "my-vpc"
   subnetworks = {
