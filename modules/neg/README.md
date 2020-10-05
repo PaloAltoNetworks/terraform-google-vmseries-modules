@@ -11,7 +11,7 @@ This module can be use as a replacement for external load balancers based on Ins
 
 ```terraform
 module "neg" {
-  source = "../modules/gcp/neg/"
+  source = "../modules/neg/"
 
   firewalls = {
     "0" = {
