@@ -12,7 +12,7 @@ data "google_compute_zones" "this" {}
 # Create  buckets for bootstrapping the fresh firewall VM.
 
 module "bootstrap" {
-  source          = "../../../modules/gcp/gcp_bootstrap/"
+  source          = "../../modules/gcp/gcp_bootstrap/"
   bucket_name     = "as4-fw-bootstrap"
   service_account = var.service_account
   file_location   = "bootstrap_files/"
@@ -24,7 +24,7 @@ module "bootstrap" {
 # Firewalls with auto-scaling.
 
 module "autoscale" {
-  source          = "../../../modules/gcp/autoscale"
+  source          = "../../modules/gcp/autoscale"
   prefix          = var.prefix
   deployment_name = var.prefix
 
@@ -67,7 +67,7 @@ module "autoscale" {
 # It's here just to show how to integrate it with auto-scaling.
 
 module "intlb" {
-  source     = "../../../modules/gcp/lb_tcp_internal/"
+  source     = "../../modules/gcp/lb_tcp_internal/"
   name       = var.intlb_name
   network    = var.trust_vpc
   subnetwork = var.trust_subnet[0]
@@ -82,7 +82,7 @@ module "intlb" {
 # It's here just to show how to integrate it with auto-scaling.
 
 module "extlb" {
-  source       = "../../../modules/gcp/lb_tcp_external/"
+  source       = "../../modules/gcp/lb_tcp_external/"
   name         = var.extlb_name
   service_port = 80
   health_check = {
