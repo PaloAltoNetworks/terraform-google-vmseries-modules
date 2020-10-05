@@ -1,37 +1,40 @@
-variable instances {
+variable firewalls {
   description = "Definition of firewalls that will be deployed"
-  type        = map(any)
-  # Why `any` here: don't use object() because then every element must then have exactly the same nested structure.
-  # It thus becomes unwieldy. There can be no optional attributes. Even if there is a non-optional attribute that
-  # is a nested list, it needs to have same number of elements for each firewall.
+//    type = map(object({
+//      name    = string
+//      zone    = string
+//
+//    }))
+}
+
+variable subnetworks {
 }
 
 variable machine_type {
-  default = "n1-standard-4"
-  type    = string
 }
 
-variable min_cpu_platform {
+variable cpu_platform {
   default = "Intel Broadwell"
-  type    = string
 }
-
 variable disk_type {
-  description = "Default is pd-ssd, alternative is pd-balanced."
-  default     = "pd-ssd"
+  default = "pd-ssd"
+  #default = "pd-standard"
 }
-
 variable bootstrap_bucket {
   default = ""
-  type    = string
 }
 
 variable ssh_key {
   default = ""
-  type    = string
+}
+
+variable public_lb_create {
+  default = false
 }
 
 variable scopes {
+  type = list(string)
+
   default = [
     "https://www.googleapis.com/auth/compute.readonly",
     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -39,20 +42,48 @@ variable scopes {
     "https://www.googleapis.com/auth/logging.write",
     "https://www.googleapis.com/auth/monitoring.write",
   ]
-  type = list(string)
 }
 
 variable image {
 }
 
 variable tags {
-  default = []
   type    = list(string)
+  default = []
 }
 
 variable create_instance_group {
-  default = false
   type    = bool
+  default = false
+}
+
+variable instance_group_names {
+  type    = list(string)
+  default = ["vmseries-instance-group"]
+}
+
+variable dependencies {
+  type    = list(string)
+  default = []
+}
+
+variable mgmt_interface_swap {
+  default = ""
+}
+
+variable nic0_public_ip {
+  type    = bool
+  default = false
+}
+
+variable nic1_public_ip {
+  type    = bool
+  default = false
+}
+
+variable nic2_public_ip {
+  type    = bool
+  default = false
 }
 
 variable service_account {
@@ -61,7 +92,27 @@ variable service_account {
   type        = string
 }
 
-variable dependencies {
-  default = []
-  type    = list(string)
+//variable "interfaces" {
+//  description = "GCP Compute Engine Network Interface Map"
+//  default = {}
+//}
+
+variable "region" {}
+variable "prefix" {
+  type = string
+}
+
+variable "environment" {
+  description = "Environment type I.E:(prod,nonprod,corp,etc)"
+  type = string
+}
+
+variable "default_fw_priority" {
+  description = "Default GCP Firewall Priority"
+  default = 25
+}
+
+variable "default_fw_protocol" {
+  description = "Default GCP Firewall protocol(s)"
+  default = "all"
 }

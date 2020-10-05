@@ -1,0 +1,58 @@
+"config":
+  "http_basic_auth": "cm9hcGk6TmNtMmVXRTB1SnBGTjAxNzlYSjA="
+"route_sets":
+  "sabre-fw01--nonprod-us-central1b":
+    "chakras":
+    - "10.200.0.1"
+    - "10.200.2.1"
+    - "10.200.4.1"
+    - "10.200.6.1"
+    - "192.168.0.1"
+    "routes":
+      "from-cert-to-untrust":
+        "dest_range": "212.77.98.9/32"
+        "name": "from-cert-to-untrust"
+        "next_hop_ip": "10.200.2.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag"
+        "vpc": "cert"
+      "from-certpci-to-untrust":
+        "dest_range": "212.77.98.9/32"
+        "name": "from-certpci-to-untrust"
+        "next_hop_ip": "10.200.6.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag"
+        "vpc": "certpci"
+      "from-dev-to-untrust":
+        "dest_range": "212.77.98.9/32"
+        "name": "from-dev-to-untrust"
+        "next_hop_ip": "10.200.4.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag"
+        "vpc": "dev"
+      "from-sharedservices-to-untrust":
+        "dest_range": "212.77.98.9/32"
+        "name": "from-sharedservices-to-untrust"
+        "next_hop_ip": "10.200.0.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag"
+        "vpc": "sharedservices"
+      "from-untrust-to-ss":
+        "dest_range": "10.200.0.0/23"
+        "name": "from-untrust-to-ss"
+        "next_hop_ip": "192.168.0.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag,anothertag"
+        "vpc": "untrust"
+  "sabre-fw01-prod-us-central1b":
+    "chakras":
+    - "192.168.0.1"
+    "routes":
+      "from-untrust-to-prod":
+        "dest_range": "10.100.0.0/16"
+        "name": "from-untrust-to-prod"
+        "next_hop_ip": "192.168.0.5"
+        "priority": 99
+        "subject_tags": "uscentral1tag"
+        "vpc": "untrust"
+
