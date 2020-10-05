@@ -9,7 +9,7 @@ provider "google" {
 data "google_compute_zones" "this" {}
 
 # module "bootstrap" {
-#   source          = "../../modules/gcp/gcp_bootstrap/"
+#   source          = "../../modules/gcp_bootstrap/"
 #   bucket_name     = "as4-fw-bootstrap"
 #   service_account = var.service_account
 #   file_location   = "bootstrap_files/"
@@ -27,7 +27,7 @@ variable allowed_sources {
 # And one more dedicated to firewall's management traffic.
 
 module "untrust" {
-  source = "../../modules/gcp/vpc"
+  source = "../../modules/vpc"
   name   = "my-example3-untrust"
   network = {
     "this" = {
@@ -39,7 +39,7 @@ module "untrust" {
 }
 
 module "mgmt" {
-  source = "../../modules/gcp/vpc"
+  source = "../../modules/vpc"
   name   = "my-example3-mgmt"
   subnetworks = {
     "this" = {
@@ -51,7 +51,7 @@ module "mgmt" {
 }
 
 module "trust" {
-  source = "../../modules/gcp/vpc"
+  source = "../../modules/vpc"
   name   = "my-example3-trust"
   subnetworks = {
     "this" = {
@@ -62,7 +62,7 @@ module "trust" {
 }
 
 module "vmseries" {
-  source = "../../modules/gcp/vmseries"
+  source = "../../modules/vmseries"
   instances = {
     "my-example-fw01" = {
       name = "my-example3-fw01"
