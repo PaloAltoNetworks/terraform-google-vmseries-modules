@@ -8,15 +8,6 @@ provider "google" {
 
 data "google_compute_zones" "this" {}
 
-# module "bootstrap" {
-#   source          = "../../modules/gcp_bootstrap/"
-#   bucket_name     = "as4-fw-bootstrap"
-#   service_account = var.service_account
-#   file_location   = "bootstrap_files/"
-#   config          = ["init-cfg.txt"]
-#   license         = ["authcodes"]
-# }
-
 variable allowed_sources {
   default = ["0.0.0.0/0"]
 }
@@ -59,6 +50,7 @@ locals {
   ]
 }
 
+# Spawn the VM-series firewall as a Google Cloud Engine Instance.
 module "vmseries" {
   source = "../../modules/vmseries"
   instances = {
@@ -71,11 +63,6 @@ module "vmseries" {
   ssh_key = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbUVRz+1iNWsTVly/Xou2BUe8+ZEYmWymClLmFbQXsoFLcAGlK+NuixTq6joS+svuKokrb2Cmje6OyGG2wNgb8AsEvzExd+zbNz7Dsz+beSbYaqVjz22853+uY59CSrgdQU4a5py+tDghZPe1EpoYGfhXiD9Y+zxOIhkk+RWl2UKSW7fUe23UdXC4f+YbA0+Xy2l19g/tOVFgThHJn9FFdlQqlJC6a/0mWfudRNLCaiO5IbOlXIKvkLluWZ2GIMkr8uC5wldHyutF20EdAF9A4n72FssHCvB+WhrMCLspIgMfQA3ZMEfQ+/N5sh0c8vCZXV8GumlV4rN9xhjLXtTwf"
 
   image_uri = var.image_uri
-
-  #   bootstrap_bucket = module.bootstrap.bucket_name
-  #   dependencies = [
-  #     module.bootstrap.completion,
-  #   ]
 }
 
 output ssh_command {
