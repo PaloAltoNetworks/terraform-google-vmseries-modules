@@ -21,6 +21,10 @@ variable allowed_sources {
   default = ["0.0.0.0/0"]
 }
 
+variable image_uri {
+  default = null
+}
+
 # Firewall requires three VPC Networks on GCP, believe it or not!
 # 
 # Two of them pass the actual data, we call them untrust network and trust network.
@@ -65,7 +69,8 @@ module "vmseries" {
     }
   }
   ssh_key = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbUVRz+1iNWsTVly/Xou2BUe8+ZEYmWymClLmFbQXsoFLcAGlK+NuixTq6joS+svuKokrb2Cmje6OyGG2wNgb8AsEvzExd+zbNz7Dsz+beSbYaqVjz22853+uY59CSrgdQU4a5py+tDghZPe1EpoYGfhXiD9Y+zxOIhkk+RWl2UKSW7fUe23UdXC4f+YbA0+Xy2l19g/tOVFgThHJn9FFdlQqlJC6a/0mWfudRNLCaiO5IbOlXIKvkLluWZ2GIMkr8uC5wldHyutF20EdAF9A4n72FssHCvB+WhrMCLspIgMfQA3ZMEfQ+/N5sh0c8vCZXV8GumlV4rN9xhjLXtTwf"
-  image   = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+
+  image_uri = var.image_uri
 
   #   bootstrap_bucket = module.bootstrap.bucket_name
   #   dependencies = [
