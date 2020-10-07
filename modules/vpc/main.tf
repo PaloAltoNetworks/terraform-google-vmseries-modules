@@ -27,6 +27,7 @@ resource "google_compute_subnetwork" "this" {
   name          = "${each.value.name}-${var.region}"
   ip_cidr_range = each.value.ip_cidr_range
   network       = try(google_compute_network.this[each.value.name].self_link, data.google_compute_network.this[each.value.name].self_link)
+  region        = var.region
 }
 
 resource "google_compute_firewall" "this" {
