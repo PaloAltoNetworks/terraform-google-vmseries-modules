@@ -2,8 +2,6 @@ variable "regions" {
   default = {}
 }
 
-# ----------
-# Cloud settings
 variable "project_id" {
   description = "GCP Project ID"
   type        = string
@@ -19,13 +17,9 @@ variable "prefix" {
   type        = string
 }
 
-variable "subnetworks" {
-  description = "Map of GCP Subnetworks"
-  default = {}
-}
-
 variable public_key_path {
   description = "Local path to public SSH key. If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin"
+  default     = "~/.ssh/id_rsa.pub"
 }
 
 variable https_interm_pem_file {
@@ -41,20 +35,14 @@ variable http_basic_auth {
 
 # ----------
 # Licencing and VM settings
-variable fw_panos {
-  description = "VM-Series license and PAN-OS (ie: bundle1-814, bundle2-814, or byol-814)"
-}
-//
-variable fw_image {
-  default = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries"
+variable panos_image_name {
+  description = "VM-Series license and PAN-OS (ie: vmseries-bundle1-912, vmseries-byol-814, etc)"
+  default     = "vmseries-flex-byol-913"
 }
 
 variable fw_machine_type {
   description = "VM size, e.g. n1-standard-16"
-}
-
-variable private_key_path {
-  description = "Local path to private SSH key. If you do not have a private key, run >> ssh-keygen -t rsa"
+  default     = null
 }
 
 variable https_cert_pem_file {

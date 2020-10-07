@@ -13,7 +13,7 @@ Shared VPC Design using Terraform Workspaces and environmental TFVARS
 
 ```sh
 terraform init
-terraform workspace new <workspace name>
+terraform workspace new <project prefix>-<environment type>-firewalls+<gcp region>
 terraform init
 terraform plan -var-file=<environment>.tfvars
 terraform apply -var-file=<environment>.tfvars
