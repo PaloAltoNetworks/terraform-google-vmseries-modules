@@ -8,6 +8,16 @@ locals {
     : k => v
     if try(v.create_network == false, false)
   }
+
+  subnetworks = { for v in var.networks : "${v.name}-${var.region}" => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+  subnetworks_to_create = { for k, v in local.subnetworks
+    : k => v
+    if ! (try(v.create_subnetwork == false, false))
+  }
+  subnetworks_to_gather = { for k, v in local.subnetworks
+    : k => v
+    if try(v.create_subnetwork == false, false)
+  }
 }
 
 data "google_compute_network" "this" {
@@ -22,9 +32,15 @@ resource "google_compute_network" "this" {
   auto_create_subnetworks         = false
 }
 
+data "google_compute_subnetwork" "this" {
+  for_each = local.subnetworks_to_gather
+  name     = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
+  region   = var.region
+}
+
 resource "google_compute_subnetwork" "this" {
-  for_each      = { for v in var.networks : "${v.name}-${var.region}" => v }
-  name          = "${each.value.name}-${var.region}"
+  for_each      = local.subnetworks_to_create
+  name          = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
   ip_cidr_range = each.value.ip_cidr_range
   network       = try(google_compute_network.this[each.value.name].self_link, data.google_compute_network.this[each.value.name].self_link)
   region        = var.region
