@@ -29,10 +29,12 @@ module "vpc" {
 }
 
 locals {
-  subnetwork_map        = {}
-  subnetwork_map_detail = {}
-
-  instances = var.regions[local.region]["instances"]
+  instances = {
+    # FIXME move this code to "vpc"
+    for k, v in var.regions[local.region]["instances"] : k => merge(v,
+      { network_interfaces = module.vpc.nicspec }
+    )
+  }
 }
 
 //#-----------------------------------------------------------------------------------------------
