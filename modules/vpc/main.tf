@@ -1,19 +1,29 @@
 locals {
+  // All the networks:
   networks = { for v in var.networks : v.name => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+
+  // Some networks need to be created:
   networks_to_create = { for k, v in local.networks
     : k => v
     if ! (try(v.create_network == false, false))
   }
+
+  // But other networks already exist:
   networks_to_gather = { for k, v in local.networks
     : k => v
     if try(v.create_network == false, false)
   }
 
-  subnetworks = { for v in var.networks : "${v.name}-${var.region}" => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+  // Same code, but now for subnetworks:
+  subnetworks = { for v in var.networks : "${v.name}-${var.region}" => v }
+
+  // Some subnetworks need to be created:
   subnetworks_to_create = { for k, v in local.subnetworks
     : k => v
     if ! (try(v.create_subnetwork == false, false))
   }
+
+  // But other subnetworks already exist:
   subnetworks_to_gather = { for k, v in local.subnetworks
     : k => v
     if try(v.create_subnetwork == false, false)
