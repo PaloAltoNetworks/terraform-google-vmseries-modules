@@ -1,5 +1,4 @@
 variable "regions" {
-  default = {}
 }
 
 variable "project_id" {

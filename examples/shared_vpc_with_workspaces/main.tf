@@ -19,6 +19,21 @@ module "bootstrap" {
   //  content       = ["pancontent","pancontent2"]
 }
 
+#-----------------------------------------------------------------------------------------------
+# Create subnetworks on our brownfield.
+# Or just gather subnetworks' data if they already exist on the brownfield.
+module "vpc" {
+  source   = "../../modules/vpc"
+  networks = var.regions[local.region].networks
+  region   = local.region
+}
+
+locals {
+  subnetwork_map        = {}
+  subnetwork_map_detail = {}
+
+  instances = var.regions[local.region]["instances"]
+}
 
 //#-----------------------------------------------------------------------------------------------
 //# Create  firewalls
@@ -32,7 +47,7 @@ module "firewalls" {
   image_name            = var.panos_image_name
   create_instance_group = false
   bootstrap_bucket      = module.bootstrap.bucket_name
-  instances             = var.regions[local.region]["instances"]
+  instances             = local.instances
 
   dependencies = [
     module.bootstrap.completion,

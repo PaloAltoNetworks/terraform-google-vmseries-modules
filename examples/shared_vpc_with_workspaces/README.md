@@ -1,9 +1,27 @@
 Shared VPC Design using Terraform Workspaces and environmental TFVARS
 
-
 ## Instruction
 
-- Set up all the VPCs and Subnetworks prior to deploying (BROWNFIELD ONLY).
+### Brownfield
+
+Here, brownfield are the VPC networks and subnetworks that are already existant
+before our main deployment of this example runs. These resources
+come from outside, e.g. from some native deployment manager or manual ui work.
+
+We have a minimal Terraform code that creates the brownfield VPCs, and the main code of this example "pretends"
+that these were already existent.
+
+- Set up the simulation of the brownfield:
+
+```sh
+cd brownfield
+terraform init
+terraform apply
+cd -
+```
+
+### Main Deployment
+
 - Set up Panorama. This example assumes it exists with proper settings.
 - Set the GCP Service Account with the sufficient permissions. The account will not only be used for GCP plugin access, but also for actually running the instances.
 - Go to the main directory of the example (i.e. where this README.md is placed)
