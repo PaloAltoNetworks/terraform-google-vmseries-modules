@@ -1,3 +1,9 @@
+terraform {
+  required_providers {
+    google = { version = "~> 3.30" }
+  }
+}
+
 resource "google_compute_health_check" "this" {
   name = "${var.name}-check-tcp${var.health_check_port}"
 

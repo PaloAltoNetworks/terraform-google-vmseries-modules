@@ -1,3 +1,8 @@
+terraform {
+  required_providers {
+    google = { version = "~> 3.30" }
+  }
+}
 
 locals {
   health_check_port = var.health_check["port"]

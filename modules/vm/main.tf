@@ -1,3 +1,9 @@
+terraform {
+  required_providers {
+    google = { version = "~> 3.30" }
+  }
+}
+
 resource "google_compute_instance" "default" {
   for_each                  = var.instances
   name                      = each.value.name
