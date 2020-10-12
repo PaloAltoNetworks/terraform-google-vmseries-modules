@@ -1,15 +1,13 @@
-output subnetwork {
+output subnetworks {
   value = google_compute_subnetwork.this
 }
 
-output vpc_name {
-  value = google_compute_network.this.name
+output networks {
+  value = google_compute_network.this
 }
 
-output vpc_id {
-  value = google_compute_network.this.id
-}
-
-output vpc_self_link {
-  value = google_compute_network.this.self_link
+output nicspec {
+  value = [for v in var.networks : {
+    subnetwork = try(data.google_compute_subnetwork.this["${v.name}-${var.region}"].self_link, null)
+  }]
 }

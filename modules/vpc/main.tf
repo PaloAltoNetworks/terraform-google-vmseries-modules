@@ -1,26 +1,62 @@
+locals {
+  // All the networks:
+  networks = { for v in var.networks : v.name => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+
+  // Some networks need to be created:
+  networks_to_create = {
+    for k, v in local.networks
+    : k => v
+    if ! (try(v.create_network == false, false))
+  }
+
+  // Same code, but now for subnetworks:
+  subnetworks = { for v in var.networks : "${v.name}-${var.region}" => v }
+
+  // Some subnetworks need to be created:
+  subnetworks_to_create = {
+    for k, v in local.subnetworks
+    : k => v
+    if ! (try(v.create_subnetwork == false, false))
+  }
+}
+
+data "google_compute_network" "this" {
+  for_each   = local.networks
+  name       = each.value.name
+  depends_on = [google_compute_network.this]
+}
+
 resource "google_compute_network" "this" {
-  name                            = var.name
-  delete_default_routes_on_create = var.delete_default_routes_on_create
+  for_each                        = local.networks_to_create
+  name                            = each.value.name
+  delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
 }
 
+data "google_compute_subnetwork" "this" {
+  for_each   = local.subnetworks
+  name       = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
+  region     = var.region
+  depends_on = [google_compute_subnetwork.this]
+}
+
 resource "google_compute_subnetwork" "this" {
-  for_each      = var.subnetworks
-  name          = each.value.name
+  for_each      = local.subnetworks_to_create
+  name          = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
   ip_cidr_range = each.value.ip_cidr_range
-  network       = google_compute_network.this.self_link
-  region        = lookup(each.value, "region", null)
+  network       = data.google_compute_network.this[each.value.name].self_link
+  region        = var.region
 }
 
 resource "google_compute_firewall" "this" {
-  count         = length(var.allowed_sources) != 0 ? 1 : 0
-  name          = "${google_compute_network.this.name}-ingress"
-  network       = google_compute_network.this.self_link
+  for_each      = { for k, v in local.networks : k => v if can(v.allowed_sources) }
+  name          = "${each.value.name}-ingress"
+  network       = data.google_compute_network.this[each.key].self_link
   direction     = "INGRESS"
-  source_ranges = var.allowed_sources
+  source_ranges = each.value.allowed_sources
 
   allow {
-    protocol = var.allowed_protocol
-    ports    = var.allowed_ports
+    protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
+    ports    = try(each.value.allowed_ports, var.allowed_ports, null)
   }
 }

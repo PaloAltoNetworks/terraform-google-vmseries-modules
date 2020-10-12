@@ -42,7 +42,22 @@ variable scopes {
   type = list(string)
 }
 
-variable image {
+variable image_prefix_uri {
+  description = "The image URI prefix, by default https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/ string. When prepended to `image_name` it should result in a full valid Google Cloud Engine image resource URI."
+  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/"
+  type        = string
+}
+
+variable image_name {
+  description = "The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913."
+  default     = "vmseries-flex-bundle1-913"
+  type        = string
+}
+
+variable image_uri {
+  description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs."
+  default     = null
+  type        = string
 }
 
 variable tags {

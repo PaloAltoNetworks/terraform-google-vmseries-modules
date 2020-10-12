@@ -1,3 +1,10 @@
+terraform {
+  required_providers {
+    null   = { version = "~> 2.1" }
+    google = { version = "~> 3.30" }
+  }
+}
+
 resource "null_resource" "dependency_getter" {
   provisioner "local-exec" {
     command = "echo ${length(var.dependencies)}"
@@ -27,7 +34,11 @@ resource "google_compute_instance" "this" {
   }
 
   dynamic "network_interface" {
-    for_each = each.value.network_interfaces
+    for_each = { for k, v in each.value.network_interfaces : k => merge(
+      try(each.value.network_interfaces_base[k], {}),
+      each.value.network_interfaces[k],
+      try(each.value.network_interfaces_custom[k], {}),
+    ) }
 
     content {
       dynamic "access_config" {
@@ -45,7 +56,7 @@ resource "google_compute_instance" "this" {
 
   boot_disk {
     initialize_params {
-      image = var.image
+      image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
       type  = var.disk_type
     }
   }

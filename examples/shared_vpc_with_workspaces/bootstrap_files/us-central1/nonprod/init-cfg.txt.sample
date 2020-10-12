@@ -1,0 +1,10 @@
+type=dhcp-client
+op-command-modes=mgmt-interface-swap
+vm-auth-key=123456789012345
+panorama-server=10.1.2.3
+tplname=my-stack
+dgname=my-device-group
+dhcp-send-hostname=yes
+dhcp-send-client-id=yes
+dhcp-accept-server-hostname=yes
+dhcp-accept-server-domain=yes

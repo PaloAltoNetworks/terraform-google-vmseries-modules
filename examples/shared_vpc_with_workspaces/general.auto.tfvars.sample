@@ -1,0 +1,5 @@
+prefix = "YOUR PREFERRED PREFIX FOR RESOURCE NAMES"
+project_id = "YOUR PROJECT ID"
+auth_file = "PATH TO YOUR AUTH FILE, or you can run in GCLOUD CONSOLE WITH PROPER PERMISSIONS"
+panos_image_name = "vmseries-flex-byol-1001"
+outbound_route_dest = "0.0.0.0/0" # LEAVE THIS ALONE UNLESS YOU WANT TO TEST a Subset of Egress traffic.
