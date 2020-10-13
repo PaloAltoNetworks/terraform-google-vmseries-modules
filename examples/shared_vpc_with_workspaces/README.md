@@ -25,13 +25,15 @@ cd -
 - Set up Panorama. This example assumes it exists with proper settings.
 - Set the GCP Service Account with the sufficient permissions. The account will not only be used for GCP plugin access, but also for actually running the instances.
 - Go to the main directory of the example (i.e. where this README.md is placed)
-- Create Terraform Workspaces with naming convention: `<project prefix>-<environment type>-firewalls+<gcp region>`
+- Create Terraform Workspaces with naming convention: `<myprefix>-<environment>-firewalls+<region>`
 - Put the created items into your `<environment>.tfvars`: (For multiple environment types please ensure the coincide with the environment name created in the workspace )
-- Update `general.auto.tfvars` with 
+- Update `general.auto.tfvars` with variables that are intended to be identical in all environments
+- Run commands:
 
 ```sh
 terraform init
-terraform workspace new <project prefix>-<environment type>-firewalls+<gcp region>
+terraform workspace new '<myprefix>-<environment>-firewalls+<region>'
+terraform workspace select '<myprefix>-<environment>-firewalls+<region>'
 terraform init
 terraform plan -var-file=<environment>.tfvars
 terraform apply -var-file=<environment>.tfvars
@@ -49,6 +51,45 @@ terraform apply -var-file=<environment>.tfvars
 | Name | Version |
 |------|---------|
 | google | ~> 3.35 |
+
+## Common errors
+
+### Invalid index
+
+```txt
+Error: Invalid index
+
+  on main.tf line ...
+    |----------------
+    | local.region is "default"
+    | var.regions is object with 1 attribute "us-central1"
+```
+
+The reason is wrong workspace, indicated by `*` below:
+
+```sh
+$ terraform workspace list
+* default
+  example-another
+  example-nonprod-firewalls+us-central1
+```
+
+Apply the main instruction again to correct the situation:
+
+```sh
+$ terraform workspace new 'example-nonprod-firewalls+us-central1'
+Workspace "example-nonprod-firewalls+us-central1" already exists
+$ terraform workspace select 'example-nonprod-firewalls+us-central1'
+$ terraform workspace list
+  default
+  example-another
+* example-nonprod-firewalls+us-central1
+```
+
+Make sure that the workspace name marked `*` is suffixed with `+us-central1` or similar. It needs
+to be a plus sign `+` followed by a valid Google Cloud Region name, and the region needs to be
+referenced in your variable `regions`. In this example, the code would expect `regions["us-central1"]`
+to be defined by you.
 
 ## Inputs
 
