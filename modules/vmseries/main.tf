@@ -44,7 +44,9 @@ resource "google_compute_instance" "this" {
       dynamic "access_config" {
         # the "access_config", if present, creates a public IP address
         for_each = try(network_interface.value.public_ip, false) ? ["one"] : []
-        content {}
+        content {
+          nat_ip = try(network_interface.value.nat_ip, null)
+        }
       }
 
       network_ip = try(network_interface.value.ip_address, null)
