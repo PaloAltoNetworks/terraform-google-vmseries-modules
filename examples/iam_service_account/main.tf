@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "google" {
-  version     = "= 3.35"
+  version = "= 3.35"
 }
 
 # Dedicated IAM service account for running GCP instances of Palo Alto Networks VM-Series.
@@ -32,9 +32,9 @@ module "iam_service_account_panorama" {
   source             = "../../modules/iam_service_account/"
   service_account_id = "iamexample-panorama-sa"
   display_name       = "Palo Alto Networks Panorama GCP Plugin Service Account"
-  roles              = [
-      "roles/compute.viewer",
-      "roles/deploymentmanager.viewer",
-      "roles/pubsub.admin",
+  roles = [
+    "roles/compute.viewer",
+    "roles/deploymentmanager.viewer",
+    "roles/pubsub.admin",
   ]
 }
