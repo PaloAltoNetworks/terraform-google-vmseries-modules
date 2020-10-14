@@ -4,14 +4,12 @@ regions = {
       {
         name           = "my-example4-untrust"
         create_network = false
-        ip_cidr_range = "10.1.1.0/24"
-        // allowed_sources = var.allowed_sources
+        ip_cidr_range  = "10.1.1.0/24"
       },
       {
-        name          = "my-example4-mgmt"
+        name           = "my-example4-mgmt"
         create_network = false
-        ip_cidr_range = "10.1.0.0/24"
-        // allowed_sources = var.allowed_sources
+        ip_cidr_range  = "10.1.0.0/24"
       },
       {
         name              = "my-example4-trust"
@@ -22,7 +20,6 @@ regions = {
     ]
     instances = {
       a1 = {
-        fw_build = true
         zone     = "us-central1-a"
         name     = "fw01"
         network_interfaces_base = [
@@ -63,5 +60,5 @@ regions = {
     }
   }
 }
-fw_machine_type  = "n1-standard-8"
-public_key_path  = "PATH TO PUBLIC KEY USED FOR PANOS"
+fw_machine_type = "n1-standard-8"
+public_key_path = "PATH TO PUBLIC KEY USED FOR PANOS"

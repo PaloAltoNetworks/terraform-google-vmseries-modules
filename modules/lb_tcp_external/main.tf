@@ -24,8 +24,8 @@ resource "google_compute_target_pool" "default" {
   name             = var.name
   region           = var.region
   session_affinity = var.session_affinity
-  instances = var.instances
-  health_checks = var.disable_health_check ? [] : [google_compute_http_health_check.default.0.self_link]
+  instances        = var.instances
+  health_checks    = var.disable_health_check ? [] : [google_compute_http_health_check.default.0.self_link]
 }
 
 resource "google_compute_http_health_check" "default" {
