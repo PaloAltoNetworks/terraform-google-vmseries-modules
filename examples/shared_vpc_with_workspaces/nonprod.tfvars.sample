@@ -23,9 +23,9 @@ regions = {
         zone     = "us-central1-a"
         name     = "fw01"
         network_interfaces_base = [
-          { public_ip = true },
-          { public_ip = true },
-          { public_ip = false },
+          { public_nat = true },
+          { public_nat = true },
+          { public_nat = false },
         ]
         network_interfaces_custom = [
           {},

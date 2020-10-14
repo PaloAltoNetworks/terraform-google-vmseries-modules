@@ -44,9 +44,9 @@ module "vpc" {
 
 locals {
   nic_attributes_list = [
-    { public_ip = true },
-    { public_ip = true },
-    { public_ip = false, ip_address = "192.168.2.15" },
+    { public_nat = true },
+    { public_nat = true },
+    { public_nat = false, ip_address = "192.168.2.15" },
   ]
 }
 
