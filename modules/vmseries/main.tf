@@ -42,16 +42,25 @@ resource "google_compute_instance" "this" {
     ) }
 
     content {
+      subnetwork = network_interface.value.subnetwork
+      network_ip = try(network_interface.value.ip_address, null)
+
       dynamic "access_config" {
         # the "access_config", if present, creates a public IP address
         for_each = try(network_interface.value.public_nat, false) ? ["one"] : []
         content {
-          nat_ip = try(network_interface.value.nat_ip, null)
+          nat_ip                 = try(network_interface.value.nat_ip, null)
+          public_ptr_domain_name = try(network_interface.value.public_ptr_domain_name, null)
         }
       }
 
-      network_ip = try(network_interface.value.ip_address, null)
-      subnetwork = network_interface.value.subnetwork
+      dynamic "alias_ip_range" {
+        for_each = try(network_interface.value.alias_ip_range, [])
+        content {
+          ip_cidr_range         = alias_ip_range.value.ip_cidr_range
+          subnetwork_range_name = try(alias_ip_range.value.subnetwork_range_name, null)
+        }
+      }
     }
   }
 
