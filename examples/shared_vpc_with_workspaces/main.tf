@@ -12,7 +12,7 @@ provider "google" {
 # Create  buckets for bootstrapping the fresh firewall VM.
 module "bootstrap" {
   source        = "../../modules/gcp_bootstrap"
-  bucket_name   = "${var.prefix}-fw-${local.environment}-${local.region}-bootstrap"
+  bucket_name   = "${var.prefix}fw-bootstrap-${local.environment}-${local.region}"
   file_location = "./bootstrap_files/${local.region}/${local.environment}/"
   config        = ["init-cfg.txt"]
   license       = ["authcodes"]
@@ -41,9 +41,7 @@ locals {
 //# Create  firewalls
 module "firewalls" {
   source = "../../modules/vmseries"
-  // FIXME region                = local.region
-  // FIXME subnetworks           = local.subnetwork_map_detail
-  // FIXME environment           = local.environment
+
   tags                  = ["paloalto"]
   ssh_key               = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
   image_name            = var.panos_image_name
