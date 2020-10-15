@@ -12,7 +12,8 @@ resource "null_resource" "dependency_getter" {
 }
 
 resource "google_compute_instance" "this" {
-  for_each                  = var.instances
+  for_each = var.instances
+
   name                      = each.value.name
   zone                      = each.value.zone
   machine_type              = var.machine_type
@@ -70,7 +71,8 @@ resource "google_compute_instance" "this" {
 
 // The Deployment Guide Jan 2020 recommends per-zone instance groups (instead of regional IGMs).
 resource "google_compute_instance_group" "this" {
-  for_each  = var.instances
+  for_each = var.instances
+
   name      = "${each.value.name}-${each.value.zone}-ig"
   zone      = each.value.zone
   instances = [google_compute_instance.this[each.key].self_link]
