@@ -41,6 +41,14 @@ locals {
 }
 
 //#-----------------------------------------------------------------------------------------------
+//# Reserve the dynamic addresses
+module "vmseries_addresses" {
+  source = "../../modules/vmseries_addresses"
+
+  instances = local.instances
+}
+
+//#-----------------------------------------------------------------------------------------------
 //# Create  firewalls
 module "firewalls" {
   source = "../../modules/vmseries"
@@ -50,7 +58,7 @@ module "firewalls" {
   image_name            = var.panos_image_name
   create_instance_group = false
   bootstrap_bucket      = module.bootstrap.bucket_name
-  instances             = local.instances
+  instances             = module.vmseries_addresses.instances
 
   dependencies = [
     module.bootstrap.completion,
