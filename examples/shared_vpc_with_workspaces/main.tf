@@ -30,10 +30,13 @@ module "vpc" {
 
 locals {
   instances = {
-    # FIXME move this code to "vpc"
-    for k, v in var.regions[local.region]["instances"] : k => merge(v,
-      { network_interfaces = module.vpc.nicspec }
-    )
+    for k, v in var.regions[local.region]["instances"] : k => {
+      name                      = "${var.prefix}-${local.environment}-${local.region}-${v.name}"
+      zone                      = v.zone
+      network_interfaces_base   = try(v.network_interfaces_base, [])
+      network_interfaces        = module.vpc.nicspec
+      network_interfaces_custom = try(v.network_interfaces_custom, [])
+    }
   }
 }
 
