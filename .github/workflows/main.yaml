@@ -1,0 +1,29 @@
+name: main
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: reviewdog/action-tflint@master
+      with:
+        github_token: ${{ secrets.github_token }}
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    # container: node:10.16-jessie
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - run: |
+        curl -L "$(curl -s https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | grep -o -E "https://.+?-linux-amd64")" > terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
+        curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip tflint.zip && rm tflint.zip && sudo mv tflint /usr/bin/
+        echo "PATH=$PATH"
+        env GO111MODULE=on GOBIN=/usr/local/bin sudo go get -u github.com/tfsec/tfsec/cmd/tfsec@v0.30.1
+        find ~ /usr/local/bin -cmin -1 -name tfsec -ls
+    - uses: pre-commit/action@v2.0.0
