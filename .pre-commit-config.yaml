@@ -5,4 +5,8 @@ repos:
     - id: terraform_fmt
     - id: terraform_docs
     - id: terraform_tflint
+      args:
+        - '--args=--config=__GIT_WORKING_DIR__/.tflint.hcl'
+        - '--args=--enable-rule=terraform_documented_variables' # FIXME all here
     - id: terraform_tfsec
+      files: ^examples/
