@@ -26,20 +26,22 @@ module "vpc" {
   networks = [
     {
       name            = "my-example3-untrust"
+      subnetwork_name = "my-example3-untrust"
       ip_cidr_range   = "192.168.1.0/24"
       allowed_sources = var.allowed_sources
     },
     {
       name            = "my-example3-mgmt"
+      subnetwork_name = "my-example3-mgmt"
       ip_cidr_range   = "192.168.0.0/24"
       allowed_sources = var.allowed_sources
     },
     {
-      name          = "my-example3-trust"
-      ip_cidr_range = "192.168.2.0/24"
+      name            = "my-example3-trust"
+      subnetwork_name = "my-example3-trust"
+      ip_cidr_range   = "192.168.2.0/24"
     },
   ]
-  region = "europe-west4"
 }
 
 locals {
