@@ -45,3 +45,29 @@ resource "google_compute_firewall" "builtin_healthchecks" {
     ports    = []
   }
 }
+
+# Connect from outside to extlb.
+resource "google_compute_firewall" "extlb" {
+  name          = "my-vpc-extlb"
+  network       = local.my_vpc
+  direction     = "INGRESS"
+  source_ranges = var.mgmt_sources
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+}
+
+# We need ssh to run our own verification code.
+resource "google_compute_firewall" "ssh" {
+  name          = "my-vpc-ssh"
+  network       = local.my_vpc
+  direction     = "INGRESS"
+  source_ranges = var.mgmt_sources
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}
