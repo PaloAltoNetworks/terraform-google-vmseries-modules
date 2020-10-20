@@ -10,7 +10,7 @@ locals {
   }
 
   // Same code, but now for subnetworks:
-  subnetworks = { for v in var.networks : "${v.name}-${var.region}" => v }
+  subnetworks = { for v in var.networks : v.subnetwork_name => v }
 
   // Some subnetworks need to be created:
   subnetworks_to_create = {
@@ -35,14 +35,14 @@ resource "google_compute_network" "this" {
 
 data "google_compute_subnetwork" "this" {
   for_each   = local.subnetworks
-  name       = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
+  name       = each.value.subnetwork_name
   region     = var.region
   depends_on = [google_compute_subnetwork.this]
 }
 
 resource "google_compute_subnetwork" "this" {
   for_each      = local.subnetworks_to_create
-  name          = try(each.value.subnetwork_name, "${each.value.name}-${var.region}")
+  name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
   network       = data.google_compute_network.this[each.value.name].self_link
   region        = var.region
