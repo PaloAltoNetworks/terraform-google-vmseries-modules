@@ -28,12 +28,16 @@ regions = {
           { public_nat = false },
         ]
         network_interfaces_custom = [
-          {},
-          {},
-          { ip_address = "192.168.2.15" },
+          { nat_ip = var.brownfield_ip },  # nic0 pre-allocated on brownfield
+          {},                              # nic1 no customizations
+          { ip_address = "192.168.2.15" }, # nic2 static private address
+          # {
+          #   alias_ip_range = [{
+          #     ip_cidr_range = "192.168.2.128/29",
+          #   }]
+          # }
           # TODO implement these {
           #   source_ranges = ["1.1.1.1/32"]
-          #   public_ip_address = var.brownfield_ip
           #   allow = {
           #      rule1 = {
           #        protocol = "tcp"
