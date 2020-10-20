@@ -2,14 +2,16 @@ regions = {
   us-central1 = {
     networks = [
       {
-        name           = "my-example4-untrust"
-        create_network = false
-        ip_cidr_range  = "10.1.1.0/24"
+        name            = "my-example4-untrust"
+        subnetwork_name = "my-example4-untrust-us-central1"
+        create_network  = false
+        ip_cidr_range   = "10.1.1.0/24"
       },
       {
-        name           = "my-example4-mgmt"
-        create_network = false
-        ip_cidr_range  = "10.1.0.0/24"
+        name            = "my-example4-mgmt"
+        subnetwork_name = "my-example4-mgmt-us-central1"
+        create_network  = false
+        ip_cidr_range   = "10.1.0.0/24"
       },
       {
         name              = "my-example4-trust"
