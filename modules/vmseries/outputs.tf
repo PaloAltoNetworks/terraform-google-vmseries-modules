@@ -28,6 +28,6 @@ output nic1_public_ips {
   }
 }
 
-output instance_groups {
+output instance_group_self_links {
   value = { for k, v in google_compute_instance_group.this : k => v.self_link }
 }
