@@ -1,17 +1,8 @@
-terraform {
-  required_version = ">= 0.12, < 0.13"
-}
-
-provider "google" {
-  version = "= 3.30"
-}
-
 variable mgmt_sources {
   default = ["0.0.0.0/0"]
 }
 
-data "google_compute_zones" "available" {
-}
+data "google_compute_zones" "available" {}
 
 module "vpc" {
   source = "../../modules/vpc/"
