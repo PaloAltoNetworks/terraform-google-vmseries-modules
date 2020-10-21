@@ -18,16 +18,20 @@ resource "google_compute_instance" "this" {
   zone                      = each.value.zone
   machine_type              = var.machine_type
   min_cpu_platform          = var.min_cpu_platform
+  labels                    = var.labels
   tags                      = var.tags
+  metadata_startup_script   = var.metadata_startup_script
+  project                   = var.project
+  resource_policies         = var.resource_policies
   can_ip_forward            = true
   allow_stopping_for_update = true
 
-  metadata = {
+  metadata = merge({
     mgmt-interface-swap                  = "enable"
     vmseries-bootstrap-gce-storagebucket = var.bootstrap_bucket
     serial-port-enable                   = true
     ssh-keys                             = var.ssh_key
-  }
+  }, var.metadata)
 
   service_account {
     email  = var.service_account
@@ -84,6 +88,7 @@ resource "google_compute_instance_group" "this" {
 
   name      = "${each.value.name}-${each.value.zone}-ig"
   zone      = each.value.zone
+  project   = var.project
   instances = [google_compute_instance.this[each.key].self_link]
 
   named_port {

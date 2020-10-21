@@ -60,7 +60,33 @@ variable image_uri {
   type        = string
 }
 
+variable labels {
+  default = {}
+  type    = map(any)
+}
+
 variable tags {
+  default = []
+  type    = list(string)
+}
+
+variable metadata {
+  default = {}
+  type    = map(string)
+}
+
+variable metadata_startup_script {
+  description = "See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
+  default     = null
+  type        = string
+}
+
+variable project {
+  default = null
+  type    = string
+}
+
+variable resource_policies {
   default = []
   type    = list(string)
 }
