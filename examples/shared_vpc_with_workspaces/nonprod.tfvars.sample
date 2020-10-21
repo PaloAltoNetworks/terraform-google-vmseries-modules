@@ -22,22 +22,23 @@ regions = {
     ]
     instances = {
       a1 = {
-        zone     = "us-central1-a"
-        name     = "fw01"
-        network_interfaces_base = [
-          { public_nat = true },
-          { public_nat = true },
-          { public_nat = false },
-        ]
-        network_interfaces_custom = [
-          { nat_ip = var.brownfield_ip },  # nic0 pre-allocated on brownfield
-          {},                              # nic1 no customizations
-          { ip_address = "192.168.2.15" }, # nic2 static private address
-          # {
-          #   alias_ip_range = [{
-          #     ip_cidr_range = "192.168.2.128/29",
-          #   }]
-          # }
+        zone = "us-central1-a"
+        name = "jbsa-nonprod-us-central1-fw01"
+        network_interfaces = [
+          {
+            subnetwork_name = "my-example4-untrust-us-central1"
+            public_nat      = true
+            nat_ip          = "146.148.92.248" # pre-allocated on brownfield 
+          },
+          {
+            subnetwork_name = "my-example4-mgmt-us-central1"
+            public_nat      = true
+          },
+          {
+            subnetwork_name = "my-example4-trust-brownfield"
+            public_nat      = false
+            ip_address      = "192.168.2.22",
+          },
           # TODO implement these {
           #   source_ranges = ["1.1.1.1/32"]
           #   allow = {
@@ -61,6 +62,25 @@ regions = {
           #      }
           #    }
           # }
+        ]
+      }
+      a2 = {
+        zone = "us-central1-b"
+        name = "jbsa-nonprod-us-central1-fw02"
+        network_interfaces = [
+          {
+            subnetwork_name = "my-example4-untrust-us-central1"
+            public_nat      = true
+          },
+          {
+            subnetwork_name = "my-example4-mgmt-us-central1"
+            public_nat      = true
+          },
+          {
+            subnetwork_name = "my-example4-trust-brownfield"
+            public_nat      = false
+            ip_address      = "192.168.2.22",
+          },
         ]
       }
     }
