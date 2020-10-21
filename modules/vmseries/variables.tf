@@ -96,6 +96,28 @@ variable create_instance_group {
   type    = bool
 }
 
+variable named_ports {
+  description = <<-EOF
+  (Optional) The list of named ports:
+
+  ```
+  named_ports = [
+    {
+      name = "http"
+      port = "80"
+    },
+    {
+      name = "app42"
+      port = "4242"
+    },
+  ]
+  ```
+
+  The name identifies the backend port to receive the traffic from the global load balancers.
+  EOF
+  default     = []
+}
+
 variable service_account {
   description = "IAM Service Account for running firewall instance (just the email)"
   default     = null
