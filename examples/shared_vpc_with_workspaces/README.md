@@ -1,4 +1,14 @@
-Shared VPC Design using Terraform Workspaces and environmental TFVARS
+# Regional Terraform Workspaces Example
+
+## Description
+
+A multi-region and multi-environment deployment, where the region is geographical and environment means dev, qa, prod, etc.
+
+Every region, and every environment in it, uses:
+
+- a separate Terraform Workspace (In other words it has a separate Terraform state.)
+- a separate variable file,
+- but, crucially, the same Terraform code.
 
 ## Instruction
 
