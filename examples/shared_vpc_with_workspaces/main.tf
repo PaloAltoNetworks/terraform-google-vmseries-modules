@@ -28,20 +28,8 @@ module "vpc" {
   region   = local.region
 }
 
-locals {
-  instances = {
-    for k, v in var.regions[local.region]["instances"] : k => {
-      name                      = "${var.prefix}-${local.environment}-${local.region}-${v.name}"
-      zone                      = v.zone
-      network_interfaces_base   = try(v.network_interfaces_base, [])
-      network_interfaces        = module.vpc.nicspec
-      network_interfaces_custom = try(v.network_interfaces_custom, [])
-    }
-  }
-}
-
-//#-----------------------------------------------------------------------------------------------
-//# Create  firewalls
+#-----------------------------------------------------------------------------------------------
+# Create  firewalls
 module "firewalls" {
   source = "../../modules/vmseries"
 
@@ -50,7 +38,20 @@ module "firewalls" {
   image_name            = var.panos_image_name
   create_instance_group = false
   bootstrap_bucket      = module.bootstrap.bucket_name
-  instances             = local.instances
+
+  instances = { for instance_key, instance in var.regions[local.region]["instances"] :
+    instance_key => {
+      name = instance.name,
+      zone = instance.zone,
+      network_interfaces = [for v in instance.network_interfaces :
+        {
+          subnetwork = module.vpc.subnetworks[v.subnetwork_name].self_link
+          public_nat = v.public_nat
+          nat_ip     = try(v.nat_ip, null)
+        }
+      ]
+    }
+  }
 
   dependencies = [
     module.bootstrap.completion,
