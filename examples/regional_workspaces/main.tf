@@ -48,6 +48,7 @@ module "firewalls" {
           subnetwork = module.vpc.subnetworks[v.subnetwork_name].self_link
           public_nat = v.public_nat
           nat_ip     = try(v.nat_ip, null)
+          ip_address = try(v.ip_address, null)
         }
       ]
     }
