@@ -37,7 +37,7 @@ regions = {
           {
             subnetwork_name = "my-example4-trust-brownfield"
             public_nat      = false
-            ip_address      = "192.168.2.22",
+            ip_address      = "192.168.2.21",
           },
           # TODO implement these {
           #   source_ranges = ["1.1.1.1/32"]
