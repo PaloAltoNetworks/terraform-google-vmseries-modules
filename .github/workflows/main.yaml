@@ -14,6 +14,17 @@ jobs:
       with:
         github_token: ${{ secrets.github_token }}
 
+  build_image_with_gpr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          export image=$(echo "docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit" | awk '{print tolower($0)}')
+          docker pull "$image" || true
+          docker build . -t thing --cache-from="$image"
+          docker tag thing "$image" && docker push "$image" || true
+
   pre-commit:
     runs-on: ubuntu-latest
     # container: node:10.16-jessie
