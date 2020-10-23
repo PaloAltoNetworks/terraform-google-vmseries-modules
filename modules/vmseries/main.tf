@@ -42,15 +42,15 @@ resource "google_compute_instance" "this" {
     for_each = each.value.network_interfaces
 
     content {
+      network_ip = local.dyn_interfaces[each.key][network_interface.key].network_ip
       subnetwork = network_interface.value.subnetwork
-      network_ip = try(network_interface.value.ip_address, null)
 
       dynamic "access_config" {
-        # the "access_config", if present, creates a public IP address
+        # The "access_config", if present, creates a public IP address. Currently GCE only supports one, hence "one".
         for_each = try(network_interface.value.public_nat, false) ? ["one"] : []
         content {
-          nat_ip                 = try(network_interface.value.nat_ip, null)
-          public_ptr_domain_name = try(network_interface.value.public_ptr_domain_name, null)
+          nat_ip                 = local.dyn_interfaces[each.key][network_interface.key].nat_ip
+          public_ptr_domain_name = local.dyn_interfaces[each.key][network_interface.key].public_ptr_domain_name
         }
       }
 
