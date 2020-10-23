@@ -39,11 +39,7 @@ resource "google_compute_instance" "this" {
   }
 
   dynamic "network_interface" {
-    for_each = { for k, v in each.value.network_interfaces : k => merge(
-      try(each.value.network_interfaces_base[k], {}),
-      each.value.network_interfaces[k],
-      try(each.value.network_interfaces_custom[k], {}),
-    ) }
+    for_each = each.value.network_interfaces
 
     content {
       subnetwork = network_interface.value.subnetwork
