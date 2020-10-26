@@ -1,40 +1,39 @@
 # This Dockerfile defines the developer's environment for running all the tests.
-FROM python:3.6-slim-buster
+FROM python:3.6-buster
 
-RUN printf 'import sys, urllib.request\nurllib.request.urlretrieve(sys.argv[1], "this")' > curl.py
+RUN curl -sL https://github.com/tfsec/tfsec/releases/download/v0.34.0/tfsec-linux-amd64 > tfsec \
+    && \
+    chmod +x tfsec \
+    && \
+    mv tfsec /usr/local/bin/ \
+    && \
+    echo "Newest release: $(curl -s https://api.github.com/repos/tfsec/tfsec/releases/latest | grep -o -E "https://.+?tfsec-linux-amd64")"
 
-RUN python curl.py https://github.com/tfsec/tfsec/releases/download/v0.34.0/tfsec-linux-amd64 \
+RUN curl -sL https://github.com/terraform-docs/terraform-docs/releases/download/v0.10.1/terraform-docs-v0.10.1-linux-amd64 > terraform-docs \
     && \
-    chmod +x this \
+    chmod +x terraform-docs \
     && \
-    mv this /usr/local/bin/tfsec \
+    mv terraform-docs /usr/local/bin/ \
     && \
-    true
-# FIXME echo "Newest release: $(wget -qO - https://api.github.com/repos/tfsec/tfsec/releases/latest | grep -o -E "https://.+?tfsec-linux-amd64")"
+    echo "Newest release: $(curl -s https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | grep -o -E "https://.+?-linux-amd64")"
 
-RUN python curl.py https://github.com/terraform-docs/terraform-docs/releases/download/v0.10.1/terraform-docs-v0.10.1-linux-amd64 \
+RUN curl -sL https://github.com/terraform-linters/tflint/releases/download/v0.20.3/tflint_linux_amd64.zip > tflint.zip \
     && \
-    chmod +x this \
+    unzip tflint.zip \
     && \
-    mv this /usr/local/bin/terraform-docs \
-    && \
-    true
-# FIXME echo "Newest release: $(wget -qO - https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | grep -o -E "https://.+?-linux-amd64")"
-
-RUN python curl.py https://github.com/terraform-linters/tflint/releases/download/v0.20.3/tflint_linux_amd64.zip \
-    && \
-    gunzip -dc this > tflint \
-    && \
-    chmod +x tflint \
-    && \
-    rm this \
+    rm tflint.zip \
     && \
     mv tflint /usr/local/bin/ \
     && \
-    tflint --version \
+    echo "Newest release: $(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")"
+
+RUN git --version \
     && \
-    true
-# FIXME echo "Newest release: $(wget -qO - https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")"
+    tfsec --version \
+    && \
+    terraform-docs --version \
+    && \
+    tflint --version
 
 RUN pip install pre-commit==2.7.1
 
