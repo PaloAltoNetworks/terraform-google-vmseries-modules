@@ -19,11 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          # Use GitHub Package Registry (GPR) because it's the fastest registry for GitHub Actions.
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          export image=$(echo "docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit" | awk '{print tolower($0)}')
+
+          # Docker accepts only lowercase name, prepare it.
+          export image=$(echo "docker.pkg.github.com/$GITHUB_REPOSITORY/test-all" | awk '{print tolower($0)}')
+
+          # Pull before build in order to utilize Docker's caching mechanism (skip some unchanged layers).
           docker pull "$image" || true
-          docker build . -t thing --cache-from="$image"
-          docker tag thing "$image" && docker push "$image" || true
+          docker build . -t this --cache-from="$image"
+          docker tag this "$image" && docker push "$image" || true
 
   pre-commit:
     runs-on: ubuntu-latest
