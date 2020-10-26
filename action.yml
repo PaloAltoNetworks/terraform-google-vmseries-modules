@@ -10,6 +10,6 @@ outputs:
     description: 'The time we greeted you'
 runs:
   using: 'docker'
-  image: 'docker.pkg.github.com/paloaltonetworks/terraform-google-vmseries-modules/test-all'
+  image: 'docker://docker.pkg.github.com/paloaltonetworks/terraform-google-vmseries-modules/test-all'
 #   args:
 #     - ${{ inputs.who-to-greet }}
