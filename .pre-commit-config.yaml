@@ -8,7 +8,7 @@ repos:
       args: [
         # --args=--module, # TODO enable it after ensuring `terraform init`
         # --args=--only=terraform_comment_syntax,
-        # --args=--only=terraform_deprecated_index,
+        --args=--only=terraform_deprecated_index,
         # --args=--only=terraform_documented_outputs,
         # --args=--only=terraform_documented_variables,
         # --args=--only=terraform_required_providers,
