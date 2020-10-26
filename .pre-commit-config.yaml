@@ -6,7 +6,6 @@ repos:
     - id: terraform_docs
     - id: terraform_tflint
       args: [
-        --args=--deep,
         # --args=--module, # TODO enable it after ensuring `terraform init`
         # --args=--only=terraform_comment_syntax,
         # --args=--only=terraform_deprecated_index,
