@@ -1,6 +1,17 @@
-FROM node:12
-RUN yarn create react-app my-react-app
-RUN cd my-react-app && yarn build
-RUN npm install -g @vue/cli && (yes | vue create my-vue-app --default)
-RUN cd my-vue-app && yarn build
-RUN mkdir -p my-tests && cd my-tests && yarn add playwright
+# This Dockerfile defines the developer's environment for running all the tests.
+FROM debian:sid-slim
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    python-pip \
+    python3 && \
+    pip install pre-commit && \
+    mkdir /pre-commit && \
+    cd /pre-commit && \
+    git init . && \
+    pre-commit install
+
+WORKDIR /pre-commit
+
+CMD ["pre-commit", "run", "--all-files"]
