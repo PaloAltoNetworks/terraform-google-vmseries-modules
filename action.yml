@@ -1,0 +1,15 @@
+name: 'GitHub Action for pre-commit framework'
+description: 'See https://pypi.org/project/pre-commit'
+inputs:
+  who-to-greet:  # id of input
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'docker.pkg.github.com/paloaltonetworks/terraform-google-vmseries-modules/test-all'
+#   args:
+#     - ${{ inputs.who-to-greet }}
