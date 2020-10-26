@@ -1,5 +1,5 @@
 # This Dockerfile defines the developer's environment for running all the tests.
-FROM debian:sid-slim
+FROM python:3.6-slim-buster
 
 RUN go mod init dummy \
     # because cannot use path@version syntax in GOPATH mode
@@ -24,11 +24,6 @@ RUN curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/rel
     && \
     sudo mv tflint /usr/local/bin/
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    python3-pip \
-    && \
-    pip install pre-commit
+RUN pip install pre-commit==2.7.1
 
 CMD ["pre-commit", "run", "--all-files"]
