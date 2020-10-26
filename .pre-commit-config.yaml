@@ -8,18 +8,18 @@ repos:
       args: [
         --args=--deep,
         # --args=--module, # TODO enable it after ensuring `terraform init`
-        # --args=--enable-rule=terraform_comment_syntax,
-        # --args=--enable-rule=terraform_deprecated_index,
-        # --args=--enable-rule=terraform_documented_outputs,
-        # --args=--enable-rule=terraform_documented_variables,
-        # --args=--enable-rule=terraform_required_providers,
-        # --args=--enable-rule=terraform_typed_variables,
-        --args=--enable-rule=terraform_naming_convention,
-        # --args=--enable-rule=terraform_required_version,
-        # --args=--enable-rule=terraform_unused_declarations,
+        # --args=--only=terraform_comment_syntax,
+        # --args=--only=terraform_deprecated_index,
+        # --args=--only=terraform_documented_outputs,
+        # --args=--only=terraform_documented_variables,
+        # --args=--only=terraform_required_providers,
+        # --args=--only=terraform_typed_variables,
+        --args=--only=terraform_naming_convention,
+        # --args=--only=terraform_required_version,
+        # --args=--only=terraform_unused_declarations,
       ]
     - id: terraform_tfsec
-      args: [ '--args=-e GCP003,GCP004' ]
+      args: [ '--args=-e GCP002,GCP003,GCP004' ]
       # GCP002 Unencrypted bucket.
       #   Ignore for transitional period. TODO enable it after encrypting all buckets.
       # GCP003 An inbound vpc rule allows traffic from /0.
