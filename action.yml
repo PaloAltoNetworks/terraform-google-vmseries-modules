@@ -1,13 +1,6 @@
 name: 'GitHub Action for pre-commit framework'
 description: 'See https://pypi.org/project/pre-commit'
-inputs:
-  terraform_version:  # id of input
-    description: 'Version of terraform to use, targetting the highest minor version supported by Hashicorp.'
-    required: true
-    default: '0.13.5'
 runs:
   using: 'docker'
   image: './Dockerfile'
 #   TODO public-accessible image: 'docker://docker.pkg.github.com/paloaltonetworks/terraform-google-vmseries-modules/test-all'
-  args:
-    - ${{ inputs.terraform_version }}
