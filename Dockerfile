@@ -27,6 +27,26 @@ RUN curl -sL https://github.com/terraform-linters/tflint/releases/download/v0.20
     && \
     echo "Newest release: $(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")"
 
+RUN curl -sL https://releases.hashicorp.com/terraform/0.12.29/terraform_0.12.29_linux_amd64.zip > terraform.zip \
+    && \
+    unzip terraform.zip \
+    && \
+    rm terraform.zip \
+    && \
+    cp -p terraform /usr/local/bin/terraform \
+    && \
+    mv terraform /usr/local/bin/tf-0.12.29
+
+RUN curl -sL https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip > terraform.zip \
+    && \
+    unzip terraform.zip \
+    && \
+    rm terraform.zip \
+    && \
+    mv terraform /usr/local/bin/terraform-todo \
+    && \
+    echo "Newest release of terraform: $(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep -o -E '"tag_name" *: *"[^"]*"')"
+
 RUN git --version \
     && \
     tfsec --version \
