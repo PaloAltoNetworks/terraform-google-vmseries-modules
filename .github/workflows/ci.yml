@@ -38,6 +38,9 @@ jobs:
         run: |
           terraform fmt -check -recursive
 
+      - name: Run the Pre-Commit Framework Action
+        uses: PaloAltoNetworks/terraform-google-vmseries-modules@precommit_docker
+
   release:
     name: release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
