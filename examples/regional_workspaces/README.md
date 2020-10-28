@@ -49,19 +49,6 @@ terraform plan -var-file=<environment>.tfvars
 terraform apply -var-file=<environment>.tfvars
 ```
 
-## Requirements
-
-| Name | Version |
-|------|---------|
-| terraform | ~>0.12 |
-| google | ~> 3.35 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| google | ~> 3.35 |
-
 ## Common errors
 
 ### Invalid index
@@ -101,33 +88,43 @@ to be a plus sign `+` followed by a valid Google Cloud Region name, and the regi
 referenced in your variable `regions`. In this example, the code would expect `regions["us-central1"]`
 to be defined by you.
 
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | ~>0.12 |
+| google | = 3.35 |
+
+## Providers
+
+No provider.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | auth\_file | GCP Project auth JSON file | `string` | n/a | yes |
 | develop\_locally | Go local development | `bool` | `false` | no |
-| fw\_image | n/a | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries"` | no |
-| fw\_machine\_type | VM size, e.g. n1-standard-16 | `any` | n/a | yes |
-| fw\_panos | VM-Series license and PAN-OS (ie: bundle1-814, bundle2-814, or byol-814) | `any` | n/a | yes |
+| fw\_machine\_type | VM size, e.g. n1-standard-16 | `any` | `null` | no |
 | http\_basic\_auth | The result of `echo -n 'mynewuser:newpassword' | base64` which is known by the clients of the route-operator API server. | `string` | `"bXluZXd1c2VyOm5ld3Bhc3N3b3Jk"` | no |
 | https\_cert\_pem\_file | Certificate (possibly self-signed) for the route-operator https API. The file can also contain a concatenated chain of certificates. | `string` | `"cert.pem"` | no |
 | https\_interm\_pem\_file | The parent certificate that signed `https_cert_pem_file` certificate. The X509 field Subject should equal to the X509 field Issuer of `https_cert_pem_file`. | `string` | `"interm.pem"` | no |
 | https\_key\_pem\_file | The private key file that corresponds to the first `https_cert_pem_file` certificate. | `string` | `"key.pem"` | no |
 | outbound\_route\_dest | When creating outbound routes (i.e. routes from GCP to the Internet) what destination to use. For production environment set to 0.0.0.0/0 but it can be quite a pain during tests. | `string` | n/a | yes |
+| panos\_image\_name | VM-Series license and PAN-OS (ie: vmseries-bundle1-912, vmseries-byol-814, etc) | `string` | `"vmseries-flex-byol-913"` | no |
 | prefix | Prefix to GCP resource names | `string` | n/a | yes |
-| private\_key\_path | Local path to private SSH key. If you do not have a private key, run >> ssh-keygen -t rsa | `any` | n/a | yes |
 | project\_id | GCP Project ID | `string` | n/a | yes |
-| public\_key\_path | Local path to public SSH key. If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `any` | n/a | yes |
-| regions | n/a | `map` | `{}` | no |
+| public\_key\_path | Local path to public SSH key. If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `string` | `"~/.ssh/id_rsa.pub"` | no |
+| regions | n/a | `any` | n/a | yes |
 | ro\_ilb\_name | n/a | `string` | `""` | no |
 | ro\_ip\_address | The IP of the route-operator API. Points to an Internal Load Balancer. | `string` | `null` | no |
-| subnetworks | Map of GCP Subnetworks | `map` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| fw\_interfaces | VM-Series Firewall Interface Output Details |
 | info | Basic Known information output regarding region/environment/projectID |
-| subnetworks | GCP Subnetwork Detailed Information Output |
+| management\_addresses | VM-Series Firewall Management Addresses |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
