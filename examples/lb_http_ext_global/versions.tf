@@ -7,5 +7,5 @@ provider "google" {
 }
 
 provider "null" {
-  version = "= 3.0"
+  version = "= 2.1.2"
 }
