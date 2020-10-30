@@ -1,6 +1,18 @@
 
 # Example of various GCP load balancers
 
+Initialize:
+
+```bash
+terraform init
+```
+
+First, apply only the instances (the step is only obligatory on Terraform version 0.12).
+
+```bash
+terraform apply --refresh=false --target modules.vmseries
+```
+
 Because of deficiencies of Terraform's `google` provider, often the resources are deemed created when in fact they cannot be used
 for quite a long time. This is why deployment will likely require manual repeats:
 
