@@ -17,11 +17,11 @@ Because of deficiencies of Terraform's `google` provider, often the resources ar
 for quite a long time. This is why deployment will likely require manual repeats:
 
 ```bash
-terraform apply
+terraform apply --refresh=false
 # ... wait some seconds ...
-terraform apply
+terraform apply --refresh=false
 # ... wait some seconds ...
-terraform apply
+terraform apply --refresh=false
 ```
 
 Same for destruction:
