@@ -20,7 +20,7 @@ module "vpc" {
 
 locals {
   my_vpc    = module.vpc.networks["my-vpc"].self_link
-  my_subnet = try(module.vpc.subnetworks["my-subnet"].name, null)
+  my_subnet = try(module.vpc.subnetworks["my-subnet"].self_link, null)
 }
 
 #  Google's own health checkers use a set of known address ranges
