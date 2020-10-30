@@ -10,7 +10,7 @@ participating groups are equally capable as well.
 module "glb" {
   source = "../modules/lb_http_ext_global"
   name   = "my-glb"
-  backend_groups        = module.vm.instance_group
+  backend_groups        = module.vmseries.instance_group_self_links
   max_rate_per_instance = 50000
 }
 
