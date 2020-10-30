@@ -114,6 +114,7 @@ variable named_ports {
   ```
 
   The name identifies the backend port to receive the traffic from the global load balancers.
+  Practically, tcp port 80 named "http" works even when not defined here, but it's not a documented provider's behavior.
   EOF
   default     = []
 }
