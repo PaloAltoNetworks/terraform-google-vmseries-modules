@@ -1,21 +1,32 @@
-module "vm" {
-  source = "../../modules/vm/"
+module "vmseries" {
+  source = "../../modules/vmseries/"
+
 
   instances = {
-    "a" = {
-      name       = "my-vm01"
-      zone       = data.google_compute_zones.available.names[0]
-      subnetwork = local.my_subnet
+    "my-vm01" = {
+      name = "my-vm01"
+      zone = data.google_compute_zones.available.names[0]
+      network_interfaces = [
+        {
+          subnetwork = local.my_subnet
+          public_nat = true
+        },
+      ]
     }
-    "b" = {
-      name       = "my-vm02"
-      zone       = data.google_compute_zones.available.names[1]
-      subnetwork = local.my_subnet
+    "my-vm02" = {
+      name = "my-vm02"
+      zone = data.google_compute_zones.available.names[1]
+      network_interfaces = [
+        {
+          subnetwork = local.my_subnet
+          public_nat = true
+        },
+      ]
     }
   }
 
   ## Any image will do, if only it exposes on port 80 the http url `/`:
-  image        = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+  image_uri    = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
   machine_type = "g1-small"
 
   ## The part before the colon is the ssh user name. The part after is intended to be replaced with your own ssh-rsa public key.
@@ -30,7 +41,7 @@ module "vm" {
 module "glb" {
   source                = "../../modules/lb_http_ext_global"
   name                  = "my-glb"
-  backend_groups        = module.vm.instance_group
+  backend_groups        = module.vmseries.instance_group_self_links
   max_rate_per_instance = 50000
 }
 
@@ -49,7 +60,7 @@ module "ilb" {
   network    = local.my_vpc
   subnetwork = local.my_subnet
   all_ports  = true
-  backends   = module.vm.instance_group
+  backends   = module.vmseries.instance_group_self_links
 }
 
 output "internal_url" {
@@ -65,7 +76,7 @@ module "extlb" {
   source       = "../../modules/lb_tcp_external/"
   name         = "my-extlb"
   service_port = 80
-  instances    = module.vm.vm_self_link_list
+  instances    = values(module.vmseries.self_links)
   health_check = {
     check_interval_sec  = 10
     healthy_threshold   = 2
