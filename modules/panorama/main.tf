@@ -1,19 +1,18 @@
-# --- create bucket and upload panorama source image file ---
-resource "google_storage_bucket" "panorama-bucket" {
+# Optional bucket, when we upload panorama os from a custom *.tar.gz file.
+resource "google_storage_bucket" "this" {
   name                     = var.panorama_bucket_name
   default_event_based_hold = false
   location                 = var.region
 }
 
-resource "google_storage_bucket_object" "panorama-bucket-image" {
+resource "google_storage_bucket_object" "this" {
   name       = var.panorama_image_file_name
   source     = "${var.panorama_image_file_path}/${var.panorama_image_file_name}"
   bucket     = var.panorama_bucket_name
-  depends_on = [ google_storage_bucket.panorama-bucket ]
+  depends_on = [google_storage_bucket.this]
 }
 
-# --- create panorama VM image ---
-resource "google_compute_image" "panorama-image" {
+resource "google_compute_image" "this" {
   name = var.image
   raw_disk {
     container_type = "TAR"
@@ -22,38 +21,34 @@ resource "google_compute_image" "panorama-image" {
   timeouts {
     create = var.image_create_timeout
   }
-  depends_on = [ google_storage_bucket_object.panorama-bucket-image ]
+  depends_on = [google_storage_bucket_object.this]
 
 }
 
-# --- create network interfaces for panorama ---
+# Permanent public address, not ephemeral.
 resource "google_compute_address" "nic0" {
   count  = length(var.names)
   name   = "${element(var.names, count.index)}-nic0"
   region = var.region
 }
 
-# --- create additional disk for Panorama ---
-resource "google_compute_disk" "panorama-log-disk" {
+resource "google_compute_disk" "panorama_logs1" {
   count = length(var.names)
-  name  = "${element(var.names, count.index)}-log-disk"
+  name  = "${element(var.names, count.index)}-logs"
   zone  = element(var.zones, count.index)
   type  = "pd-standard"
   size  = "2000"
 }
 
-resource "google_compute_disk" "panorama-log-disk2" {
+resource "google_compute_disk" "panorama_logs2" {
   count = length(var.names)
-  name  = "${element(var.names, count.index)}-log-disk2"
+  name  = "${element(var.names, count.index)}-logs2"
   zone  = element(var.zones, count.index)
   type  = "pd-standard"
   size  = "2000"
 }
 
-
-
-# --- create panorama instances ---
-resource "google_compute_instance" "panorama" {
+resource "google_compute_instance" "this" {
   count                     = length(var.names)
   name                      = element(var.names, count.index)
   machine_type              = var.machine_type
@@ -64,7 +59,6 @@ resource "google_compute_instance" "panorama" {
   tags                      = var.tags
 
   metadata = {
-    # panorama-bootstrap-gce-storagebucket = var.bootstrap_bucket
     serial-port-enable = true
     ssh-keys           = var.ssh_key
   }
@@ -92,14 +86,14 @@ resource "google_compute_instance" "panorama" {
   }
 
   attached_disk {
-      source = "${element(var.names, count.index)}-log-disk"
+    source = "${element(var.names, count.index)}-log-disk"
   }
 
   attached_disk {
-      source = "${element(var.names, count.index)}-log-disk2"
+    source = "${element(var.names, count.index)}-log-disk2"
   }
 
   depends_on = [
-      google_compute_image.panorama-image
+    google_compute_image.this
   ]
 }
