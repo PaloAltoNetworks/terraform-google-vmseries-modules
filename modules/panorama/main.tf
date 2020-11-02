@@ -20,7 +20,7 @@ resource "google_storage_bucket_object" "this" {
 }
 
 resource "google_compute_image" "this" {
-  name = var.image
+  name = var.image_uri
   raw_disk {
     container_type = "TAR"
     source         = "${var.storage_uri}/${var.panorama_bucket_name}/${var.panorama_image_file_name}?authuser=0"
@@ -37,6 +37,18 @@ resource "google_compute_address" "nic0" {
   count  = length(var.names)
   name   = "${element(var.names, count.index)}-nic0"
   region = var.region
+}
+
+# Permanent private address, not ephemeral, because firewalls keep it saved.
+resource "google_compute_address" "private" {
+  count        = length(var.names)
+  address_type = "INTERNAL"
+  name         = "${element(var.names, count.index)}-nic0-private"
+  subnetwork   = var.subnetworks[0]
+  region       = var.region
+  # address      = try(each.value.nic.ip_address, null)
+  # subnetwork   = each.value.nic.subnetwork
+  # region       = data.google_compute_subnetwork.this[each.key].region
 }
 
 resource "google_compute_disk" "panorama_logs1" {
@@ -58,19 +70,24 @@ resource "google_compute_disk" "panorama_logs2" {
 resource "google_compute_instance" "this" {
   count                     = length(var.names)
   name                      = element(var.names, count.index)
-  machine_type              = var.machine_type
   zone                      = element(var.zones, count.index)
-  min_cpu_platform          = var.cpu_platform
-  can_ip_forward            = true
-  allow_stopping_for_update = true
+  machine_type              = var.machine_type
+  min_cpu_platform          = var.min_cpu_platform
+  labels                    = var.labels
   tags                      = var.tags
+  metadata_startup_script   = var.metadata_startup_script
+  project                   = var.project
+  resource_policies         = var.resource_policies
+  can_ip_forward            = false
+  allow_stopping_for_update = true
 
-  metadata = {
+  metadata = merge({
     serial-port-enable = true
     ssh-keys           = var.ssh_key
-  }
+  }, var.metadata)
 
   service_account {
+    email  = var.service_account
     scopes = var.scopes
   }
 
@@ -87,17 +104,17 @@ resource "google_compute_instance" "this" {
 
   boot_disk {
     initialize_params {
-      image = var.image
+      image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
       type  = var.disk_type
     }
   }
 
   attached_disk {
-    source = "${element(var.names, count.index)}-log-disk"
+    source = google_compute_disk.panorama_logs1[count.index].name
   }
 
   attached_disk {
-    source = "${element(var.names, count.index)}-log-disk2"
+    source = google_compute_disk.panorama_logs2[count.index].name
   }
 
   depends_on = [
