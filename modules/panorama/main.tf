@@ -8,18 +8,24 @@ terraform {
 
 # Optional bucket, when we upload panorama os from a custom *.tar.gz file.
 resource "google_storage_bucket" "this" {
+  count = var.panorama_image_file_name != "" ? 1 : 0
+
   name                     = var.panorama_bucket_name
   default_event_based_hold = false
   location                 = var.region
 }
 
 resource "google_storage_bucket_object" "this" {
+  count = var.panorama_image_file_name != "" ? 1 : 0
+
   name   = var.panorama_image_file_name
   source = "${var.panorama_image_file_path}/${var.panorama_image_file_name}"
-  bucket = google_storage_bucket.this.name
+  bucket = google_storage_bucket.this[0].name
 }
 
 resource "google_compute_image" "this" {
+  count = var.panorama_image_file_name != "" ? 1 : 0
+
   name = var.image_uri
   raw_disk {
     container_type = "TAR"
