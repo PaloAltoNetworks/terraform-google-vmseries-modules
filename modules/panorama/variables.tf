@@ -50,13 +50,15 @@ variable "nic0_public_ip" {
 # }
 
 variable machine_type {
-  default = "n1-standard-16"
-  type    = string
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = "n1-standard-16"
+  type        = string
 }
 
 variable min_cpu_platform {
-  default = "Intel Broadwell"
-  type    = string
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = "Intel Broadwell"
+  type        = string
 }
 
 variable disk_type {
@@ -70,6 +72,7 @@ variable ssh_key {
 }
 
 variable scopes {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
   default = [
     "https://www.googleapis.com/auth/compute.readonly",
     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -87,8 +90,8 @@ variable image_prefix_uri {
 }
 
 variable image_name {
-  description = "The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913."
-  default     = "vmseries-flex-bundle1-913"
+  description = "The image name from which to boot an instance, including the license type and the version, e.g. panorama-byol-901, panorama-byol-1000. Default is panorama-byol-912."
+  default     = "panorama-byol-912"
   type        = string
 }
 
@@ -99,38 +102,43 @@ variable image_uri {
 }
 
 variable labels {
-  default = {}
-  type    = map(any)
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = {}
+  type        = map(any)
 }
 
 variable tags {
-  default = []
-  type    = list(string)
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = []
+  type        = list(string)
 }
 
 variable metadata {
-  default = {}
-  type    = map(string)
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = {}
+  type        = map(string)
 }
 
 variable metadata_startup_script {
-  description = "See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
   default     = null
   type        = string
 }
 
 variable project {
-  default = null
-  type    = string
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = null
+  type        = string
 }
 
 variable resource_policies {
-  default = []
-  type    = list(string)
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  default     = []
+  type        = list(string)
 }
 
 variable service_account {
-  description = "IAM Service Account for running firewall instance (just the email)"
+  description = "IAM Service Account for running the instance (just the email)"
   default     = null
   type        = string
 }
