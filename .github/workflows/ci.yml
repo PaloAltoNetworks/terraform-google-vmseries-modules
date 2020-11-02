@@ -39,7 +39,7 @@ jobs:
           terraform fmt -check -recursive
 
       - name: Run the Pre-Commit Framework Action
-        uses: PaloAltoNetworks/terraform-google-vmseries-modules@precommit_docker
+        uses: PaloAltoNetworks/terraform-google-vmseries-modules@develop
 
   release:
     name: release
