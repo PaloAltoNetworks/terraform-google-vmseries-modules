@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    google = {
+      version = "~> 3.30"
+      source  = "hashicorp/google"
+    }
+  }
+}
+
 # Optional bucket, when we upload panorama os from a custom *.tar.gz file.
 resource "google_storage_bucket" "this" {
   name                     = var.panorama_bucket_name
