@@ -19,7 +19,9 @@ repos:
         --args=--only=terraform_workspace_remote,
       ]
     - id: terraform_tfsec
-      args: [ '--args=-e GCP002,GCP003,GCP004' ]
+      args: [ '--args=-e GCP001,GCP002,GCP003,GCP004' ]
+      # GCP001 Unencrypted disk.
+      #   Ignore for transitional period. TODO enable it after encrypting all panorama log-disks.
       # GCP002 Unencrypted bucket.
       #   Ignore for transitional period. TODO enable it after encrypting all buckets.
       # GCP003 An inbound vpc rule allows traffic from /0.
