@@ -14,10 +14,9 @@ resource "google_storage_bucket" "this" {
 }
 
 resource "google_storage_bucket_object" "this" {
-  name       = var.panorama_image_file_name
-  source     = "${var.panorama_image_file_path}/${var.panorama_image_file_name}"
-  bucket     = var.panorama_bucket_name
-  depends_on = [google_storage_bucket.this]
+  name   = var.panorama_image_file_name
+  source = "${var.panorama_image_file_path}/${var.panorama_image_file_name}"
+  bucket = google_storage_bucket.this.name
 }
 
 resource "google_compute_image" "this" {
