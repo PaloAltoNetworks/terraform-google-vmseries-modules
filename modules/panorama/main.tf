@@ -6,13 +6,17 @@ terraform {
   }
 }
 
+locals {
+  first_instance = try(keys(var.instances)[0], null)
+}
+
 # Optional bucket, when we upload panorama os from a custom *.tar.gz file.
 resource "google_storage_bucket" "this" {
   count = var.panorama_image_file_name != "" ? 1 : 0
 
   name                     = var.panorama_bucket_name
   default_event_based_hold = false
-  location                 = var.region
+  location                 = data.google_compute_subnetwork.this[local.first_instance].region
 }
 
 resource "google_storage_bucket_object" "this" {

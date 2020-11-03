@@ -16,11 +16,6 @@ variable panorama_bucket_name {
   type        = string
 }
 
-variable region {
-  description = "GCP region where to spawn instances of Panorama, for example us-east1."
-  type        = string
-}
-
 variable image_create_timeout {
   description = "(Optional) Timeout for uploading the *.tar.gz custom image file into the Google bucket. Default is `180m` (180 minutes)."
   default     = "180m"
