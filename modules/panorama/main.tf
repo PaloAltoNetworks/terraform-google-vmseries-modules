@@ -26,7 +26,8 @@ resource "google_storage_bucket_object" "this" {
 resource "google_compute_image" "this" {
   count = var.panorama_image_file_name != "" ? 1 : 0
 
-  name = var.image_uri
+  name   = var.image_uri
+  family = "custom-panorama"
 
   raw_disk {
     container_type = "TAR"
