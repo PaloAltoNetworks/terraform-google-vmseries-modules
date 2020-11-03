@@ -40,25 +40,29 @@ resource "google_compute_image" "this" {
   depends_on = [google_storage_bucket_object.this]
 }
 
-# Permanent public address, not ephemeral.
-resource "google_compute_address" "nic0" {
+data google_compute_subnetwork this {
   for_each = var.instances
 
-  name    = "${each.value.name}-nic0"
-  address = try(each.value.nat_ip, null)
-  region  = var.region
+  self_link = each.value.subnetwork
 }
 
-# Permanent private address, not ephemeral, because firewalls keep it saved.
+# Permanent private address, not ephemeral, because the managed firewalls keep it saved.
 resource "google_compute_address" "private" {
   for_each = var.instances
 
   address_type = "INTERNAL"
   name         = "${each.value.name}-nic0-private"
   subnetwork   = each.value.subnetwork
-  region       = var.region
   address      = try(each.value.network_ip, null)
-  # TODO region       = data.google_compute_subnetwork.this[each.key].region
+}
+
+# Permanent public address, not ephemeral.
+resource "google_compute_address" "nic0" {
+  for_each = var.instances
+
+  name    = "${each.value.name}-nic0"
+  address = try(each.value.nat_ip, null)
+  region  = data.google_compute_subnetwork.this[each.key].region
 }
 
 resource "google_compute_disk" "panorama_logs1" {
