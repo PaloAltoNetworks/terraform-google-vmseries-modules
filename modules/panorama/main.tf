@@ -17,6 +17,7 @@ resource "google_storage_bucket" "this" {
   name                     = var.panorama_bucket_name
   default_event_based_hold = false
   location                 = data.google_compute_subnetwork.this[local.first_instance].region
+  storage_class            = "NEARLINE"
 }
 
 resource "google_storage_bucket_object" "this" {
