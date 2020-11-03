@@ -57,8 +57,21 @@ variable min_cpu_platform {
 }
 
 variable disk_type {
-  description = "Default is pd-ssd, alternative is pd-balanced."
+  description = "Type of boot disk. Default is pd-ssd, alternative is pd-balanced."
   default     = "pd-ssd"
+  type        = string
+}
+
+variable log_disk_type {
+  description = "Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced."
+  default     = "pd-standard"
+  type        = string
+}
+
+variable log_disk_size {
+  description = "Size of disk holding traffic logs in gigabytes. Default is 2000."
+  default     = "2000"
+  type        = string
 }
 
 variable ssh_key {

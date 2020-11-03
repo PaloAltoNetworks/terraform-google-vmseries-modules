@@ -65,8 +65,8 @@ resource "google_compute_disk" "panorama_logs1" {
 
   name = "${each.value.name}-logs1"
   zone = each.value.zone
-  type = "pd-standard"
-  size = "2000"
+  type = var.log_disk_type
+  size = var.log_disk_size
 }
 
 resource "google_compute_disk" "panorama_logs2" {
@@ -74,8 +74,8 @@ resource "google_compute_disk" "panorama_logs2" {
 
   name = "${each.value.name}-logs2"
   zone = each.value.zone
-  type = "pd-standard"
-  size = "2000"
+  type = var.log_disk_type
+  size = var.log_disk_size
 }
 
 resource "google_compute_instance" "this" {
