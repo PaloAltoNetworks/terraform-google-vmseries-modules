@@ -1,28 +1,33 @@
-variable "panorama_image_file_name" {
-  default = ""
-  type    = string
+variable panorama_image_file_name {
+  description = "(Optional) Local filesystem file name (without the path component) of the file downloaded from https://support.paloaltonetworks.com from Software Updates - Panorama Base Images - GCP. The extension should be included (usually it is *.tar.gz). By default empty, which means to use either `image_name` or `image_uri` that point to a pre-existing image."
+  default     = ""
+  type        = string
 }
 
-variable "panorama_image_file_path" {
-  default = "."
-  type    = string
+variable panorama_image_file_path {
+  description = "(Optional) Local filesystem path for the `panorama_image_file_name`. Used only when `panorama_image_file_name` is set. The *.tag.gz file is expected to be present at `panorama_image_file_path/panorama_image_file_name`."
+  default     = "."
+  type        = string
 }
 
-variable "panorama_bucket_name" {
-  default = null
-  type    = string
+variable panorama_bucket_name {
+  description = "(Optional) Bucket name used to hold the customized Panorama OS image. Used only when `panorama_image_file_name` is set."
+  default     = "paloaltonetworks-panorama-os-image-bucket"
+  type        = string
 }
 
-variable "region" {
-  type = string
+variable region {
+  description = "GCP region where to spawn instances of Panorama, for example us-east1."
+  type        = string
 }
 
-variable "image_create_timeout" {
-  default = "60m"
-  type    = string
+variable image_create_timeout {
+  description = "(Optional) Timeout for uploading the *.tar.gz custom image file into the Google bucket. Default is `180m` (180 minutes)."
+  default     = "180m"
+  type        = string
 }
 
-variable "storage_uri" {
+variable storage_uri {
   description = "(Optional) Custom URI prefix for Google Cloud Storage API."
   default     = "https://storage.cloud.google.com"
   type        = string
@@ -33,16 +38,10 @@ variable instances {
   type        = map(any)
 }
 
-variable "nic0_public_ip" {
+variable nic0_public_ip {
   type    = bool
   default = false
 }
-
-
-# variable instances {
-#   description = "Definition of firewalls that will be deployed"
-#   type        = map(any)
-# }
 
 variable machine_type {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
