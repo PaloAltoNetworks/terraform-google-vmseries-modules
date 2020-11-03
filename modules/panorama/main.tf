@@ -27,56 +27,62 @@ resource "google_compute_image" "this" {
   count = var.panorama_image_file_name != "" ? 1 : 0
 
   name = var.image_uri
+
   raw_disk {
     container_type = "TAR"
     source         = "${var.storage_uri}/${var.panorama_bucket_name}/${var.panorama_image_file_name}?authuser=0"
   }
+
   timeouts {
     create = var.image_create_timeout
   }
   depends_on = [google_storage_bucket_object.this]
-
 }
 
 # Permanent public address, not ephemeral.
 resource "google_compute_address" "nic0" {
-  count  = length(var.names)
-  name   = "${element(var.names, count.index)}-nic0"
-  region = var.region
+  for_each = var.instances
+
+  name    = "${each.value.name}-nic0"
+  address = try(each.value.nat_ip, null)
+  region  = var.region
 }
 
 # Permanent private address, not ephemeral, because firewalls keep it saved.
 resource "google_compute_address" "private" {
-  count        = length(var.names)
+  for_each = var.instances
+
   address_type = "INTERNAL"
-  name         = "${element(var.names, count.index)}-nic0-private"
-  subnetwork   = var.subnetworks[0]
+  name         = "${each.value.name}-nic0-private"
+  subnetwork   = each.value.subnetwork
   region       = var.region
-  # address      = try(each.value.nic.ip_address, null)
-  # subnetwork   = each.value.nic.subnetwork
-  # region       = data.google_compute_subnetwork.this[each.key].region
+  address      = try(each.value.network_ip, null)
+  # TODO region       = data.google_compute_subnetwork.this[each.key].region
 }
 
 resource "google_compute_disk" "panorama_logs1" {
-  count = length(var.names)
-  name  = "${element(var.names, count.index)}-logs"
-  zone  = element(var.zones, count.index)
-  type  = "pd-standard"
-  size  = "2000"
+  for_each = var.instances
+
+  name = "${each.value.name}-logs1"
+  zone = each.value.zone
+  type = "pd-standard"
+  size = "2000"
 }
 
 resource "google_compute_disk" "panorama_logs2" {
-  count = length(var.names)
-  name  = "${element(var.names, count.index)}-logs2"
-  zone  = element(var.zones, count.index)
-  type  = "pd-standard"
-  size  = "2000"
+  for_each = var.instances
+
+  name = "${each.value.name}-logs2"
+  zone = each.value.zone
+  type = "pd-standard"
+  size = "2000"
 }
 
 resource "google_compute_instance" "this" {
-  count                     = length(var.names)
-  name                      = element(var.names, count.index)
-  zone                      = element(var.zones, count.index)
+  for_each = var.instances
+
+  name                      = each.value.name
+  zone                      = each.value.zone
   machine_type              = var.machine_type
   min_cpu_platform          = var.min_cpu_platform
   labels                    = var.labels
@@ -99,13 +105,13 @@ resource "google_compute_instance" "this" {
 
   network_interface {
     dynamic "access_config" {
-      for_each = var.nic0_public_ip ? [""] : []
+      for_each = var.nic0_public_ip ? ["one"] : []
       content {
-        nat_ip = google_compute_address.nic0[count.index].address
+        nat_ip = try(google_compute_address.nic0[each.key].nat_ip, null)
       }
     }
-    network_ip = element(var.nic0_ip, count.index)
-    subnetwork = var.subnetworks[0]
+    network_ip = try(each.value.network_ip, null)
+    subnetwork = each.value.subnetwork
   }
 
   boot_disk {
@@ -116,11 +122,11 @@ resource "google_compute_instance" "this" {
   }
 
   attached_disk {
-    source = google_compute_disk.panorama_logs1[count.index].name
+    source = google_compute_disk.panorama_logs1[each.key].name
   }
 
   attached_disk {
-    source = google_compute_disk.panorama_logs2[count.index].name
+    source = google_compute_disk.panorama_logs2[each.key].name
   }
 
   depends_on = [

@@ -1,6 +1,3 @@
-variable "subnetworks" { type = list(string) }
-variable "names" { type = list(string) }
-
 variable "panorama_image_file_name" {
   default = ""
   type    = string
@@ -20,8 +17,6 @@ variable "region" {
   type = string
 }
 
-variable "zones" { type = list(string) }
-
 variable "image_create_timeout" {
   default = "60m"
   type    = string
@@ -33,9 +28,9 @@ variable "storage_uri" {
   type        = string
 }
 
-variable "nic0_ip" {
-  type    = list(string)
-  default = [""]
+variable instances {
+  description = "Definition of Panorama cloud instances"
+  type        = map(any)
 }
 
 variable "nic0_public_ip" {
