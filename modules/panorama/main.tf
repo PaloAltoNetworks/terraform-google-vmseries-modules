@@ -57,10 +57,10 @@ resource "google_compute_address" "private" {
 }
 
 # Permanent public address, not ephemeral.
-resource "google_compute_address" "nic0" {
+resource "google_compute_address" "public" {
   for_each = var.instances
 
-  name    = "${each.value.name}-nic0"
+  name    = "${each.value.name}-nic0-public"
   address = try(each.value.nat_ip, null)
   region  = data.google_compute_subnetwork.this[each.key].region
 }
@@ -112,10 +112,10 @@ resource "google_compute_instance" "this" {
     dynamic "access_config" {
       for_each = var.nic0_public_ip ? ["one"] : []
       content {
-        nat_ip = try(google_compute_address.nic0[each.key].nat_ip, null)
+        nat_ip = try(google_compute_address.public[each.key].address, null)
       }
     }
-    network_ip = try(each.value.network_ip, null)
+    network_ip = google_compute_address.private[each.key].address
     subnetwork = each.value.subnetwork
   }
 
