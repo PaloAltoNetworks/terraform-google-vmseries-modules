@@ -117,6 +117,7 @@ resource "google_compute_instance" "this" {
   boot_disk {
     initialize_params {
       image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
+      size  = var.disk_size
       type  = var.disk_type
     }
   }

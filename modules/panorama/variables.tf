@@ -62,6 +62,12 @@ variable disk_type {
   type        = string
 }
 
+variable disk_size {
+  description = "Size of boot disk in gigabytes. Default is the same as the os image."
+  default     = null
+  type        = string
+}
+
 variable log_disk_type {
   description = "Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced."
   default     = "pd-standard"
