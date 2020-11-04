@@ -87,12 +87,17 @@ resource "google_compute_instance_group_manager" "this" {
   name               = "${var.prefix}-igm-${each.value}"
   zone               = each.value
   target_pools       = [var.pool]
+
   version {
     instance_template = google_compute_instance_template.this.id
   }
-  named_port {
-    name = "custom"
-    port = 80
+
+  dynamic "named_port" {
+    for_each = var.named_ports
+    content {
+      name = named_port.value.name
+      port = named_port.value.port
+    }
   }
 }
 
