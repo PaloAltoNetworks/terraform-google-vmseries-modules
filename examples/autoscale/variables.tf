@@ -60,6 +60,15 @@ variable networks {
   description = "The list of maps describing the VPC networks and subnetworks"
 }
 
+variable fw_network_ordering {
+  description = "Just names from the `networks[*].name` attributes."
+  default     = []
+}
+
+variable intlb_network {
+  description = "One of the names from the `networks[*].name` attribute."
+}
+
 variable autoscaler_metric_name {
   default = "custom.googleapis.com/VMSeries/panSessionActive"
 }
@@ -74,6 +83,6 @@ variable autoscaler_metric_target {
 
 variable service_account {
   description = "IAM Service Account for running firewall instances (just the identifier, without `@domain` part)"
-  default     = null
+  default     = "paloaltonetworks-fw"
   type        = string
 }

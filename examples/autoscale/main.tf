@@ -50,11 +50,7 @@ module "autoscale" {
     zone2 = data.google_compute_zones.this.names[1]
   }
 
-  subnetworks = [
-    module.vpc.subnetworks["as4-untrust"].name,
-    module.vpc.subnetworks["as4-mgmt"].name,
-    module.vpc.subnetworks["as4-trust"].name,
-  ]
+  subnetworks = [for v in var.fw_network_ordering : module.vpc.subnetworks[v].name]
 
   prefix                   = var.prefix
   deployment_name          = var.prefix
@@ -89,8 +85,8 @@ module "intlb" {
   source = "../../modules/lb_tcp_internal/"
 
   name       = var.intlb_name
-  network    = module.vpc.networks["as4-trust"].name
-  subnetwork = module.vpc.subnetworks["as4-trust"].name
+  network    = module.vpc.networks[var.intlb_network].name
+  subnetwork = module.vpc.subnetworks[var.intlb_network].name
   all_ports  = true
   backends   = module.autoscale.backends
 }
