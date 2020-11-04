@@ -21,7 +21,7 @@ variable public_key_path {
 
 variable fw_panos {
   description = "VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814)"
-  default     = "byol-913"
+  default     = "byol-912"
 }
 
 variable fw_image {
@@ -105,7 +105,7 @@ variable autoscaler_metric_target {
 }
 
 variable service_account {
-  description = "IAM Service Account for running firewall instance (just the email)"
+  description = "IAM Service Account for running firewall instances (just the identifier, without `@domain` part)"
   default     = null
   type        = string
 }
