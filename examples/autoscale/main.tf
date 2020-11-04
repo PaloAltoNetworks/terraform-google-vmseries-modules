@@ -9,24 +9,41 @@ provider "google" {
 data "google_compute_zones" "this" {}
 
 #-----------------------------------------------------------------------------------------------
-# Create  buckets for bootstrapping the fresh firewall VM.
+# Dedicated IAM service account for running GCP instances of Palo Alto Networks VM-Series.
+# Applying this module requires IAM roles Security Admin and Service Account Admin or their equivalents.
+# The account will not only be used for running the instances, but also for their GCP plugin access.
 
+module "iam_service_account" {
+  source = "../../modules/iam_service_account/"
+
+  service_account_id = var.service_account
+}
+
+# Create  buckets for bootstrapping the fresh firewall VM.
 module "bootstrap" {
   source          = "../../modules/gcp_bootstrap/"
   bucket_name     = "as4-fw-bootstrap"
-  service_account = var.service_account
+  service_account = module.iam_service_account.email
   file_location   = "bootstrap_files/"
   config          = ["init-cfg.txt"]
   license         = ["authcodes"]
 }
 
 #-----------------------------------------------------------------------------------------------
+# VPC Networks
+
+module "vpc" {
+  source = "../../modules/vpc"
+
+  networks = var.networks
+}
+
+
+#-----------------------------------------------------------------------------------------------
 # Firewalls with auto-scaling.
 
 module "autoscale" {
-  source          = "../../modules/autoscale"
-  prefix          = var.prefix
-  deployment_name = var.prefix
+  source = "../../modules/autoscale"
 
   zones = {
     zone1 = data.google_compute_zones.this.names[0]
@@ -34,11 +51,13 @@ module "autoscale" {
   }
 
   subnetworks = [
-    var.untrust_subnet[0],
-    var.mgmt_subnet[0],
-    var.trust_subnet[0],
+    module.vpc.subnetworks["as4-untrust"].name,
+    module.vpc.subnetworks["as4-mgmt"].name,
+    module.vpc.subnetworks["as4-trust"].name,
   ]
 
+  prefix                   = var.prefix
+  deployment_name          = var.prefix
   machine_type             = var.fw_machine_type
   mgmt_interface_swap      = "enable"
   ssh_key                  = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
@@ -49,7 +68,7 @@ module "autoscale" {
   pool                     = module.extlb.target_pool
   bootstrap_bucket         = module.bootstrap.bucket_name
   scopes                   = ["https://www.googleapis.com/auth/cloud-platform"]
-  service_account          = var.service_account
+  service_account          = module.iam_service_account.email
   max_replicas_per_zone    = 2
   autoscaler_metric_name   = var.autoscaler_metric_name
   autoscaler_metric_type   = var.autoscaler_metric_type
@@ -67,10 +86,11 @@ module "autoscale" {
 # It's here just to show how to integrate it with auto-scaling.
 
 module "intlb" {
-  source     = "../../modules/lb_tcp_internal/"
+  source = "../../modules/lb_tcp_internal/"
+
   name       = var.intlb_name
-  network    = var.trust_vpc
-  subnetwork = var.trust_subnet[0]
+  network    = module.vpc.networks["as4-trust"].name
+  subnetwork = module.vpc.subnetworks["as4-trust"].name
   all_ports  = true
   backends   = module.autoscale.backends
 }
@@ -82,7 +102,8 @@ module "intlb" {
 # It's here just to show how to integrate it with auto-scaling.
 
 module "extlb" {
-  source       = "../../modules/lb_tcp_external/"
+  source = "../../modules/lb_tcp_external/"
+
   name         = var.extlb_name
   service_port = 80
   health_check = {
