@@ -56,41 +56,9 @@ variable mgmt_sources {
   type    = list(string)
 }
 
-variable mgmt_vpc {
+variable networks {
+  description = "The list of maps describing the VPC networks and subnetworks"
 }
-
-variable mgmt_subnet {
-  type = list(string)
-}
-
-# variable mgmt_cidr {
-#   type = list(string)
-# }
-
-variable untrust_vpc {
-}
-
-variable untrust_subnet {
-  type = list(string)
-}
-
-# variable untrust_cidr {
-#   type = list(string)
-# }
-
-variable trust_vpc {
-  description = "Pre-existing VPC that contains the services and apps"
-  type        = string
-}
-
-variable trust_subnet {
-  description = "Pre-existing subnets that contain the services and apps"
-  type        = list(string)
-}
-
-# variable trust_cidr {
-#   type = list(string)
-# }
 
 variable autoscaler_metric_name {
   default = "custom.googleapis.com/VMSeries/panSessionActive"
