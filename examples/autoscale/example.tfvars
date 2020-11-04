@@ -1,3 +1,5 @@
+public_key_path = "id_rsa.pub"
+
 networks = [
   {
     name            = "as4-untrust"
@@ -21,6 +23,12 @@ networks = [
     subnetwork_name = "as4-trust"
     ip_cidr_range   = "192.168.2.0/24"
   },
+]
+
+fw_network_ordering = [
+  "as4-untrust",
+  "as4-mgmt",
+  "as4-trust",
 ]
 
 service_account = "paloaltonetworks-fw"

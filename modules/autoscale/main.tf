@@ -100,7 +100,7 @@ resource "random_id" "autoscaler" {
   for_each = var.zones
   keepers = {
     # Re-randomize on igm change. It forcibly recreates all users of this random_id.
-    google_compute_instance_group_manager = google_compute_instance_group_manager.this[each.key].id
+    google_compute_instance_group_manager = try(google_compute_instance_group_manager.this[each.key].id, null)
   }
   byte_length = 3
 }
@@ -108,7 +108,7 @@ resource "random_id" "autoscaler" {
 resource "google_compute_autoscaler" "this" {
   for_each = var.zones
   name     = "${var.prefix}-${random_id.autoscaler[each.key].hex}-as-${each.value}"
-  target   = google_compute_instance_group_manager.this[each.key].id
+  target   = try(google_compute_instance_group_manager.this[each.key].id, "")
   zone     = each.value
 
   autoscaling_policy {
