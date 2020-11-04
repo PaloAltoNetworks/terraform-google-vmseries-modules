@@ -69,6 +69,12 @@ module "autoscale" {
   autoscaler_metric_name   = var.autoscaler_metric_name
   autoscaler_metric_type   = var.autoscaler_metric_type
   autoscaler_metric_target = var.autoscaler_metric_target
+  named_ports = [
+    {
+      name = "http"
+      port = "80"
+    },
+  ]
 
   dependencies = [
     module.bootstrap.completion,
