@@ -61,12 +61,12 @@ variable networks {
 }
 
 variable fw_network_ordering {
-  description = "Just names from the `networks[*].name` attributes."
+  description = "A list of names from the `networks[*].name` attributes."
   default     = []
 }
 
 variable intlb_network {
-  description = "One of the names from the `networks[*].name` attribute."
+  description = "Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute."
 }
 
 variable autoscaler_metric_name {
