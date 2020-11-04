@@ -14,6 +14,7 @@ variable roles {
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
+    "roles/viewer", # to reach a bootstrap bucket (project's storage.buckets.list with bucket's roles/storage.objectViewer insufficient)
     # per https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/deploy-vm-series-on-gcp/enable-google-stackdriver-monitoring-on-the-vm-series-firewall.html
     "roles/stackdriver.accounts.viewer",
     "roles/stackdriver.resourceMetadata.writer",
