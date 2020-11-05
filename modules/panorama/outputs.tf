@@ -1,5 +1,5 @@
 output "nic0_public_ips" {
-  value = var.nic0_public_ip ? { for k, v in google_compute_instance.this : k =>
+  value = var.public_nat ? { for k, v in google_compute_instance.this : k =>
     v.network_interface[0].access_config[0].nat_ip
   } : {}
 }

@@ -33,7 +33,7 @@ variable instances {
   type        = map(any)
 }
 
-variable nic0_public_ip {
+variable public_nat {
   type    = bool
   default = false
 }

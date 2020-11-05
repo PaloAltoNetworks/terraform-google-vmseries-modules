@@ -63,7 +63,7 @@ resource "google_compute_address" "private" {
 
 # Permanent public address, not ephemeral.
 resource "google_compute_address" "public" {
-  for_each = var.instances
+  for_each = { for k, v in var.instances : k => v if var.public_nat }
 
   name    = "${each.value.name}-nic0-public"
   address = try(each.value.nat_ip, null)
@@ -115,7 +115,7 @@ resource "google_compute_instance" "this" {
 
   network_interface {
     dynamic "access_config" {
-      for_each = var.nic0_public_ip ? ["one"] : []
+      for_each = var.public_nat ? ["one"] : []
       content {
         nat_ip = try(google_compute_address.public[each.key].address, null)
       }
