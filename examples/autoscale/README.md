@@ -9,6 +9,7 @@
 
 - Set up Panorama and its VPC (consider using `examples/panorama`).
 - Configure Panorama. This example assumes it exists with proper settings.
+- Restart Panorama with `request restart system` to ensure the vm-auth-key is saved properly.
 - Go to the main directory of the example (i.e. where this `README.md` is placed).
 - Copy the `example.tfvars` into `terraform.tfvars` and modify it to your needs.
 - Put the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
