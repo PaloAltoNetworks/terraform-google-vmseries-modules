@@ -69,6 +69,12 @@ variable intlb_network {
   description = "Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute."
 }
 
+variable intlb_global_access {
+  description = "(Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route."
+  default     = false
+  type        = bool
+}
+
 variable autoscaler_metric_name {
   default = "custom.googleapis.com/VMSeries/panSessionActive"
 }

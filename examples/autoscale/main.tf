@@ -95,6 +95,8 @@ module "intlb" {
   subnetwork = module.vpc.subnetworks[var.intlb_network].name
   all_ports  = true
   backends   = module.autoscale.backends
+
+  allow_global_access = var.intlb_global_access
 }
 
 #-----------------------------------------------------------------------------------------------
