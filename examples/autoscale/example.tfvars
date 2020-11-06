@@ -31,6 +31,8 @@ fw_network_ordering = [
   "as4-trust",
 ]
 
+intlb_global_access = true
+
 service_account = "paloaltonetworks-fw"
 
 # Aid in initial troubleshooting:
