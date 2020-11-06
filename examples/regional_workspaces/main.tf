@@ -11,12 +11,15 @@ provider "google" {
 #-----------------------------------------------------------------------------------------------
 # Create  buckets for bootstrapping the fresh firewall VM.
 module "bootstrap" {
-  source        = "../../modules/gcp_bootstrap"
-  bucket_name   = "${var.prefix}fw-bootstrap-${local.environment}-${local.region}"
-  file_location = "./bootstrap_files/${local.region}/${local.environment}/"
-  config        = ["init-cfg.txt"]
-  license       = ["authcodes"]
-  //  content       = ["pancontent","pancontent2"]
+  source = "../../modules/bootstrap/"
+
+  name_prefix = "${var.prefix}fw-bootstrap-${local.environment}-${local.region}"
+  # service_account = module.iam_service_account.email
+  files = {
+    "bootstrap_files/${local.region}/${local.environment}/init-cfg.txt" = "config/init-cfg.txt"
+    "bootstrap_files/${local.region}/${local.environment}/authcodes"    = "license/authcodes"
+    # "bootstrap_files/vm_series-2.0.2" = "plugins/vm_series-2.0.2"
+  }
 }
 
 #-----------------------------------------------------------------------------------------------

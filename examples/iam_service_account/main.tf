@@ -16,10 +16,10 @@ module "iam_service_account" {
 # Create a bucket for bootstrapping a firewall VM.
 # (The VM itself is out of scope here.)
 module "bootstrap" {
-  source          = "../../modules/gcp_bootstrap/"
-  bucket_name     = "iamexample-fw-bootstrap"
+  source = "../../modules/bootstrap/"
+
   service_account = module.iam_service_account.email
-  file_location   = ""
+  files           = {}
 }
 
 # Dedicated IAM service account for authenticating Panorama's GCP Plugin 2.0.

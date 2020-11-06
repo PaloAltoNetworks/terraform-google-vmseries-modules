@@ -21,12 +21,14 @@ module "iam_service_account" {
 
 # Create  buckets for bootstrapping the fresh firewall VM.
 module "bootstrap" {
-  source          = "../../modules/gcp_bootstrap/"
-  bucket_name     = "as4-fw-bootstrap"
+  source = "../../modules/bootstrap/"
+
   service_account = module.iam_service_account.email
-  file_location   = "bootstrap_files/"
-  config          = ["init-cfg.txt"]
-  license         = ["authcodes"]
+  files = {
+    "bootstrap_files/init-cfg.txt"    = "config/init-cfg.txt"
+    "bootstrap_files/authcodes"       = "license/authcodes"
+    "bootstrap_files/vm_series-2.0.2" = "plugins/vm_series-2.0.2"
+  }
 }
 
 #-----------------------------------------------------------------------------------------------
