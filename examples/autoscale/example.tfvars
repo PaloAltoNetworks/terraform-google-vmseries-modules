@@ -1,4 +1,5 @@
-public_key_path = "id_rsa.pub"
+public_key_path  = "id_rsa.pub"
+private_key_path = "id_rsa"
 
 networks = [
   {
@@ -31,6 +32,8 @@ fw_network_ordering = [
   "as4-trust",
 ]
 
+jumphost_network    = "as4-mgmt"
+intlb_network       = "as4-trust"
 intlb_global_access = true
 
 service_account = "paloaltonetworks-fw"
