@@ -19,6 +19,11 @@ variable public_key_path {
   default     = "id_rsa.pub"
 }
 
+variable private_key_path {
+  description = "Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` "
+  default     = "id_rsa"
+}
+
 variable fw_panos {
   description = "VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814)"
   default     = "byol-912"
@@ -63,6 +68,10 @@ variable networks {
 variable fw_network_ordering {
   description = "A list of names from the `networks[*].name` attributes."
   default     = []
+}
+
+variable jumphost_network {
+  description = "Name of the defined network for the jumphost. One of the names from the `networks[*].name` attribute."
 }
 
 variable intlb_network {

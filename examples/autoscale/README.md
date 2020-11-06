@@ -1,5 +1,9 @@
 # Example for GCP Auto-Scaling of Firewalls
 
+The firewalls are created and destroyed by the GCP managed instance group.
+
+For enhanced security, the firewalls' management interfaces are unreachable through public IP addresses (there is however a jumphost to aid initial troubleshooting).
+
 ## Caveat
 
 1. The auto-scaling happens independently in each zone (it appears to be a limitation of GCP plugin 2.0.0 on Panorama, it simply does not check for the regional instance groups). The test was on Panorama 9.1.4.

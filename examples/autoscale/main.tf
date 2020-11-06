@@ -59,7 +59,7 @@ module "autoscale" {
   ssh_key                  = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
   image                    = "${var.fw_image}-${var.fw_panos}"
   nic0_public_ip           = true
-  nic1_public_ip           = true
+  nic1_public_ip           = false
   nic2_public_ip           = false
   pool                     = module.extlb.target_pool
   bootstrap_bucket         = module.bootstrap.bucket_name
