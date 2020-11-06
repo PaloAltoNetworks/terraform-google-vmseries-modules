@@ -121,3 +121,18 @@ module "extlb" {
     host                = null
   }
 }
+
+# -----------------------------------------------------------------------------------------------
+# Cloud Nat for the management interfaces.
+# Needed to reach bootstrap bucket or to log to Cortex DataLake.
+module "mgmt_cloud_nat" {
+  source  = "terraform-google-modules/cloud-nat/google"
+  version = "~> 1.2"
+
+  name          = "mgmt"
+  project_id    = "gcp-gcs-pso" # FIXME vars? other module?
+  region        = "europe-west4"
+  create_router = true
+  router        = "mgmt"
+  network       = var.jumphost_network
+}
