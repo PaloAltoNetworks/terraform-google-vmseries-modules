@@ -54,5 +54,6 @@ resource "google_compute_forwarding_rule" "this" {
   all_ports             = var.all_ports
   ports                 = var.ports
   subnetwork            = var.subnetwork
+  allow_global_access   = var.allow_global_access
   backend_service       = google_compute_region_backend_service.this.self_link
 }

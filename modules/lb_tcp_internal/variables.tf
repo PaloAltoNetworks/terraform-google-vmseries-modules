@@ -84,3 +84,9 @@ variable failover_ratio {
   default     = null
   type        = number
 }
+
+variable allow_global_access {
+  description = "(Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route."
+  default     = false
+  type        = bool
+}
