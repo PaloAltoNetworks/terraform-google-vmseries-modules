@@ -1,4 +1,4 @@
-# Example for GCP Auto-Scaling of Firewalls
+# Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
 The firewalls are created and destroyed by the GCP managed instance group.
 
