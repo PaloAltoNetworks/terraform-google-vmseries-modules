@@ -23,12 +23,14 @@ locals {
 data "google_compute_network" "this" {
   for_each   = local.networks
   name       = each.value.name
+  project    = try(each.value.host_project_id, null)
   depends_on = [google_compute_network.this]
 }
 
 resource "google_compute_network" "this" {
   for_each                        = local.networks_to_create
   name                            = each.value.name
+  project                         = try(each.value.host_project_id, null)
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
 }
@@ -36,6 +38,7 @@ resource "google_compute_network" "this" {
 data "google_compute_subnetwork" "this" {
   for_each   = local.subnetworks
   name       = each.value.subnetwork_name
+  project    = try(each.value.host_project_id, null)
   region     = var.region
   depends_on = [google_compute_subnetwork.this]
 }
