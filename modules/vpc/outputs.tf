@@ -1,12 +1,7 @@
 output subnetworks {
-  value = { for k, v in local.subnetworks : k =>
-    # null happens when we `terraform destroy` an empty state
-    try(data.google_compute_subnetwork.this[k], null)
-  }
+  value = merge(data.google_compute_subnetwork.this, google_compute_subnetwork.this)
 }
 
 output networks {
-  value = { for k, v in local.networks : k =>
-    try(data.google_compute_network.this[k], null)
-  }
+  value = merge(data.google_compute_network.this, google_compute_network.this)
 }
