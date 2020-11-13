@@ -32,7 +32,7 @@ fw_network_ordering = [
   "as4-trust",
 ]
 
-jumphost_network    = "as4-mgmt"
+mgmt_network        = "as4-mgmt"
 intlb_network       = "as4-trust"
 intlb_global_access = true
 

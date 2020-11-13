@@ -136,5 +136,5 @@ module "mgmt_cloud_nat" {
   region        = "europe-west4"
   create_router = true
   router        = "mgmt"
-  network       = var.jumphost_network
+  network       = var.mgmt_network
 }

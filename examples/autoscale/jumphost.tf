@@ -20,7 +20,7 @@ module "jumphost" {
       zone = "europe-west4-c"
       network_interfaces = [
         {
-          subnetwork = try(module.vpc.subnetworks[var.jumphost_network].self_link, null)
+          subnetwork = try(module.vpc.subnetworks[var.mgmt_network].self_link, null)
           public_nat = true
         },
       ]
