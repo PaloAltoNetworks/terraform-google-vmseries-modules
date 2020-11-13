@@ -56,13 +56,17 @@ resource "google_compute_instance_template" "this" {
     subnetwork = var.subnetworks[1]
   }
 
-  network_interface {
-    dynamic "access_config" {
-      for_each = var.nic2_public_ip ? [""] : []
-      content {}
+  dynamic "network_interface" {
+    for_each = try([var.subnetworks[2]], [])
+
+    content {
+      dynamic "access_config" {
+        for_each = var.nic2_public_ip ? [""] : []
+        content {}
+      }
+      network_ip = var.nic2_ip[0]
+      subnetwork = var.subnetworks[2]
     }
-    network_ip = var.nic2_ip[0]
-    subnetwork = var.subnetworks[2]
   }
 
   disk {
