@@ -70,8 +70,8 @@ variable fw_network_ordering {
   default     = []
 }
 
-variable jumphost_network {
-  description = "Name of the defined network for the jumphost. One of the names from the `networks[*].name` attribute."
+variable mgmt_network {
+  description = "Name of the network to create for firewall management. One of the names from the `networks[*].name` attribute."
 }
 
 variable intlb_network {
