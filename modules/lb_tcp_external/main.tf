@@ -22,6 +22,11 @@ resource "google_compute_target_pool" "this" {
   health_checks    = var.disable_health_check ? [] : [google_compute_http_health_check.this[0].self_link]
   region           = var.region
   project          = var.project
+
+  lifecycle {
+    # Ignore changes because autoscaler changes this in the background.
+    ignore_changes = [instances]
+  }
 }
 
 resource "google_compute_http_health_check" "this" {
