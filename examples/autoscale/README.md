@@ -13,10 +13,10 @@ For enhanced security, the firewalls' management interfaces are unreachable thro
 
 - Set up Panorama and its VPC (consider using `examples/panorama`).
 - Configure Panorama. This example assumes it exists with proper settings.
-- Restart Panorama with `request restart system` to ensure the vm-auth-key is saved properly.
+- Optionally, restart Panorama with `request restart system` to ensure the vm-auth-key is saved properly.
 - Go to the main directory of the example (i.e. where this `README.md` is placed).
 - Copy the `example.tfvars` into `terraform.tfvars` and modify it to your needs.
-- Put the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
+- Generate the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
 - Manually edit the settings in `bootstrap_files/authcodes`
 - Manually edit the settings in `bootstrap_files/init-cfg.txt`
 - Deploy Terraform:
