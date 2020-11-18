@@ -76,10 +76,6 @@ resource "google_compute_instance_template" "this" {
     boot         = true
   }
 
-  depends_on = [
-    null_resource.dependency_getter
-  ]
-
   lifecycle {
     create_before_destroy = true
   }
@@ -103,6 +99,10 @@ resource "google_compute_instance_group_manager" "this" {
       port = named_port.value.port
     }
   }
+
+  depends_on = [
+    null_resource.dependency_getter
+  ]
 }
 
 resource "random_id" "autoscaler" {
