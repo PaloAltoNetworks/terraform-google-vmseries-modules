@@ -92,6 +92,15 @@ resource "google_compute_instance_group_manager" "this" {
     instance_template = google_compute_instance_template.this.id
   }
 
+  lifecycle {
+    # Ignore the name changes and only react to the version.instance_template changes.
+    # Google webui uses dummy name changes to implement Rolling Restart.
+    ignore_changes = [
+      version[0].name,
+      version[1].name,
+    ]
+  }
+
   dynamic "named_port" {
     for_each = var.named_ports
     content {
