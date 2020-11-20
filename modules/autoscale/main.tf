@@ -86,7 +86,7 @@ resource "google_compute_instance_group_manager" "this" {
   base_instance_name = "${var.prefix}-fw"
   name               = "${var.prefix}-igm-${each.value}"
   zone               = each.value
-  target_pools       = [var.pool]
+  target_pools       = compact([var.pool])
 
   version {
     instance_template = google_compute_instance_template.this.id
