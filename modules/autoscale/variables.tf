@@ -109,7 +109,8 @@ variable nic2_public_ip {
 }
 
 variable pool {
-  description = "The self_link of google_compute_target_pool where the instances will be placed for healtchecking"
+  description = "The self_link of google_compute_target_pool where the auto-created instances will be placed for healtchecking of External Load Balancer"
+  default     = null
   type        = string
 }
 
