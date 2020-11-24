@@ -35,17 +35,19 @@ variable ip_address {
 }
 
 variable ip_protocol {
-  default = "TCP"
+  description = "(Optional) Ignored for route next hop. Incoming packets that are *not* using this load balancer as their next hop can only pass if they are using this protocol, either TCP or UDP, but not both. In the usual case of incoming packets that *are* routed to this load balancer as their next hop, this setting is ignored and [both TCP and UDP always pass](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#all-traffic)."
+  default     = "TCP"
+  type        = string
 }
 
 variable all_ports {
-  description = "Forward all ports of the ip_protocol from the frontend to the backends. Needs to be null if `ports` are provided."
+  description = "Forward all port numbers from the frontend to the backends. Needs to be null if `ports` are provided."
   default     = null
   type        = bool
 }
 
 variable ports {
-  description = "Which port numbers are forwarded to the backends (up to 5 ports). Conflicts with all_ports."
+  description = "Which port numbers are forwarded to the backends (up to 5 ports). Conflicts with `all_ports`. Ignored for route next hop traffic, just like the `ip_protocol` argument."
   default     = []
   type        = list(number)
 }
