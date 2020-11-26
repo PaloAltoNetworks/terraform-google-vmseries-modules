@@ -43,14 +43,14 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 |------|---------|
 | terraform | >= 0.12, < 0.13 |
 | google | = 3.30 |
-| null | = 3.0 |
+| null | = 2.1.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | google | = 3.30 |
-| null | = 3.0 |
+| null | = 2.1.2 |
 
 ## Inputs
 

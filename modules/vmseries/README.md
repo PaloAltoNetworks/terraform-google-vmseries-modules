@@ -34,11 +34,11 @@ When troubleshooting you can use this module also with a good ol' Linux image. I
 | image\_uri | The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs. | `string` | `null` | no |
 | instances | Definition of firewalls that will be deployed | `map(any)` | n/a | yes |
 | labels | n/a | `map(any)` | `{}` | no |
-| machine\_type | n/a | `string` | `"n1-standard-4"` | no |
+| machine\_type | Firewall instance machine type, which depends on the license used. See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html) | `string` | `"n1-standard-4"` | no |
 | metadata | n/a | `map(string)` | `{}` | no |
 | metadata\_startup\_script | See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html) | `string` | `null` | no |
 | min\_cpu\_platform | n/a | `string` | `"Intel Broadwell"` | no |
-| named\_ports | (Optional) The list of named ports:<pre>named_ports = [<br>  {<br>    name = "http"<br>    port = "80"<br>  },<br>  {<br>    name = "app42"<br>    port = "4242"<br>  },<br>]</pre>The name identifies the backend port to receive the traffic from the global load balancers. | `list` | `[]` | no |
+| named\_ports | (Optional) The list of named ports:<pre>named_ports = [<br>  {<br>    name = "http"<br>    port = "80"<br>  },<br>  {<br>    name = "app42"<br>    port = "4242"<br>  },<br>]</pre>The name identifies the backend port to receive the traffic from the global load balancers.<br>Practically, tcp port 80 named "http" works even when not defined here, but it's not a documented provider's behavior. | `list` | `[]` | no |
 | project | n/a | `string` | `null` | no |
 | resource\_policies | n/a | `list(string)` | `[]` | no |
 | scopes | n/a | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/compute.readonly",<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
@@ -51,9 +51,16 @@ When troubleshooting you can use this module also with a good ol' Linux image. I
 | Name | Description |
 |------|-------------|
 | instance\_group\_self\_links | n/a |
+| instance\_groups | n/a |
+| instances | n/a |
 | names | n/a |
+| nic0\_ips | Map of IP addresses of interface at index 0, one entry per each instance. Contains public IP if one exists, otherwise private IP. |
+| nic0\_private\_ips | n/a |
 | nic0\_public\_ips | n/a |
+| nic1\_ips | Map of IP addresses of interface at index 1, one entry per each instance. Contains public IP if one exists, otherwise private IP. |
+| nic1\_private\_ips | n/a |
 | nic1\_public\_ips | n/a |
+| private\_ips | n/a |
 | public\_ips | n/a |
 | self\_links | n/a |
 
