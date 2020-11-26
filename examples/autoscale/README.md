@@ -40,6 +40,7 @@ terraform apply
 | Name | Version |
 |------|---------|
 | google | = 3.35 |
+| null | n/a |
 
 ## Inputs
 
@@ -52,21 +53,23 @@ terraform apply
 | extlb\_name | n/a | `string` | `"as4-fw-extlb"` | no |
 | fw\_image | n/a | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries"` | no |
 | fw\_machine\_type | n/a | `string` | `"n1-standard-4"` | no |
-| fw\_panos | VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814) | `string` | `"byol-913"` | no |
+| fw\_network\_ordering | A list of names from the `networks[*].name` attributes. | `list` | `[]` | no |
+| fw\_panos | VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814) | `string` | `"byol-912"` | no |
+| intlb\_global\_access | (Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route. | `bool` | `false` | no |
 | intlb\_name | n/a | `string` | `"as4-fw-intlb"` | no |
+| intlb\_network | Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
+| mgmt\_network | Name of the network to create for firewall management. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
 | mgmt\_sources | n/a | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| mgmt\_subnet | n/a | `list(string)` | n/a | yes |
-| mgmt\_vpc | n/a | `any` | n/a | yes |
+| networks | The list of maps describing the VPC networks and subnetworks | `any` | n/a | yes |
 | prefix | Prefix to GCP resource names, an arbitrary string | `string` | `"as4"` | no |
+| private\_key\_path | Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` | `any` | `null` | no |
 | public\_key\_path | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"id_rsa.pub"` | no |
-| service\_account | IAM Service Account for running firewall instance (just the email) | `string` | `null` | no |
-| trust\_subnet | Pre-existing subnets that contain the services and apps | `list(string)` | n/a | yes |
-| trust\_vpc | Pre-existing VPC that contains the services and apps | `string` | n/a | yes |
-| untrust\_subnet | n/a | `list(string)` | n/a | yes |
-| untrust\_vpc | n/a | `any` | n/a | yes |
+| service\_account | IAM Service Account for running firewall instances (just the identifier, without `@domain` part) | `string` | `"paloaltonetworks-fw"` | no |
 
 ## Outputs
 
-No output.
+| Name | Description |
+|------|-------------|
+| jumphost\_ssh\_command | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

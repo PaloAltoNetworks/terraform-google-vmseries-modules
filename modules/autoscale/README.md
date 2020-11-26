@@ -35,13 +35,14 @@
 | mgmt\_interface\_swap | n/a | `string` | `""` | no |
 | min\_cpu\_platform | n/a | `string` | `"Intel Broadwell"` | no |
 | min\_replicas\_per\_zone | Minimum number of VM-series instances per *each* of the zones | `number` | `1` | no |
+| named\_ports | (Optional) The list of named ports:<pre>named_ports = [<br>  {<br>    name = "http"<br>    port = "80"<br>  },<br>  {<br>    name = "app42"<br>    port = "4242"<br>  },<br>]</pre>The name identifies the backend port to receive the traffic from the global load balancers. | `list` | `[]` | no |
 | nic0\_ip | n/a | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | nic0\_public\_ip | n/a | `bool` | `false` | no |
 | nic1\_ip | n/a | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | nic1\_public\_ip | n/a | `bool` | `false` | no |
 | nic2\_ip | n/a | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
 | nic2\_public\_ip | n/a | `bool` | `false` | no |
-| pool | The self\_link of google\_compute\_target\_pool where the instances will be placed for healtchecking | `string` | n/a | yes |
+| pool | The self\_link of google\_compute\_target\_pool where the auto-created instances will be placed for healtchecking of External Load Balancer | `string` | `null` | no |
 | prefix | Prefix to various GCP resource names | `string` | n/a | yes |
 | region | GCP region to deploy to, if not set the default provider region is used. | `string` | `null` | no |
 | scopes | n/a | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/compute.readonly",<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
