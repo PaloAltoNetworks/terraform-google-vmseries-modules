@@ -21,7 +21,7 @@ variable public_key_path {
 
 variable private_key_path {
   description = "Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` "
-  default     = "id_rsa"
+  default     = null
 }
 
 variable fw_panos {
