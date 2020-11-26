@@ -94,9 +94,5 @@ resource "google_compute_instance_group" "this" {
       port = named_port.value.port
     }
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
