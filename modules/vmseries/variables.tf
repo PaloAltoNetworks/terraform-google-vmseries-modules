@@ -77,9 +77,26 @@ variable metadata {
 }
 
 variable metadata_startup_script {
-  description = "See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
+  description = <<-EOF
+    Ignored unless `nonprod_just_linux` is true. Intended for initial troubleshooting only, not for production use.
+    It is always executed using /bin/bash and the shebang line is ignored.
+    EOF
   default     = null
   type        = string
+}
+
+variable nonprod_just_linux {
+  description = <<-EOF
+    Deploy a plain Linux image instead of Palo Alto Networks VM-Series image.
+    Set Linux to ip_forward all the traffic without any filtering.
+    Unsafe for any normal use, intended for initial troubleshooting of the connectivity. Only recommended on a *closed network*.
+
+    Bootstrap bucket or Panorama is not used/contacted at all with this setting.
+
+    The default image_uri becomes "debian-cloud-testing/debian-sid", but still remains customizable.
+    EOF
+  default     = false
+  type        = bool
 }
 
 variable project {

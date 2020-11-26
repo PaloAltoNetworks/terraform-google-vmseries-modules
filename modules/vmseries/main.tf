@@ -20,7 +20,7 @@ resource "google_compute_instance" "this" {
   min_cpu_platform          = var.min_cpu_platform
   labels                    = var.labels
   tags                      = var.tags
-  metadata_startup_script   = var.metadata_startup_script
+  metadata_startup_script   = local.metadata_startup_scripts[each.key]
   project                   = var.project
   resource_policies         = var.resource_policies
   can_ip_forward            = true
@@ -64,12 +64,13 @@ resource "google_compute_instance" "this" {
     }
   }
 
-  # TODO: var.linux_fake  -> 0.0/0 route for both nic0 and nic1 -> ip vrf add nic1 ; ip ro add 0.0.0.0/0
-
   boot_disk {
     initialize_params {
-      image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
-      type  = var.disk_type
+      image = coalesce(
+        var.image_uri,
+        var.nonprod_just_linux ? "debian-cloud-testing/debian-sid" : "${var.image_prefix_uri}${var.image_name}"
+      )
+      type = var.disk_type
     }
   }
 

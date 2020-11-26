@@ -36,9 +36,10 @@ When troubleshooting you can use this module also with a good ol' Linux image. I
 | labels | n/a | `map(any)` | `{}` | no |
 | machine\_type | Firewall instance machine type, which depends on the license used. See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html) | `string` | `"n1-standard-4"` | no |
 | metadata | n/a | `map(string)` | `{}` | no |
-| metadata\_startup\_script | See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html) | `string` | `null` | no |
+| metadata\_startup\_script | Ignored unless `nonprod_just_linux` is true. Intended for initial troubleshooting only, not for production use.<br>It is always executed using /bin/bash and the shebang line is ignored. | `string` | `null` | no |
 | min\_cpu\_platform | n/a | `string` | `"Intel Broadwell"` | no |
 | named\_ports | (Optional) The list of named ports:<pre>named_ports = [<br>  {<br>    name = "http"<br>    port = "80"<br>  },<br>  {<br>    name = "app42"<br>    port = "4242"<br>  },<br>]</pre>The name identifies the backend port to receive the traffic from the global load balancers.<br>Practically, tcp port 80 named "http" works even when not defined here, but it's not a documented provider's behavior. | `list` | `[]` | no |
+| nonprod\_just\_linux | Deploy a plain Linux image instead of Palo Alto Networks VM-Series image.<br>Set Linux to ip\_forward all the traffic without any filtering.<br>Unsafe for any normal use, intended for initial troubleshooting of the connectivity. Only recommended on a \*closed network\*.<br><br>Bootstrap bucket or Panorama is not used/contacted at all with this setting.<br><br>The default image\_uri becomes "debian-cloud-testing/debian-sid", but still remains customizable. | `bool` | `false` | no |
 | project | n/a | `string` | `null` | no |
 | resource\_policies | n/a | `list(string)` | `[]` | no |
 | scopes | n/a | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/compute.readonly",<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |

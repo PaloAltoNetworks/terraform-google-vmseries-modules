@@ -33,7 +33,9 @@ locals {
     instance_key => {
       for nic_key, nic in instance.network_interfaces :
       nic_key => {
-        network_ip = google_compute_address.private["${instance_key}-${nic_key}"].address
+        subnetwork_cidr = data.google_compute_subnetwork.this["${instance_key}-${nic_key}"].ip_cidr_range
+        subnetwork_gw   = cidrhost(data.google_compute_subnetwork.this["${instance_key}-${nic_key}"].ip_cidr_range, 1)
+        network_ip      = google_compute_address.private["${instance_key}-${nic_key}"].address
         nat_ip = (
           # If we have been given an excplicit nat_ip, use it. Else, use our own named address.
           try(nic.nat_ip, null) != null ?
