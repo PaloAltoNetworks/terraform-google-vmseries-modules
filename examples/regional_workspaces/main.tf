@@ -5,7 +5,7 @@ terraform {
 provider "google" {
   credentials = file(var.auth_file)
   project     = lower(var.project_id)
-  version     = "= 3.35"
+  version     = "= 3.48"
 }
 
 #-----------------------------------------------------------------------------------------------
