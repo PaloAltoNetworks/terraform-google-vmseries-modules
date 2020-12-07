@@ -142,6 +142,12 @@ resource "google_compute_autoscaler" "this" {
       target = var.autoscaler_metric_target
     }
 
+    scale_in_control {
+      time_window_sec = var.scale_in_control_time_window_sec
+      max_scaled_in_replicas {
+        fixed = var.scale_in_control_replicas_fixed
+      }
+    }
   }
 }
 

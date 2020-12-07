@@ -143,6 +143,18 @@ variable cooldown_period {
   type        = number
 }
 
+variable scale_in_control_time_window_sec {
+  description = "How many seconds autoscaling should look into the past when scaling in (down). Default 30 minutes corresponds to the default custom metrics period of 5 minutes and also to the considerable init time of a fresh instance."
+  default     = 1800
+  type        = number
+}
+
+variable scale_in_control_replicas_fixed {
+  description = "Fixed number of VM instances that can be killed in each zone within the scale-in time window. See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler)."
+  default     = 1
+  type        = number
+}
+
 variable named_ports {
   description = <<-EOF
   (Optional) The list of named ports:
