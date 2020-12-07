@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "google" {
-  version = "= 3.35"
+  version = "= 3.48"
 }
 
 data "google_compute_zones" "this" {}

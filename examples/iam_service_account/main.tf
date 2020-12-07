@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "google" {
-  version = "= 3.35"
+  version = "= 3.48"
 }
 
 # Dedicated IAM service account for running GCP instances of Palo Alto Networks VM-Series.
