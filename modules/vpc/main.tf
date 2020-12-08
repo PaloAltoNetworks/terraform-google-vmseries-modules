@@ -62,4 +62,12 @@ resource "google_compute_firewall" "this" {
     protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
     ports    = try(each.value.allowed_ports, var.allowed_ports, null)
   }
+
+  dynamic log_config {
+    for_each = compact(try([each.value.log_metadata], []))
+
+    content {
+      metadata = log_config.value
+    }
+  }
 }
