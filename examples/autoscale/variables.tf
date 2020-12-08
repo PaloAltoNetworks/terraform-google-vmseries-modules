@@ -84,16 +84,12 @@ variable intlb_global_access {
   type        = bool
 }
 
-variable autoscaler_metric_name {
-  default = "custom.googleapis.com/VMSeries/panSessionActive"
-}
-
-variable autoscaler_metric_type {
-  default = "GAUGE"
-}
-
-variable autoscaler_metric_target {
-  default = 100
+variable autoscaler_metrics {
+  default = {
+    "custom.googleapis.com/VMSeries/panSessionActive" = {
+      target = 100
+    }
+  }
 }
 
 variable service_account {
