@@ -54,23 +54,21 @@ module "autoscale" {
 
   subnetworks = [for v in var.fw_network_ordering : module.vpc.subnetworks[v].name]
 
-  prefix                   = var.prefix
-  deployment_name          = var.prefix
-  machine_type             = var.fw_machine_type
-  mgmt_interface_swap      = "enable"
-  ssh_key                  = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
-  image                    = "${var.fw_image}-${var.fw_panos}"
-  nic0_public_ip           = true
-  nic1_public_ip           = false
-  nic2_public_ip           = false
-  pool                     = module.extlb.target_pool
-  bootstrap_bucket         = module.bootstrap.bucket_name
-  scopes                   = ["https://www.googleapis.com/auth/cloud-platform"]
-  service_account          = module.iam_service_account.email
-  max_replicas_per_zone    = 2
-  autoscaler_metric_name   = var.autoscaler_metric_name
-  autoscaler_metric_type   = var.autoscaler_metric_type
-  autoscaler_metric_target = var.autoscaler_metric_target
+  prefix                = var.prefix
+  deployment_name       = var.prefix
+  machine_type          = var.fw_machine_type
+  mgmt_interface_swap   = "enable"
+  ssh_key               = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
+  image                 = "${var.fw_image}-${var.fw_panos}"
+  nic0_public_ip        = true
+  nic1_public_ip        = false
+  nic2_public_ip        = false
+  pool                  = module.extlb.target_pool
+  bootstrap_bucket      = module.bootstrap.bucket_name
+  scopes                = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account       = module.iam_service_account.email
+  max_replicas_per_zone = 2
+  autoscaler_metrics    = var.autoscaler_metrics
   named_ports = [
     {
       name = "http"
