@@ -136,10 +136,13 @@ resource "google_compute_autoscaler" "this" {
 
     # cpu_utilization { target = 0.7 }
 
-    metric {
-      name   = var.autoscaler_metric_name
-      type   = var.autoscaler_metric_type
-      target = var.autoscaler_metric_target
+    dynamic metric {
+      for_each = var.autoscaler_metrics
+      content {
+        name   = metric.key
+        type   = try(metric.value.type, "GAUGE")
+        target = metric.value.target
+      }
     }
 
   }
