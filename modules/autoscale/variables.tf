@@ -114,15 +114,15 @@ variable pool {
   type        = string
 }
 
-variable autoscaler_metric_name {
-  type = string
-}
-
-variable autoscaler_metric_type {
-  type = string
-}
-
-variable autoscaler_metric_target {
+variable autoscaler_metrics {
+  default = {
+    "custom.googleapis.com/VMSeries/panSessionUtilization" = {
+      target = 70
+    }
+    "custom.googleapis.com/VMSeries/panSessionThroughputKbps" = {
+      target = 700000
+    }
+  }
 }
 
 variable max_replicas_per_zone {
