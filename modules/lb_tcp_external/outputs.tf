@@ -1,11 +1,11 @@
-output forwarding_rule {
-  description = "The self-link of the forwarding rule."
-  value       = google_compute_forwarding_rule.this.self_link
+output forwarding_rules {
+  description = "The map of created forwarding rules."
+  value       = google_compute_forwarding_rule.rule
 }
 
 output address {
-  description = "The IP address of the forwarding rule."
-  value       = google_compute_forwarding_rule.this.ip_address
+  description = "The map of IP addresses of the forwarding rules."
+  value       = { for k, v in google_compute_forwarding_rule.rule : k => v.ip_address }
 }
 
 output target_pool {
