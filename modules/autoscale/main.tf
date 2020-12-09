@@ -72,7 +72,7 @@ resource "google_compute_instance_template" "this" {
   disk {
     source_image = var.image
     disk_type    = var.disk_type
-    auto_delete  = false # FIXME true # needed for de-registration
+    auto_delete  = false # FIXME no longer needed for de-registration, but change to true requires template change and a manual rolling update
     boot         = true
   }
 
