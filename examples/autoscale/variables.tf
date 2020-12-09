@@ -24,13 +24,10 @@ variable private_key_path {
   default     = null
 }
 
-variable fw_panos {
-  description = "VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814)"
-  default     = "byol-912"
-}
-
-variable fw_image {
-  default = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries"
+variable fw_image_uri {
+  description = "Link to VM-Series PAN-OS image"
+  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"
+  type        = string
 }
 
 variable fw_machine_type {
