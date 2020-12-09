@@ -73,19 +73,35 @@ output "internal_url" {
 # It's optional, just showing it can co-exist with other load balancers.
 
 module "extlb" {
-  source       = "../../modules/lb_tcp_external/"
-  name         = "my-extlb"
-  service_port = 80
-  instances    = values(module.vmseries.self_links)
-  health_check = {
-    check_interval_sec  = 10
-    healthy_threshold   = 2
-    timeout_sec         = 5
-    unhealthy_threshold = 3
-    port                = 80
-    request_path        = "/"
-    host                = "anything"
+  source    = "../../modules/lb_tcp_external/"
+  name      = "my-extlb"
+  instances = values(module.vmseries.self_links)
+  rules = {
+    # Standard HTTP port:
+    "tcp-80" = {
+      port_range  = "80"
+      ip_protocol = "TCP"
+    }
+    # A range of ports is possible as well:
+    "tcp-4000-4002" = {
+      port_range  = "4000-4002"
+      ip_protocol = "TCP"
+    }
+    # Example of ICMP, it has no concept of ports:
+    "icmp" = {
+      port_range  = null
+      ip_protocol = "ICMP"
+    }
   }
+
+  health_check_interval_sec        = 10
+  health_check_healthy_threshold   = 2
+  health_check_timeout_sec         = 5
+  health_check_unhealthy_threshold = 3
+
+  health_check_port         = 80
+  health_check_request_path = "/"
+  health_check_host         = "anything"
 }
 
 output "regional_url" {

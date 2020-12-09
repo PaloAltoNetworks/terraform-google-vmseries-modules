@@ -12,12 +12,18 @@ variable region {
 }
 
 variable name {
+  description = "Name of the target pool and of the associated healthcheck."
   type        = string
-  description = "Name for the forwarding rule and prefix for supporting resources."
 }
 
-variable service_port {
-  description = "TCP port your service is listening on. Can be a number or a range like 8080-8089."
+variable rules {
+  description = <<-EOF
+  Map of objects, the keys are names of the external forwarding rules, each object has the following attributes:
+
+  - port_ranges: (Required) the port your service is listening on. Can be a number or a range like 8080-8089 or even 1-65535.
+  - ip_address: (Optional) IP address of the external load balancer, auto-assigned if empty.
+  - ip_protocol: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, AH, SCTP or ICMP. Default is TCP.
+  EOF
 }
 
 variable session_affinity {
@@ -32,36 +38,46 @@ variable disable_health_check {
   default     = false
 }
 
-variable health_check {
-  description = "Health check to determine whether instances are responsive and able to do work"
-  type = object({
-    check_interval_sec  = number
-    healthy_threshold   = number
-    timeout_sec         = number
-    unhealthy_threshold = number
-    port                = number
-    request_path        = string
-    host                = string
-  })
-  default = {
-    check_interval_sec  = null
-    healthy_threshold   = null
-    timeout_sec         = null
-    unhealthy_threshold = null
-    port                = null
-    request_path        = null
-    host                = null
-  }
-}
-
-variable ip_address {
-  description = "IP address of the external load balancer, if empty one will be assigned."
+variable health_check_interval_sec {
+  description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
   default     = null
+  type        = number
 }
 
-variable ip_protocol {
-  description = "The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, AH, SCTP or ICMP."
-  default     = "TCP"
+variable health_check_healthy_threshold {
+  description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
+  default     = null
+  type        = number
+}
+
+variable health_check_timeout_sec {
+  description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
+  default     = null
+  type        = number
+}
+
+variable health_check_unhealthy_threshold {
+  description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
+  default     = null
+  type        = number
+}
+
+variable health_check_port {
+  description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
+  default     = null
+  type        = number
+}
+
+variable health_check_request_path {
+  description = "Health check http request path, with the default adjusted to /php/login.php to be able to check the health of the PAN-OS webui."
+  default     = "/php/login.php"
+  type        = string
+}
+
+variable health_check_host {
+  description = "Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui."
+  default     = "localhost"
+  type        = string
 }
 
 variable instances {
