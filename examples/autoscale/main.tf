@@ -59,7 +59,7 @@ module "autoscale" {
   machine_type          = var.fw_machine_type
   mgmt_interface_swap   = "enable"
   ssh_key               = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
-  image                 = "${var.fw_image}-${var.fw_panos}"
+  image                 = var.fw_image_uri
   nic0_public_ip        = true
   nic1_public_ip        = false
   nic2_public_ip        = false
