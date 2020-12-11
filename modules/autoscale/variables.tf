@@ -144,15 +144,45 @@ variable cooldown_period {
 }
 
 variable scale_in_control_time_window_sec {
-  description = "How many seconds autoscaling should look into the past when scaling in (down). Default 30 minutes corresponds to the default custom metrics period of 5 minutes and also to the considerable init time of a fresh instance."
+  description = <<-EOF
+  How many seconds autoscaling should look into the past when scaling in (down).
+  Default 30 minutes corresponds to the default custom metrics period of 5 minutes
+  and also to the considerable init time of a fresh instance.
+  EOF
   default     = 1800
   type        = number
 }
 
 variable scale_in_control_replicas_fixed {
-  description = "Fixed number of VM instances that can be killed in each zone within the scale-in time window. See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler)."
+  description = <<-EOF
+  Fixed number of VM instances that can be killed in each zone within the scale-in time window.
+  See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler).
+  EOF
   default     = 1
   type        = number
+}
+
+variable update_policy_min_ready_sec {
+  description = <<-EOF
+  After underlying template changes (e.g. PAN-OS upgrade) and the new instance is being spawned,
+  how long to wait after it becomes online.
+  See `update_policy` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager)."
+  EOF
+  default     = 720
+  type        = number
+}
+
+variable update_policy_type {
+  description = <<-EOF
+  What to do when the underlying template changes (e.g. PAN-OS upgrade).
+  OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed: it immediately
+  starts to re-create/delete instances and since this is not coordinated with
+  the instance group manager in other zone, it can easily lead to total outage.
+  It is thus feasible only in dev environments. Real environments should
+  perform a "Rolling Update" in GCP web interface.
+  EOF
+  default     = "OPPORTUNISTIC"
+  type        = string
 }
 
 variable named_ports {

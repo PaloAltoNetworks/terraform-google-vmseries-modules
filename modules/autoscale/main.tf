@@ -82,7 +82,8 @@ resource "google_compute_instance_template" "this" {
 }
 
 resource "google_compute_instance_group_manager" "this" {
-  for_each           = var.zones
+  for_each = var.zones
+
   base_instance_name = "${var.prefix}-fw"
   name               = "${var.prefix}-igm-${each.value}"
   zone               = each.value
@@ -99,6 +100,12 @@ resource "google_compute_instance_group_manager" "this" {
       version[0].name,
       version[1].name,
     ]
+  }
+
+  update_policy {
+    type           = var.update_policy_type
+    min_ready_sec  = var.update_policy_min_ready_sec
+    minimal_action = "REPLACE"
   }
 
   dynamic "named_port" {
