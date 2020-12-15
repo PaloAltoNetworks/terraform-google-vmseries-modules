@@ -1,4 +1,12 @@
 .terraform/
 terraform.tfstate*
 authcodes
-id_rsa_pgs
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed*
+!id*.pub
+venv
+.idea
+.vscode
+TODObranch.txt
