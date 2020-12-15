@@ -5,7 +5,7 @@
 
 | Name | Version |
 |------|---------|
-| google | ~> 3.35 |
+| google | ~> 3.48 |
 | null | ~> 2.1 |
 | random | ~> 2.3 |
 
@@ -13,7 +13,7 @@
 
 | Name | Version |
 |------|---------|
-| google | ~> 3.35 |
+| google | ~> 3.48 |
 | null | ~> 2.1 |
 | random | ~> 2.3 |
 
@@ -45,11 +45,15 @@
 | pool | The self\_link of google\_compute\_target\_pool where the auto-created instances will be placed for healtchecking of External Load Balancer | `string` | `null` | no |
 | prefix | Prefix to various GCP resource names | `string` | n/a | yes |
 | region | GCP region to deploy to, if not set the default provider region is used. | `string` | `null` | no |
+| scale\_in\_control\_replicas\_fixed | Fixed number of VM instances that can be killed in each zone within the scale-in time window.<br>See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `number` | `1` | no |
+| scale\_in\_control\_time\_window\_sec | How many seconds autoscaling should look into the past when scaling in (down).<br>Default 30 minutes corresponds to the default custom metrics period of 5 minutes<br>and also to the considerable init time of a fresh instance. | `number` | `1800` | no |
 | scopes | n/a | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/compute.readonly",<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
 | service\_account | IAM Service Account for running firewall instance (just the email) | `string` | `null` | no |
 | ssh\_key | n/a | `string` | `""` | no |
 | subnetworks | n/a | `list(string)` | n/a | yes |
 | tags | n/a | `list(string)` | `[]` | no |
+| update\_policy\_min\_ready\_sec | After underlying template changes (e.g. PAN-OS upgrade) and the new instance is being spawned,<br>how long to wait after it becomes online.<br>See `update_policy` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager)." | `number` | `720` | no |
+| update\_policy\_type | What to do when the underlying template changes (e.g. PAN-OS upgrade).<br>OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed: it immediately<br>starts to re-create/delete instances and since this is not coordinated with<br>the instance group manager in other zone, it can easily lead to total outage.<br>It is thus feasible only in dev environments. Real environments should<br>perform a "Rolling Update" in GCP web interface. | `string` | `"OPPORTUNISTIC"` | no |
 | zones | Map of zone names for the zonal IGMs | `map(string)` | `{}` | no |
 
 ## Outputs

@@ -6,7 +6,7 @@
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12, < 0.13 |
-| google | = 3.35 |
+| google | = 3.48 |
 
 ## Providers
 

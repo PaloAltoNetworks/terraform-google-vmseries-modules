@@ -33,13 +33,13 @@ terraform apply
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12, < 0.13 |
-| google | = 3.35 |
+| google | = 3.48 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| google | = 3.35 |
+| google | = 3.48 |
 | null | n/a |
 
 ## Inputs
