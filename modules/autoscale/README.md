@@ -21,15 +21,13 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| autoscaler\_metric\_name | n/a | `string` | n/a | yes |
-| autoscaler\_metric\_target | n/a | `any` | n/a | yes |
-| autoscaler\_metric\_type | n/a | `string` | n/a | yes |
+| autoscaler\_metrics | The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).<br>Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.<br>Each zonal group grows until it satisfies all the targets.<br><br>Additional optional attribute `type` defines the metric as either `GAUGE` (the default), `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.<br>For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `map` | <pre>{<br>  "custom.googleapis.com/VMSeries/panSessionThroughputKbps": {<br>    "target": 700000<br>  },<br>  "custom.googleapis.com/VMSeries/panSessionUtilization": {<br>    "target": 70<br>  }<br>}</pre> | no |
 | bootstrap\_bucket | n/a | `string` | `""` | no |
 | cooldown\_period | How much tame does it take for a spawned PA-VM to become functional on the initialization boot | `number` | `720` | no |
 | dependencies | n/a | `list(string)` | `[]` | no |
 | deployment\_name | Deployment Name that matches what is specified in Panorama GCP Plugin | `string` | n/a | yes |
 | disk\_type | n/a | `string` | `"pd-ssd"` | no |
-| image | n/a | `string` | n/a | yes |
+| image | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"` | no |
 | machine\_type | n/a | `string` | n/a | yes |
 | max\_replicas\_per\_zone | Maximum number of VM-series instances per *each* of the zones | `number` | `1` | no |
 | mgmt\_interface\_swap | n/a | `string` | `""` | no |

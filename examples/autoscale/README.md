@@ -46,15 +46,12 @@ terraform apply
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| autoscaler\_metric\_name | n/a | `string` | `"custom.googleapis.com/VMSeries/panSessionActive"` | no |
-| autoscaler\_metric\_target | n/a | `number` | `100` | no |
-| autoscaler\_metric\_type | n/a | `string` | `"GAUGE"` | no |
+| autoscaler\_metrics | The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).<br>Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.<br>Each zonal group grows until it satisfies all the targets.<br><br>Additional optional attribute `type` defines the metric as either `GAUGE` (the default), `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.<br>For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `map` | <pre>{<br>  "custom.googleapis.com/VMSeries/panSessionActive": {<br>    "target": 100<br>  }<br>}</pre> | no |
 | extlb\_healthcheck\_port | n/a | `number` | `80` | no |
 | extlb\_name | n/a | `string` | `"as4-fw-extlb"` | no |
-| fw\_image | n/a | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries"` | no |
+| fw\_image\_uri | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"` | no |
 | fw\_machine\_type | n/a | `string` | `"n1-standard-4"` | no |
 | fw\_network\_ordering | A list of names from the `networks[*].name` attributes. | `list` | `[]` | no |
-| fw\_panos | VM-Series license and PAN-OS version (ie: bundle1-814, bundle2-814, or byol-814) | `string` | `"byol-912"` | no |
 | intlb\_global\_access | (Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route. | `bool` | `false` | no |
 | intlb\_name | n/a | `string` | `"as4-fw-intlb"` | no |
 | intlb\_network | Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
