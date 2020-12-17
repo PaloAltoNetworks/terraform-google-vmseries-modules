@@ -25,7 +25,7 @@ variable private_key_path {
 }
 
 variable fw_image_uri {
-  description = "Link to VM-Series PAN-OS image"
+  description = "Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
   default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"
   type        = string
 }
