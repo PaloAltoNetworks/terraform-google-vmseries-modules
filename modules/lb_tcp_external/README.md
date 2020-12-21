@@ -1,4 +1,12 @@
-# Externally-Facing Regional TCP/UDP Load Balancer on GCP
+# Externally-Facing Regional TCP/UDP Network Load Balancer on GCP
+
+- A regional LB, which is faster than a global one.
+- IPv4 only, a limitation imposed by GCP.
+- Perhaps unexpectedly, the External TCP/UDP NLB has additional limitations imposed by GCP when comparing to the Internal TCP/UDP NLB, namely:
+
+  - Despite it works for any TCP traffic (also UDP and other protocols), it can only use a plain HTTP health check. So, HTTPS or SSH probes are *not* possible.
+  - Can only use the nic0 (the base interface) of an instance.
+  - Cannot serve as a next hop in a GCP custom routing table entry.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -41,3 +49,10 @@
 | target\_pool | The self-link of the target pool. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Resources Created
+
+- One TargetPool.
+- Zero or one HttpHealthCheck, the legacy kind.
+- Multiple ForwardingRules (all in a single region) of type EXTERNAL and tier PREMIUM.
+  - Each creates zero or one of non-ephemeral, external, regional IPv4 IPAddresses.
