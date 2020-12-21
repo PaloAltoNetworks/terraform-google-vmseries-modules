@@ -43,7 +43,7 @@ resource "google_compute_target_pool" "this" {
 resource "google_compute_http_health_check" "this" {
   count = var.disable_health_check ? 0 : 1
 
-  name                = "${var.name}-hc"
+  name                = var.name
   check_interval_sec  = var.health_check_interval_sec
   healthy_threshold   = var.health_check_healthy_threshold
   timeout_sec         = var.health_check_timeout_sec
