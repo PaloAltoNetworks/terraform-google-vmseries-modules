@@ -18,22 +18,26 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | disable\_health\_check | Disables the health check on the target pool. | `bool` | `false` | no |
-| health\_check | Health check to determine whether instances are responsive and able to do work | <pre>object({<br>    check_interval_sec  = number<br>    healthy_threshold   = number<br>    timeout_sec         = number<br>    unhealthy_threshold = number<br>    port                = number<br>    request_path        = string<br>    host                = string<br>  })</pre> | <pre>{<br>  "check_interval_sec": null,<br>  "healthy_threshold": null,<br>  "host": null,<br>  "port": null,<br>  "request_path": null,<br>  "timeout_sec": null,<br>  "unhealthy_threshold": null<br>}</pre> | no |
+| health\_check\_healthy\_threshold | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
+| health\_check\_host | Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui. | `string` | `"localhost"` | no |
+| health\_check\_interval\_sec | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
+| health\_check\_port | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
+| health\_check\_request\_path | Health check http request path, with the default adjusted to /php/login.php to be able to check the health of the PAN-OS webui. | `string` | `"/php/login.php"` | no |
+| health\_check\_timeout\_sec | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
+| health\_check\_unhealthy\_threshold | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
 | instances | Links to the instances (nic0 of each instance gets the traffic). Even when this list is shifted or re-ordered, it doesn't cause re-create and such modifications often proceed without any noticeable downtime. | `list(string)` | `null` | no |
-| ip\_address | IP address of the external load balancer, if empty one will be assigned. | `any` | `null` | no |
-| ip\_protocol | The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, AH, SCTP or ICMP. | `string` | `"TCP"` | no |
-| name | Name for the forwarding rule and prefix for supporting resources. | `string` | n/a | yes |
+| name | Name of the target pool and of the associated healthcheck. | `string` | n/a | yes |
 | project | The project to deploy to, if not set the default provider project is used. | `string` | `""` | no |
 | region | GCP region to deploy to, if not set the default provider region is used. | `string` | `null` | no |
-| service\_port | TCP port your service is listening on. Can be a number or a range like 8080-8089. | `any` | n/a | yes |
+| rules | Map of objects, the keys are names of the external forwarding rules, each object has the following attributes:<br><br>- port\_ranges: (Required) the port your service is listening on. Can be a number or a range like 8080-8089 or even 1-65535.<br>- ip\_address: (Optional) IP address of the external load balancer, auto-assigned if empty.<br>- ip\_protocol: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, AH, SCTP or ICMP. Default is TCP. | `any` | n/a | yes |
 | session\_affinity | How to distribute load. Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO` | `string` | `"NONE"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| address | The IP address of the forwarding rule. |
-| forwarding\_rule | The self-link of the forwarding rule. |
+| address | The map of IP addresses of the forwarding rules. |
+| forwarding\_rules | The map of created forwarding rules. |
 | target\_pool | The self-link of the target pool. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
