@@ -1,12 +1,12 @@
 
 variable project {
   type        = string
-  description = "The project to deploy to, if not set the default provider project is used."
+  description = "The project to deploy to. If unset the default provider project is used."
   default     = ""
 }
 
 variable region {
-  description = "GCP region to deploy to, if not set the default provider region is used."
+  description = "GCP region to deploy to. If unset the default provider region is used."
   default     = null
   type        = string
 }
@@ -18,18 +18,18 @@ variable name {
 
 variable rules {
   description = <<-EOF
-  Map of objects, the keys are names of the external forwarding rules, each object has the following attributes:
+  Map of objects, the keys are names of the external forwarding rules, each of the objects has the following attributes:
 
-  - port_ranges: (Required) the port your service is listening on. Can be a number or a range like 8080-8089 or even 1-65535.
-  - ip_address: (Optional) IP address of the external load balancer, auto-assigned if empty.
-  - ip_protocol: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, AH, SCTP or ICMP. Default is TCP.
+  - `port_ranges`: (Required) The port your service is listening on. Can be a number (80) or a range (8080-8089, or even 1-65535).
+  - `ip_address`: (Optional) A public IP address on which to listen, must be in the same region as the LB and must be IPv4. If empty, automatically generates a new non-ephemeral IP on a PREMIUM tier.
+  - `ip_protocol`: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, or ICMP. Default is TCP.
   EOF
 }
 
 variable session_affinity {
-  type        = string
-  description = "How to distribute load. Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`"
+  description = "How to distribute load. Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`."
   default     = "NONE"
+  type        = string
 }
 
 variable disable_health_check {
@@ -81,7 +81,7 @@ variable health_check_host {
 }
 
 variable instances {
-  description = "Links to the instances (nic0 of each instance gets the traffic). Even when this list is shifted or re-ordered, it doesn't cause re-create and such modifications often proceed without any noticeable downtime."
+  description = "List of links to the instances. Expected to be empty when using an autoscaler, as the autoscaler inserts entries to the target pool dynamically. The nic0 of each instance gets the traffic. Even when this list is shifted or re-ordered, it doesn't re-create any resources and such modifications often proceed without any noticeable downtime."
   default     = null
   type        = list(string)
 }
