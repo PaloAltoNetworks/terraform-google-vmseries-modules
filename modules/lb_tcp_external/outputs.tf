@@ -3,7 +3,7 @@ output forwarding_rules {
   value       = google_compute_forwarding_rule.rule
 }
 
-output address {
+output ip_addresses {
   description = "The map of IP addresses of the forwarding rules."
   value       = { for k, v in google_compute_forwarding_rule.rule : k => v.ip_address }
 }

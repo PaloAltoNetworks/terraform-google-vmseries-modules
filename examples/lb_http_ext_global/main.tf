@@ -104,6 +104,11 @@ module "extlb" {
   health_check_host         = "anything"
 }
 
+locals {
+  # Ensure that `terraform destroy` can pass again even when the map is already destroyed.
+  extlb_address = try(module.extlb.ip_addresses["tcp-80"], "")
+}
+
 output "regional_url" {
-  value = "http://${module.extlb.address}"
+  value = "http://${local.extlb_address}"
 }

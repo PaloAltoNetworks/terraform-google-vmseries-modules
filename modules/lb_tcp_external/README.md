@@ -44,8 +44,8 @@
 
 | Name | Description |
 |------|-------------|
-| address | The map of IP addresses of the forwarding rules. |
 | forwarding\_rules | The map of created forwarding rules. |
+| ip\_addresses | The map of IP addresses of the forwarding rules. |
 | target\_pool | The self-link of the target pool. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
