@@ -203,3 +203,60 @@ resource google_compute_address this {
   subnetwork = module.subnet_untrust.name
 }
 ```
+
+## Handle Pre-existing VPC Networks
+
+How to handle customer-provided (also known as *brownfield*) networks and subnetworks.
+
+Decision is to use: ...TODO, fill before merge...
+
+Possibilities, subjectively worst to best:
+
+### Data Passthrough Method
+
+```
+```
+
+On tf-0.12.29 it can handle a repeated `terraform apply` only with `--refresh=false`. Executing `terraform refresh` totally taints the tfstate.
+
+On tf-0.13 there is no such problem.
+
+Example:
+
+```txt
+$ terraform apply
+
+  # module.vpc.data.google_compute_network.this["my-vpc"] will be read during apply
+  # (config refers to values not yet known)
+ <= data "google_compute_network" "this"  {
+      + description            = (known after apply)
+      + gateway_ipv4           = (known after apply)
+      + id                     = (known after apply)
+      + name                   = "my-vpc"
+      + self_link              = (known after apply)
+      + subnetworks_self_links = (known after apply)
+    }
+
+  # module.vpc.google_compute_subnetwork.this["my-subnet"] must be replaced
+-/+ resource "google_compute_subnetwork" "this" {
+      ...
+      ~ network                  = "https://www.googleapis.com/compute/v1/projects/gcp-gcs-pso/global/networks/my-vpc" -> (known after apply) # forces replacement
+    }
+  # module.vmseries.google_compute_instance.this["my-vm02"] must be replaced
+-/+ resource "google_compute_instance" "this" {
+      ...
+      ~ subnetwork         = "https://www.googleapis.com/compute/v1/projects/gcp-gcs-pso/regions/europe-west4/subnetworks/my-subnet" -> (known after apply) # forces replacement
+    }
+...
+```
+
+A workaround:
+
+```txt
+$ terraform apply --refresh=false
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+```
+
+### Data Merge Method
+
+### Alt Module Method
