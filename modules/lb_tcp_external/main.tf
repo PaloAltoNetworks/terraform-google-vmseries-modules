@@ -40,10 +40,17 @@ resource "google_compute_target_pool" "this" {
   }
 }
 
+data "google_client_config" "this" {}
+
+locals {
+  # If we were told an exact region, use it, otherwise fall back to a client-default region
+  region = coalesce(var.region, data.google_client_config.this.region)
+}
+
 resource "google_compute_http_health_check" "this" {
   count = var.create_health_check ? 1 : 0
 
-  name                = var.name
+  name                = "${var.name}-${local.region}"
   check_interval_sec  = var.health_check_interval_sec
   healthy_threshold   = var.health_check_healthy_threshold
   timeout_sec         = var.health_check_timeout_sec
