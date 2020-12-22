@@ -4,8 +4,10 @@ terraform {
   }
 }
 
+data "google_client_config" "this" {}
+
 resource "google_compute_health_check" "this" {
-  name = "${var.name}-check-tcp${var.health_check_port}"
+  name = "${var.name}-${data.google_client_config.this.region}-check-tcp${var.health_check_port}"
 
   tcp_health_check {
     port = var.health_check_port
