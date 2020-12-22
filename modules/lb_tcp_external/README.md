@@ -25,7 +25,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| disable\_health\_check | Disables the health check on the target pool. | `bool` | `false` | no |
+| create\_health\_check | Whether to create a health check on the target pool. | `bool` | `true` | no |
 | health\_check\_healthy\_threshold | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
 | health\_check\_host | Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui. | `string` | `"localhost"` | no |
 | health\_check\_interval\_sec | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
@@ -44,6 +44,7 @@
 
 | Name | Description |
 |------|-------------|
+| created\_health\_check | The created health check resource. Null if `create_health_check` option was false. |
 | forwarding\_rules | The map of created forwarding rules. |
 | ip\_addresses | The map of IP addresses of the forwarding rules. |
 | target\_pool | The self-link of the target pool. |
