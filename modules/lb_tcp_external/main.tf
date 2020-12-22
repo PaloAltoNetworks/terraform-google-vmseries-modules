@@ -30,7 +30,7 @@ resource "google_compute_target_pool" "this" {
   name             = var.name
   session_affinity = var.session_affinity
   instances        = var.instances
-  health_checks    = var.disable_health_check ? [] : [google_compute_http_health_check.this[0].self_link]
+  health_checks    = var.create_health_check ? [google_compute_http_health_check.this[0].self_link] : []
   region           = var.region
   project          = var.project
 
@@ -41,7 +41,7 @@ resource "google_compute_target_pool" "this" {
 }
 
 resource "google_compute_http_health_check" "this" {
-  count = var.disable_health_check ? 0 : 1
+  count = var.create_health_check ? 1 : 0
 
   name                = var.name
   check_interval_sec  = var.health_check_interval_sec

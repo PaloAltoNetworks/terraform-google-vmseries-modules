@@ -32,10 +32,10 @@ variable session_affinity {
   type        = string
 }
 
-variable disable_health_check {
+variable create_health_check {
+  description = "Whether to create a health check on the target pool."
+  default     = true
   type        = bool
-  description = "Disables the health check on the target pool."
-  default     = false
 }
 
 variable health_check_interval_sec {
