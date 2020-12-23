@@ -99,9 +99,9 @@ module "extlb" {
   health_check_timeout_sec         = 5
   health_check_unhealthy_threshold = 3
 
-  health_check_port         = 80
-  health_check_request_path = "/"
-  health_check_host         = "anything"
+  health_check_http_port         = 80
+  health_check_http_request_path = "/"
+  health_check_http_host         = "anything"
 }
 
 locals {
