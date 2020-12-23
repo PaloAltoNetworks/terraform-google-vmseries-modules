@@ -55,8 +55,8 @@ resource "google_compute_http_health_check" "this" {
   healthy_threshold   = var.health_check_healthy_threshold
   timeout_sec         = var.health_check_timeout_sec
   unhealthy_threshold = var.health_check_unhealthy_threshold
-  port                = var.health_check_port
-  request_path        = var.health_check_request_path
-  host                = var.health_check_host
+  port                = var.health_check_http_port
+  request_path        = var.health_check_http_request_path
+  host                = var.health_check_http_host
   project             = var.project
 }

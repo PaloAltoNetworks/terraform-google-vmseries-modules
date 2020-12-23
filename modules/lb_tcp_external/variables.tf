@@ -62,19 +62,19 @@ variable health_check_unhealthy_threshold {
   type        = number
 }
 
-variable health_check_port {
+variable health_check_http_port {
   description = "Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)"
   default     = null
   type        = number
 }
 
-variable health_check_request_path {
+variable health_check_http_request_path {
   description = "Health check http request path, with the default adjusted to /php/login.php to be able to check the health of the PAN-OS webui."
   default     = "/php/login.php"
   type        = string
 }
 
-variable health_check_host {
+variable health_check_http_host {
   description = "Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui."
   default     = "localhost"
   type        = string
