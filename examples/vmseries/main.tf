@@ -74,5 +74,5 @@ module "vmseries" {
 }
 
 output ssh_command {
-  value = { for k, v in module.vmseries.nic1_public_ips : k => "ssh admin@${v}" }
+  value = { for k, v in module.vmseries.nic1_ips : k => "ssh admin@${v}" }
 }
