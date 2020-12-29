@@ -1,6 +1,6 @@
 # TODO: unfeasible to have it 3-4 minutes, see README.md
 resource "null_resource" "delay_actual_use" {
-  for_each = module.vmseries.nic0_public_ips
+  for_each = module.vmseries.nic0_ips
 
   provisioner "remote-exec" {
     connection {
@@ -18,7 +18,7 @@ resource "null_resource" "delay_actual_use" {
 }
 
 resource "null_resource" "verify_with_curl" {
-  for_each = module.vmseries.nic0_public_ips
+  for_each = module.vmseries.nic0_ips
 
   provisioner "remote-exec" {
     connection {
