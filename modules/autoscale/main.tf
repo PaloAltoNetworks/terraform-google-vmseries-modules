@@ -103,9 +103,10 @@ resource "google_compute_instance_group_manager" "this" {
   }
 
   update_policy {
-    type           = var.update_policy_type
-    min_ready_sec  = var.update_policy_min_ready_sec
-    minimal_action = "REPLACE"
+    type            = var.update_policy_type
+    min_ready_sec   = var.update_policy_min_ready_sec
+    max_surge_fixed = 1
+    minimal_action  = "REPLACE"
   }
 
   dynamic "named_port" {
