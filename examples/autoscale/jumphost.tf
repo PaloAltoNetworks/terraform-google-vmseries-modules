@@ -11,6 +11,21 @@ module "jumpvpc" {
   region = "europe-west4"
 }
 
+resource google_compute_firewall this {
+  for_each = module.jumpvpc.networks
+
+  name          = "${each.value.name}-jumpbox-ingress"
+  network       = each.value.self_link
+  direction     = "INGRESS"
+  source_ranges = var.networks[0].allowed_sources
+  target_tags   = ["jumphost"]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "443"]
+  }
+}
+
 # Spawn the VM-series firewall as a Google Cloud Engine Instance.
 module "jumphost" {
   source = "../../modules/vmseries"
@@ -28,6 +43,7 @@ module "jumphost" {
   }
   ssh_key         = "admin:${file(var.public_key_path)}"
   image_uri       = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+  tags            = ["jumphost"]
   service_account = module.iam_service_account.email
 }
 
