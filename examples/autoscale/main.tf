@@ -108,18 +108,11 @@ module "intlb" {
 module "extlb" {
   source = "../../modules/lb_tcp_external/"
 
-  name         = var.extlb_name
-  service_port = 80
-  health_check = {
-    # null means to use a default value
-    check_interval_sec  = null
-    timeout_sec         = null
-    healthy_threshold   = null
-    unhealthy_threshold = 3
-    port                = 80
-    request_path        = "/"
-    host                = null
-  }
+  name  = var.extlb_name
+  rules = { (var.extlb_name) = { port_range = 80 } }
+
+  health_check_http_port         = 80
+  health_check_http_request_path = "/"
 }
 
 # -----------------------------------------------------------------------------------------------
