@@ -10,5 +10,5 @@ output "info" {
 
 output "management_addresses" {
   description = "VM-Series Firewall Management Addresses"
-  value       = module.firewalls.nic1_public_ips
+  value       = module.firewalls.nic1_ips
 }
