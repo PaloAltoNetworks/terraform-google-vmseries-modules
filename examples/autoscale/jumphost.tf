@@ -32,15 +32,17 @@ module "jumphost" {
 }
 
 output jumphost_ssh_command {
-  value = module.jumphost.nic0_public_ips
+  value = { for k, v in module.jumphost.nic0_ips : k => "ssh  -i ${var.private_key_path}  admin@${v}" }
 }
 
 resource null_resource jumphost_ssh_priv_key {
+  for_each = module.jumphost.nic0_ips
+
   connection {
     type        = "ssh"
     user        = "admin"
     private_key = file(var.private_key_path)
-    host        = module.jumphost.nic0_public_ips["as4-jumphost01"]
+    host        = each.value
   }
 
   provisioner "file" {
