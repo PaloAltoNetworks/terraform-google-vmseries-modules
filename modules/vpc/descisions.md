@@ -210,6 +210,89 @@ How to handle customer-provided (also known as *brownfield*) networks and subnet
 
 Decision is to use: ...TODO, fill before merge...
 
+The test-cases, starting from most crucial ones:   FIXME Errors are for merge(x, data.x):
+
+- possible without a total destroy: repeat `terraform apply --refresh`
+
+OK, even the `tf12 refresh`.
+
+- possible without a total destroy: add a subnetwork to a brownfield network (a pre-existing network)
+
+Needs workaround.
+
+- possible without a total destroy: add a brownfield subnetwork (a pre-existing subnetwork)
+
+Good.
+
+- possible without a total destroy: delete a brownfield subnetwork (a pre-existing subnetwork)
+
+Good.
+
+- possible without a total destroy: add a greenfield network with a subnetwork
+
+Needs workaround.
+
+- possible without a total destroy: add another subnetwork to a greenfield network from a previous run
+
+Error: Duplicate object key
+
+  on ../../modules/vpc/main.tf line 3, in locals:
+   3:   networks = { for v in var.networks : v.name => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+    |----------------
+    | v.name is "my-example3-trust"
+
+Two different items produced the key "my-example3-trust" in this 'for'
+expression. If duplicates are expected, use the ellipsis (...) after the value
+expression to enable grouping by key.
+
+But the grouping leads to super ugly code, you'd need to merge(each.value[*])
+
+- possible without a total destroy: add a raw greenfield network created by calling terrform-google-modules/network v2.6.0
+
+Needs workaround.
+
+- possible without a total destroy: rename an unused network with its subnetwork
+
+Needs workaround.
+
+- possible without a total destroy: delete an unused network with its subnetwork
+
+OK? Needs a different workaround?
+
+- execute `terraform plan` on tf-0.12
+
+Needs workaround (`terraform plan --target ...` is supported).
+
+- execute `terraform plan` on tf-0.13
+
+Error: Required attribute is not set
+
+  on ../../modules/vpc/main.tf line 62, in resource "google_compute_subnetwork" "this":
+  62:   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
+
+- destroy an empty state on tf-0.12 (nice to have)
+
+OK, except when trying to pass `module.google_vpc.network_name` (or any other module output), as somehow it invalidates the merge() and propagates as "Error: Invalid for_each argument".
+
+- destroy an empty state on tf-0.13
+
+OK.
+
+- outputs can be used for `for_each`
+
+Needs workaround:
+
+```
+tf12 apply --compact-warnings --target module.vpc.google_compute_network.this
+tf12 apply --compact-warnings --target module.vpc.google_compute_subnetwork.this
+```
+
+When renaming a subnetwork or a network, the workaround is to delete it and then re-add it.
+
+- outputs can be used for `data any any { name = our.output }`
+
+Needs the same workaround as `for_each` test-case.
+
 Possibilities, subjectively worst to best:
 
 ### Data Passthrough Method
@@ -218,6 +301,13 @@ Possibilities, subjectively worst to best:
 ```
 
 On tf-0.12.29 it can handle a repeated `terraform apply` only with `--refresh=false`. Executing `terraform refresh` totally taints the tfstate.
+This quite unsafe for out-of-terraform attribute changes, such as drifting away from OPPORTUNISTIC autoscaler strategy.
+
+A partial refresh descends to all the dependencies, so this is not an effective workaround:
+
+```
+terraform refresh --target module.anything_except_vpc --target module.another_except_vpc  # will refresh vpc anyway
+```
 
 On tf-0.13 there is no such problem.
 
@@ -258,5 +348,7 @@ Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 ```
 
 ### Data Merge Method
+
+Drawback: requires documenting a workaround for tf-0.12 (not needed for tf-0.13).
 
 ### Alt Module Method
