@@ -50,6 +50,9 @@ variable networks {
     }
   }
   ```
+
+  Terraform 0.12.x and 0.13.x limitation: the existing networks/subnetworks names should be static strings and not come from other `resource` objects.
+  It is allowed from Terraform 0.14 onwards.
   EOF
 }
 
