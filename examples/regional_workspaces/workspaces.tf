@@ -1,6 +1,6 @@
 locals {
-  workspace_split_region      = split("+", terraform.workspace)
-  region                      = element(local.workspace_split_region, 1)
-  workspace_split_environment = split("-", terraform.workspace)
-  environment                 = element(local.workspace_split_environment, 1)
+  workspace_split        = split("+", terraform.workspace)
+  region                 = local.workspace_split[1]
+  workspace_prefix_split = split("-", local.workspace_split[0])
+  environment            = element(local.workspace_prefix_split, 1)
 }
