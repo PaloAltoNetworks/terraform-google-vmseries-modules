@@ -6,9 +6,11 @@ provider "google" {
   version = "= 3.48"
 }
 
-# The brownfield is the pre-existing infrastructure.
-# Although we create it as Terraform objects, the rest of Terraform code doesn't use them.
-# The same objects can also be created in Google Cloud Console or by API.
+# The brownfield or, in other words, the pre-existing infrastructure.
+# Although we create it as Terraform objects, the rest of our code does not
+# refer to them as to objects. Instead it treats them as pre-existing
+# objects that could have been created as well manually with Google Cloud Console
+# or with gcloud command.
 
 # The VPC Networks.
 module "brownfield" {
@@ -18,12 +20,12 @@ module "brownfield" {
 }
 
 # The pre-existing public IP address. 
-# We need to migrate it onto PANW VM-Series.
+# Pretended goal: migrate it onto PANW VM-Series.
 resource "google_compute_address" "this" {
   name   = "my-example4-ip"
   region = var.brownfield_networks_region
 }
 
-output "public_ip_allocatted" {
+output "public_ip_allocated" {
   value = google_compute_address.this.address
 }
