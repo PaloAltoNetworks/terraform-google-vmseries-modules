@@ -11,43 +11,149 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| google | ~> 3.30 |
+The following requirements are needed by this module:
 
-## Providers
+- google (~> 3.30)
 
-| Name | Version |
-|------|---------|
-| google | ~> 3.30 |
+## Required Inputs
 
-## Inputs
+The following input variables are required:
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| create\_health\_check | Whether to create a health check on the target pool. | `bool` | `true` | no |
-| health\_check\_healthy\_threshold | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
-| health\_check\_http\_host | Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui. | `string` | `"localhost"` | no |
-| health\_check\_http\_port | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
-| health\_check\_http\_request\_path | Health check http request path, with the default adjusted to /php/login.php to be able to check the health of the PAN-OS webui. | `string` | `"/php/login.php"` | no |
-| health\_check\_interval\_sec | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
-| health\_check\_timeout\_sec | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
-| health\_check\_unhealthy\_threshold | Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check) | `number` | `null` | no |
-| instances | List of links to the instances. Expected to be empty when using an autoscaler, as the autoscaler inserts entries to the target pool dynamically. The nic0 of each instance gets the traffic. Even when this list is shifted or re-ordered, it doesn't re-create any resources and such modifications often proceed without any noticeable downtime. | `list(string)` | `null` | no |
-| name | Name of the target pool and of the associated healthcheck. | `string` | n/a | yes |
-| project | The project to deploy to. If unset the default provider project is used. | `string` | `""` | no |
-| region | GCP region to deploy to. If unset the default provider region is used. | `string` | `null` | no |
-| rules | Map of objects, the keys are names of the external forwarding rules, each of the objects has the following attributes:<br><br>- `port_ranges`: (Required) The port your service is listening on. Can be a number (80) or a range (8080-8089, or even 1-65535).<br>- `ip_address`: (Optional) A public IP address on which to listen, must be in the same region as the LB and must be IPv4. If empty, automatically generates a new non-ephemeral IP on a PREMIUM tier.<br>- `ip_protocol`: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, or ICMP. Default is TCP. | `any` | n/a | yes |
-| session\_affinity | How to distribute load. Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`. | `string` | `"NONE"` | no |
+### name
+
+Description: Name of the target pool and of the associated healthcheck.
+
+Type: `string`
+
+### rules
+
+Description: Map of objects, the keys are names of the external forwarding rules, each of the objects has the following attributes:
+
+- `port_ranges`: (Required) The port your service is listening on. Can be a number (80) or a range (8080-8089, or even 1-65535).
+- `ip_address`: (Optional) A public IP address on which to listen, must be in the same region as the LB and must be IPv4. If empty, automatically generates a new non-ephemeral IP on a PREMIUM tier.
+- `ip_protocol`: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, or ICMP. Default is TCP.
+
+Type: `any`
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### create\_health\_check
+
+Description: Whether to create a health check on the target pool.
+
+Type: `bool`
+
+Default: `true`
+
+### health\_check\_healthy\_threshold
+
+Description: Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)
+
+Type: `number`
+
+Default: `null`
+
+### health\_check\_http\_host
+
+Description: Health check http request host header, with the default adjusted to localhost to be able to check the health of the PAN-OS webui.
+
+Type: `string`
+
+Default: `"localhost"`
+
+### health\_check\_http\_port
+
+Description: Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)
+
+Type: `number`
+
+Default: `null`
+
+### health\_check\_http\_request\_path
+
+Description: Health check http request path, with the default adjusted to /php/login.php to be able to check the health of the PAN-OS webui.
+
+Type: `string`
+
+Default: `"/php/login.php"`
+
+### health\_check\_interval\_sec
+
+Description: Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)
+
+Type: `number`
+
+Default: `null`
+
+### health\_check\_timeout\_sec
+
+Description: Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)
+
+Type: `number`
+
+Default: `null`
+
+### health\_check\_unhealthy\_threshold
+
+Description: Health check parameter, see [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_http_health_check)
+
+Type: `number`
+
+Default: `null`
+
+### instances
+
+Description: List of links to the instances. Expected to be empty when using an autoscaler, as the autoscaler inserts entries to the target pool dynamically. The nic0 of each instance gets the traffic. Even when this list is shifted or re-ordered, it doesn't re-create any resources and such modifications often proceed without any noticeable downtime.
+
+Type: `list(string)`
+
+Default: `null`
+
+### project
+
+Description: The project to deploy to. If unset the default provider project is used.
+
+Type: `string`
+
+Default: `""`
+
+### region
+
+Description: GCP region to deploy to. If unset the default provider region is used.
+
+Type: `string`
+
+Default: `null`
+
+### session\_affinity
+
+Description: How to distribute load. Options are `NONE`, `CLIENT_IP` and `CLIENT_IP_PROTO`.
+
+Type: `string`
+
+Default: `"NONE"`
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| created\_health\_check | The created health check resource. Null if `create_health_check` option was false. |
-| forwarding\_rules | The map of created forwarding rules. |
-| ip\_addresses | The map of IP addresses of the forwarding rules. |
-| target\_pool | The self-link of the target pool. |
+The following outputs are exported:
+
+### created\_health\_check
+
+Description: The created health check resource. Null if `create_health_check` option was false.
+
+### forwarding\_rules
+
+Description: The map of created forwarding rules.
+
+### ip\_addresses
+
+Description: The map of IP addresses of the forwarding rules.
+
+### target\_pool
+
+Description: The self-link of the target pool.
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

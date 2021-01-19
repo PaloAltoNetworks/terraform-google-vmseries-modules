@@ -39,31 +39,50 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12, < 0.13 |
-| google | = 3.48 |
-| null | = 2.1.2 |
+The following requirements are needed by this module:
 
-## Providers
+- terraform (>= 0.12, < 0.13)
 
-| Name | Version |
-|------|---------|
-| google | = 3.48 |
-| null | = 2.1.2 |
+- google (= 3.48)
 
-## Inputs
+- null (= 2.1.2)
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| mgmt\_sources | n/a | `list` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+## Required Inputs
+
+No required input.
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### mgmt\_sources
+
+Description: n/a
+
+Type: `list`
+
+Default:
+
+```json
+[
+  "0.0.0.0/0"
+]
+```
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| global\_url | n/a |
-| internal\_url | n/a |
-| regional\_url | n/a |
+The following outputs are exported:
+
+### global\_url
+
+Description: n/a
+
+### internal\_url
+
+Description: n/a
+
+### regional\_url
+
+Description: n/a
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -3,28 +3,48 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12, < 0.13 |
-| google | = 3.48 |
+The following requirements are needed by this module:
 
-## Providers
+- terraform (>= 0.12, < 0.13)
 
-| Name | Version |
-|------|---------|
-| google | = 3.48 |
+- google (= 3.48)
 
-## Inputs
+## Required Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| allowed\_sources | n/a | `list` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| image\_uri | n/a | `any` | `null` | no |
+No required input.
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### allowed\_sources
+
+Description: n/a
+
+Type: `list`
+
+Default:
+
+```json
+[
+  "0.0.0.0/0"
+]
+```
+
+### image\_uri
+
+Description: n/a
+
+Type: `any`
+
+Default: `null`
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| ssh\_command | n/a |
+The following outputs are exported:
+
+### ssh\_command
+
+Description: n/a
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

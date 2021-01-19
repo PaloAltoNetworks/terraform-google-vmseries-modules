@@ -3,18 +3,19 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.12, < 0.13 |
-| google | = 3.48 |
+The following requirements are needed by this module:
 
-## Providers
+- terraform (>= 0.12, < 0.13)
 
-No provider.
+- google (= 3.48)
 
-## Inputs
+## Required Inputs
 
-No input.
+No required input.
+
+## Optional Inputs
+
+No optional input.
 
 ## Outputs
 
