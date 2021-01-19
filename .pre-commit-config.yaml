@@ -4,6 +4,11 @@ repos:
   hooks:
     - id: terraform_fmt
     - id: terraform_docs
+      args: [
+        --args=document, # by default it's a "table"
+        --args=--hide providers,
+        --args=--sort-by-required,
+      ]
     - id: terraform_tflint
       args: [
         # --args=--module, # TODO enable it after ensuring `terraform init`
