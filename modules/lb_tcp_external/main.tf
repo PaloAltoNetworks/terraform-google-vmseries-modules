@@ -20,8 +20,8 @@ resource "google_compute_forwarding_rule" "rule" {
   target                = google_compute_target_pool.this.self_link
   load_balancing_scheme = "EXTERNAL"
   port_range            = each.value.port_range
-  ip_address            = try(each.value.ip_address, google_compute_address.this[each.key].address)
-  ip_protocol           = try(each.value.ip_protocol, "TCP")
+  ip_address            = lookup(each.value, "ip_address", google_compute_address.this[each.key].address)
+  ip_protocol           = lookup(each.value, "ip_protocol", "TCP")
   region                = var.region
   project               = var.project
 }
