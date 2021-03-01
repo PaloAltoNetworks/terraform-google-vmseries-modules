@@ -61,13 +61,13 @@ output nic1_public_ips {
 output nic0_ips {
   description = "Map of IP addresses of interface at index 0, one entry per each instance. Contains public IP if one exists, otherwise private IP."
   value = { for k, v in google_compute_instance.this :
-    k => try(v.network_interface[0].access_config[0].nat_ip, v.network_interface[0].network_ip, null)
+    k => can(v.network_interface[0].access_config[0].nat_ip) ? v.network_interface[0].access_config[0].nat_ip : try(v.network_interface[0].network_ip, null)
   }
 }
 
 output nic1_ips {
   description = "Map of IP addresses of interface at index 1, one entry per each instance. Contains public IP if one exists, otherwise private IP."
   value = { for k, v in google_compute_instance.this :
-    k => try(v.network_interface[1].access_config[0].nat_ip, v.network_interface[1].network_ip, null)
+    k => can(v.network_interface[1].access_config[0].nat_ip) ? v.network_interface[1].access_config[0].nat_ip : try(v.network_interface[1].network_ip, null)
   }
 }
