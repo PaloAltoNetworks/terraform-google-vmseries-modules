@@ -38,3 +38,8 @@ along with the changelog, on the GitHub [Releases](../../releases) page.
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps,
 and credit will always be given. Please follow our [contributing guide](./docs/contributing.md).
+
+## Who maintains these modules?
+
+This repository is maintained by [Palo Alto Networks](https://www.paloaltonetworks.com/).
+<!-- If you're looking for commercial support or services, send an email to [address not known yet]. -->
