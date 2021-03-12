@@ -4,7 +4,7 @@
 
 A set of opinionated modules for using **Palo Alto Networks VM-Series firewalls** to provide control and protection
 to your applications running on Google Cloud Platform (GCP). It deploys VM-Series as virtual machine
-instances and it configures aspects like Shared VPC connectivity, IAM access, Service Accounts, Panorama virtual
+instances and it configures aspects such as Shared VPC connectivity, IAM access, Service Accounts, Panorama virtual
 machine instances, and more.
 
 The design is heavily based on the [Reference Architecture Guide for Google Cloud Platform](https://pandocs.tech/fw/160p-prime).
