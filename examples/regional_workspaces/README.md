@@ -93,38 +93,49 @@ to be defined by you.
 
 | Name | Version |
 |------|---------|
-| terraform | ~>0.12 |
-| google | = 3.48 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~>0.12 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | = 3.48 |
 
 ## Providers
 
-No provider.
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ |  |
+| <a name="module_firewalls"></a> [firewalls](#module\_firewalls) | ../../modules/vmseries |  |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
+
+## Resources
+
+No resources.
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| auth\_file | GCP Project auth JSON file | `string` | n/a | yes |
-| develop\_locally | Go local development | `bool` | `false` | no |
-| fw\_machine\_type | VM size, e.g. n1-standard-16 | `any` | `null` | no |
-| http\_basic\_auth | The result of `echo -n 'mynewuser:newpassword' | base64` which is known by the clients of the route-operator API server. | `string` | `"bXluZXd1c2VyOm5ld3Bhc3N3b3Jk"` | no |
-| https\_cert\_pem\_file | Certificate (possibly self-signed) for the route-operator https API. The file can also contain a concatenated chain of certificates. | `string` | `"cert.pem"` | no |
-| https\_interm\_pem\_file | The parent certificate that signed `https_cert_pem_file` certificate. The X509 field Subject should equal to the X509 field Issuer of `https_cert_pem_file`. | `string` | `"interm.pem"` | no |
-| https\_key\_pem\_file | The private key file that corresponds to the first `https_cert_pem_file` certificate. | `string` | `"key.pem"` | no |
-| outbound\_route\_dest | When creating outbound routes (i.e. routes from GCP to the Internet) what destination to use. For production environment set to 0.0.0.0/0 but it can be quite a pain during tests. | `string` | n/a | yes |
-| panos\_image\_name | VM-Series license and PAN-OS (ie: vmseries-bundle1-912, vmseries-byol-814, etc) | `string` | `"vmseries-flex-byol-913"` | no |
-| prefix | Prefix to GCP resource names | `string` | n/a | yes |
-| project\_id | GCP Project ID | `string` | n/a | yes |
-| public\_key\_path | Local path to public SSH key. If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `string` | `"~/.ssh/id_rsa.pub"` | no |
-| regions | n/a | `any` | n/a | yes |
-| ro\_ilb\_name | n/a | `string` | `""` | no |
-| ro\_ip\_address | The IP of the route-operator API. Points to an Internal Load Balancer. | `string` | `null` | no |
+| <a name="input_auth_file"></a> [auth\_file](#input\_auth\_file) | GCP Project auth JSON file | `string` | n/a | yes |
+| <a name="input_develop_locally"></a> [develop\_locally](#input\_develop\_locally) | Go local development | `bool` | `false` | no |
+| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | VM size, e.g. n1-standard-16 | `any` | `null` | no |
+| <a name="input_http_basic_auth"></a> [http\_basic\_auth](#input\_http\_basic\_auth) | The result of `echo -n 'mynewuser:newpassword' | base64` which is known by the clients of the route-operator API server. | `string` | `"bXluZXd1c2VyOm5ld3Bhc3N3b3Jk"` | no |
+| <a name="input_https_cert_pem_file"></a> [https\_cert\_pem\_file](#input\_https\_cert\_pem\_file) | Certificate (possibly self-signed) for the route-operator https API. The file can also contain a concatenated chain of certificates. | `string` | `"cert.pem"` | no |
+| <a name="input_https_interm_pem_file"></a> [https\_interm\_pem\_file](#input\_https\_interm\_pem\_file) | The parent certificate that signed `https_cert_pem_file` certificate. The X509 field Subject should equal to the X509 field Issuer of `https_cert_pem_file`. | `string` | `"interm.pem"` | no |
+| <a name="input_https_key_pem_file"></a> [https\_key\_pem\_file](#input\_https\_key\_pem\_file) | The private key file that corresponds to the first `https_cert_pem_file` certificate. | `string` | `"key.pem"` | no |
+| <a name="input_outbound_route_dest"></a> [outbound\_route\_dest](#input\_outbound\_route\_dest) | When creating outbound routes (i.e. routes from GCP to the Internet) what destination to use. For production environment set to 0.0.0.0/0 but it can be quite a pain during tests. | `string` | n/a | yes |
+| <a name="input_panos_image_name"></a> [panos\_image\_name](#input\_panos\_image\_name) | VM-Series license and PAN-OS (ie: vmseries-bundle1-912, vmseries-byol-814, etc) | `string` | `"vmseries-flex-byol-913"` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names | `string` | n/a | yes |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID | `string` | n/a | yes |
+| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `string` | `"~/.ssh/id_rsa.pub"` | no |
+| <a name="input_regions"></a> [regions](#input\_regions) | n/a | `any` | n/a | yes |
+| <a name="input_ro_ilb_name"></a> [ro\_ilb\_name](#input\_ro\_ilb\_name) | n/a | `string` | `""` | no |
+| <a name="input_ro_ip_address"></a> [ro\_ip\_address](#input\_ro\_ip\_address) | The IP of the route-operator API. Points to an Internal Load Balancer. | `string` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| info | Basic Known information output regarding region/environment/projectID |
-| management\_addresses | VM-Series Firewall Management Addresses |
-
+| <a name="output_info"></a> [info](#output\_info) | Basic Known information output regarding region/environment/projectID |
+| <a name="output_management_addresses"></a> [management\_addresses](#output\_management\_addresses) | VM-Series Firewall Management Addresses |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
