@@ -25,8 +25,6 @@ jobs:
           terraform_version: 0.12.29
 
       - name: terraform validate
-        env:
-          AWS_DEFAULT_REGION: us-west-2
         run: |
           cd ${GITHUB_WORKSPACE}/modules
           for dir in $(find . -type d -not \( -name ".?*" \) -maxdepth 1 -mindepth 1);
