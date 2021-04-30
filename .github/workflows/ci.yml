@@ -34,10 +34,6 @@ jobs:
             terraform validate
           done
 
-      - name: terraform fmt
-        run: |
-          terraform fmt -check -recursive
-
       - name: Run the Pre-Commit Framework Action
         uses: PaloAltoNetworks/terraform-google-vmseries-modules@develop
 
