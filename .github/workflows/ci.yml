@@ -4,7 +4,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - master
+      - main
       - develop
   pull_request:
   schedule:
@@ -45,7 +45,7 @@ jobs:
 
   release:
     name: release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [validate]
     runs-on: ubuntu-latest
 
