@@ -54,8 +54,6 @@ terraform apply
 | <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries |  |
 | <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc |  |
 | <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
-| <a name="module_testbox"></a> [testbox](#module\_testbox) | ../../modules/vmseries |  |
-| <a name="module_testvpc"></a> [testvpc](#module\_testvpc) | ../../modules/vpc |  |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
 
 ## Resources
@@ -63,7 +61,6 @@ terraform apply
 | Name | Type |
 |------|------|
 | [google_compute_firewall.this](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_firewall) | resource |
-| [google_compute_route.trust_to_ilb_to_untrust](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_route) | resource |
 | [null_resource.jumphost_ssh_priv_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/data-sources/compute_zones) | data source |
 
