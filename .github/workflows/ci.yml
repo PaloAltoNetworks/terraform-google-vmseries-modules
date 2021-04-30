@@ -26,6 +26,8 @@ jobs:
 
       - name: terraform validate
         run: |
+          mkdir -p ~/.ssh
+          echo dummy file required for terraform validate to pass >> ~/.ssh/id_rsa
           cd "$GITHUB_WORKSPACE"
           for dir in $(find modules examples -type d -not \( -name ".?*" -o -name regional_workspaces \) -maxdepth 1 -mindepth 1 );
           do
