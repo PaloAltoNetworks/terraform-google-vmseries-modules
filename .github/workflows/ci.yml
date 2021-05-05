@@ -38,7 +38,7 @@ jobs:
           done
 
       - name: Run the Pre-Commit Framework Action
-        uses: PaloAltoNetworks/terraform-google-vmseries-modules@develop
+        uses: PaloAltoNetworks/terraform-google-vmseries-modules@ci_main
 
   release:
     name: release
