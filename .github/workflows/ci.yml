@@ -37,8 +37,14 @@ jobs:
             terraform validate
           done
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          # Semantic version range syntax (like 3.x) or the exact Python version
+          python-version: '3.9.4'
+
       - name: Run the Pre-Commit Framework Action
-        uses: ./.github/action-precommit
+        run: cd .github/action-precommit && sudo ./install.sh && sudo ./run.sh
 
   release:
     name: release
