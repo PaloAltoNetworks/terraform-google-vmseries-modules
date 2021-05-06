@@ -37,6 +37,6 @@ RUN git --version    && \
     echo "Also, the newest release: $(curl -s https://api.github.com/repos/tfsec/tfsec/releases/latest | grep -o -E "https://.+?tfsec-linux-amd64")"    && \
     echo "Also, the newest release: $(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")"
 
-RUN pip install pre-commit==2.7.1
+RUN python3 -m pip install -r.github/action-precommit/requirements.txt
 
 CMD ["pre-commit", "run", "--all-files"]
