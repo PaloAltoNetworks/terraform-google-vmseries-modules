@@ -11,6 +11,23 @@ on:
     - cron: '0 0 1 * *'
 
 jobs:
+  pre-commit:
+    name: Verify the pre-commit framework was used properly by developers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          # Semantic version range syntax (like 3.x) or the exact Python version
+          python-version: '3.9.4'
+
+      - name: Run pre-commit framework as the developer should run it
+        run: sudo ./scripts/install.sh && sudo ./scripts/run.sh
+
   validate:
     name: Validate
     runs-on: ubuntu-latest
@@ -36,15 +53,6 @@ jobs:
             terraform init -backend=false
             terraform validate
           done
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          # Semantic version range syntax (like 3.x) or the exact Python version
-          python-version: '3.9.4'
-
-      - name: Run the Pre-Commit Framework Action
-        run: cd .github/action-precommit && sudo ./install.sh && sudo ./run.sh
 
   release:
     name: release
