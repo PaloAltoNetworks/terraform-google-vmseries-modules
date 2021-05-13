@@ -53,7 +53,7 @@ terraform apply
 | <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_tcp_internal/ |  |
 | <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries |  |
 | <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc |  |
-| <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | ~> 1.2 |
+| <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
 
 ## Resources
