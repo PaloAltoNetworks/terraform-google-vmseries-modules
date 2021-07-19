@@ -1,4 +1,4 @@
-variable networks {
+variable "networks" {
   description = <<-EOF
   Map of networks, a minimal example:
 
@@ -56,7 +56,7 @@ variable networks {
   EOF
 }
 
-variable region {
+variable "region" {
   description = <<-EOF
   GCP region for all the created subnetworks and for all the imported subnetworks. Set to null to use a default provider's region.
   
@@ -66,12 +66,12 @@ variable region {
   type        = string
 }
 
-variable allowed_protocol {
+variable "allowed_protocol" {
   description = "A protocol (TCP or UDP) to pass for the `networks` entries that do not have their own `allowed_protocol` attribute."
   default     = "all"
 }
 
-variable allowed_ports {
+variable "allowed_ports" {
   description = "A list of ports to pass for the `networks` entries that do not have their own `allowed_ports` attribute. For example [\"22\", \"443\"]. Can also include ranges, for example [\"80\", \"8080-8999\"]. Empty list means to allow all."
   default     = []
   type        = list(string)

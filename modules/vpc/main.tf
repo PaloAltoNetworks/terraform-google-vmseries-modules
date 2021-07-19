@@ -13,7 +13,7 @@ locals {
   networks_to_create = {
     for k, v in local.networks
     : k => v
-    if ! (try(v.create_network == false, false))
+    if !(try(v.create_network == false, false))
   }
 
   // We have networks, now the same for subnetworks:
@@ -30,7 +30,7 @@ locals {
   subnetworks_to_create = {
     for k, v in local.subnetworks
     : k => v
-    if ! (try(v.create_subnetwork == false, false))
+    if !(try(v.create_subnetwork == false, false))
   }
 }
 
@@ -56,11 +56,12 @@ data "google_compute_subnetwork" "this" {
 }
 
 resource "google_compute_subnetwork" "this" {
-  for_each      = local.subnetworks_to_create
-  name          = each.value.subnetwork_name
-  ip_cidr_range = each.value.ip_cidr_range
-  network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
-  region        = var.region
+  for_each                 = local.subnetworks_to_create
+  name                     = each.value.subnetwork_name
+  ip_cidr_range            = each.value.ip_cidr_range
+  network                  = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
+  region                   = var.region
+  private_ip_google_access = true
 }
 
 resource "google_compute_firewall" "this" {
@@ -75,7 +76,7 @@ resource "google_compute_firewall" "this" {
     ports    = try(each.value.allowed_ports, var.allowed_ports, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = compact(try([each.value.log_metadata], []))
 
     content {
