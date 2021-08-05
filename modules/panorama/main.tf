@@ -45,7 +45,7 @@ resource "google_compute_image" "this" {
   depends_on = [google_storage_bucket_object.this]
 }
 
-data google_compute_subnetwork this {
+data "google_compute_subnetwork" "this" {
   for_each = var.instances
 
   self_link = each.value.subnetwork

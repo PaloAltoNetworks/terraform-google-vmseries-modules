@@ -16,14 +16,13 @@ and employ `for_each` or `count` parameters when needed.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12, < 0.13 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.33 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.29, < 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.33 |
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
 
 ## Modules
 

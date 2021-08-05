@@ -5,7 +5,7 @@ terraform {
 }
 
 resource "google_compute_address" "this" {
-  for_each = { for k, v in var.rules : k => v if ! can(v.ip_address) }
+  for_each = { for k, v in var.rules : k => v if !can(v.ip_address) }
 
   name         = each.key
   address_type = "EXTERNAL"

@@ -11,6 +11,7 @@ When troubleshooting you can use this module also with a good ol' Linux image. I
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.29, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.30 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | ~> 2.1 |
 
@@ -44,7 +45,7 @@ No modules.
 | <a name="input_create_instance_group"></a> [create\_instance\_group](#input\_create\_instance\_group) | n/a | `bool` | `false` | no |
 | <a name="input_dependencies"></a> [dependencies](#input\_dependencies) | n/a | `list(string)` | `[]` | no |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Default is pd-ssd, alternative is pd-balanced. | `string` | `"pd-ssd"` | no |
-| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913. | `string` | `"vmseries-flex-bundle1-913"` | no |
+| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913. | `string` | `"vmseries-flex-bundle1-919"` | no |
 | <a name="input_image_prefix_uri"></a> [image\_prefix\_uri](#input\_image\_prefix\_uri) | The image URI prefix, by default https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/ string. When prepended to `image_name` it should result in a full valid Google Cloud Engine image resource URI. | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/"` | no |
 | <a name="input_image_uri"></a> [image\_uri](#input\_image\_uri) | The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs. | `string` | `null` | no |
 | <a name="input_instances"></a> [instances](#input\_instances) | Definition of firewalls that will be deployed | `map(any)` | n/a | yes |
