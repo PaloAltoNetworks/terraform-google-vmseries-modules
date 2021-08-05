@@ -12,6 +12,7 @@ The account produced by this module is intended to have minimal required permiss
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.29, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.30 |
 
 ## Providers

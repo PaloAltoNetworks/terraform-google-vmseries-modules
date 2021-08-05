@@ -1,4 +1,4 @@
-variable mgmt_sources {
+variable "mgmt_sources" {
   default = ["0.0.0.0/0"]
 }
 

@@ -26,7 +26,14 @@ No resources.
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_display_name"></a> [display\_name](#input\_display\_name) | n/a | `any` | n/a | yes |
+| <a name="input_network"></a> [network](#input\_network) | n/a | `any` | n/a | yes |
+| <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | n/a | `any` | n/a | yes |
+| <a name="input_service_account_id"></a> [service\_account\_id](#input\_service\_account\_id) | n/a | `any` | n/a | yes |
+| <a name="input_zones"></a> [zones](#input\_zones) | n/a | `any` | n/a | yes |
 
 ## Outputs
 

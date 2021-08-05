@@ -1,12 +1,12 @@
-output completion {
+output "completion" {
   value = null_resource.dependency_setter.id
 }
 
-output bucket_name {
+output "bucket_name" {
   value = google_storage_bucket.this.name
 }
 
-output bucket {
+output "bucket" {
   value = google_storage_bucket.this
 }
 
