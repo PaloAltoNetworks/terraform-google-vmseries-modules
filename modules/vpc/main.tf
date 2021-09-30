@@ -70,6 +70,7 @@ resource "google_compute_firewall" "this" {
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
   direction     = "INGRESS"
   source_ranges = each.value.allowed_sources
+  project       = each.value.project
 
   allow {
     protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
