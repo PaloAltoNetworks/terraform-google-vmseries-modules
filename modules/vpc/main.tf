@@ -43,7 +43,7 @@ data "google_compute_network" "this" {
 resource "google_compute_network" "this" {
   for_each                        = local.networks_to_create
   name                            = each.value.name
-  project                         = try(each.value.host_project_id, null)
+  project                         = try(each.value.host_project_id, each.value.project)
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
 }
@@ -51,8 +51,8 @@ resource "google_compute_network" "this" {
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
   name     = each.value.subnetwork_name
-  project  = try(each.value.host_project_id, null)
-  region   = var.region
+  project  = try(each.value.host_project_id, each.value.project)
+  region   = each.value.region
 }
 
 resource "google_compute_subnetwork" "this" {
@@ -60,7 +60,8 @@ resource "google_compute_subnetwork" "this" {
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
-  region        = var.region
+  region        = each.value.region
+  project       = each.value.project
 }
 
 resource "google_compute_firewall" "this" {
