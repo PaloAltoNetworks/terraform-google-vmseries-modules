@@ -5,9 +5,9 @@ resource "random_string" "randomstring" {
 }
 
 resource "google_storage_bucket" "this" {
-  name               = join("", [var.name_prefix, random_string.randomstring.result])
-  force_destroy      = true
-  bucket_policy_only = true
+  name                        = join("", [var.name_prefix, random_string.randomstring.result])
+  force_destroy               = true
+  uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket_object" "file" {
