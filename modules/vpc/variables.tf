@@ -76,3 +76,9 @@ variable allowed_ports {
   default     = []
   type        = list(string)
 }
+
+variable project {
+  description = "Project in which to create or look for VPCs and subnets"
+  default     = null
+  type        = string
+}
