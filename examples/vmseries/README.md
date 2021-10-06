@@ -18,8 +18,8 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
+| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
