@@ -104,9 +104,9 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ |  |
-| <a name="module_firewalls"></a> [firewalls](#module\_firewalls) | ../../modules/vmseries |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
+| <a name="module_firewalls"></a> [firewalls](#module\_firewalls) | ../../modules/vmseries | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 

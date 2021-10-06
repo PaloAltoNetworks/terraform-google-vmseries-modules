@@ -46,15 +46,15 @@ terraform apply
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale |  |
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ |  |
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ |  |
-| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ |  |
-| <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_tcp_internal/ |  |
-| <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries |  |
-| <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc |  |
+| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale | n/a |
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
+| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
+| <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_tcp_internal/ | n/a |
+| <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries | n/a |
+| <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc | n/a |
 | <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
