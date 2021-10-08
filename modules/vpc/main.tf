@@ -37,13 +37,13 @@ locals {
 data "google_compute_network" "this" {
   for_each = local.networks_existing
   name     = each.value.name
-  project  = try(each.value.host_project_id, null)
+  project  = try(each.value.host_project_id, each.value.project, var.project, null)
 }
 
 resource "google_compute_network" "this" {
   for_each                        = local.networks_to_create
   name                            = each.value.name
-  project                         = try(each.value.host_project_id, each.value.project)
+  project                         = try(each.value.host_project_id, each.value.project, var.project, null)
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
   auto_create_subnetworks         = false
 }
@@ -51,8 +51,8 @@ resource "google_compute_network" "this" {
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
   name     = each.value.subnetwork_name
-  project  = try(each.value.host_project_id, each.value.project)
-  region   = each.value.region
+  project  = try(each.value.host_project_id, each.value.project, var.project, null)
+  region   = try(each.value.region, var.region, null)
 }
 
 resource "google_compute_subnetwork" "this" {
@@ -60,8 +60,8 @@ resource "google_compute_subnetwork" "this" {
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
-  region        = each.value.region
-  project       = each.value.project
+  region        = try(each.value.region, var.region, null)
+  project       = try(each.value.host_project_id, each.value.project, var.project, null)
 }
 
 resource "google_compute_firewall" "this" {
@@ -69,8 +69,8 @@ resource "google_compute_firewall" "this" {
   name          = "${each.value.name}-ingress"
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
   direction     = "INGRESS"
-  source_ranges = each.value.allowed_sources
-  project       = each.value.project
+  source_ranges = try(each.value.allowed_sources, var.allowed_sources, null)
+  project       = try(each.value.host_project_id, each.value.project, var.project,null)
 
   allow {
     protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
