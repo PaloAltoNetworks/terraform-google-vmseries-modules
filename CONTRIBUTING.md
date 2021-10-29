@@ -158,7 +158,3 @@ git checkout develop
 git merge master
 git push origin develop
 ```
-<<<<<<< HEAD
-
-=======
->>>>>>> dd6d56d (docs: Adding contributing.md     Fixes #66)
