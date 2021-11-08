@@ -61,7 +61,7 @@ resource "google_compute_subnetwork" "this" {
   ip_cidr_range = each.value.ip_cidr_range
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
   region        = try(each.value.region, null)
-  project       = try(each.value.host_project_id, null)
+  project       = try(each.value.host_project_id, var.project_id)
 }
 
 resource "google_compute_firewall" "this" {
@@ -70,7 +70,7 @@ resource "google_compute_firewall" "this" {
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
   direction     = "INGRESS"
   source_ranges = try(each.value.allowed_sources, null)
-  project       = try(each.value.host_project_id, null)
+  project       = try(each.value.host_project_id, var.project_id)
 
   allow {
     protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
