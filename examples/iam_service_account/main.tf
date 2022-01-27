@@ -1,10 +1,4 @@
-terraform {
-  required_version = ">= 0.12, < 0.13"
-}
-
-provider "google" {
-  version = "= 3.48"
-}
+provider "google" {}
 
 # Dedicated IAM service account for running GCP instances of Palo Alto Networks VM-Series.
 # Applying this module requires IAM roles Security Admin and Service Account Admin or their equivalents.

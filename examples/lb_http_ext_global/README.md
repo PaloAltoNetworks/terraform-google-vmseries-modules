@@ -41,16 +41,17 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12, < 0.13 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | = 3.48 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | = 2.1.2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.29, < 2.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.48 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | ~> 2.1 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 2.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | = 3.48 |
-| <a name="provider_null"></a> [null](#provider\_null) | = 2.1.2 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.48 |
+| <a name="provider_null"></a> [null](#provider\_null) | ~> 2.1 |
 
 ## Modules
 
@@ -66,12 +67,12 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 
 | Name | Type |
 |------|------|
-| [google_compute_firewall.builtin_healthchecks](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_firewall) | resource |
-| [google_compute_firewall.extlb](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_firewall) | resource |
-| [google_compute_firewall.ssh](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_firewall) | resource |
-| [null_resource.delay_actual_use](https://registry.terraform.io/providers/hashicorp/null/2.1.2/docs/resources/resource) | resource |
-| [null_resource.verify_with_curl](https://registry.terraform.io/providers/hashicorp/null/2.1.2/docs/resources/resource) | resource |
-| [google_compute_zones.available](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/data-sources/compute_zones) | data source |
+| [google_compute_firewall.builtin_healthchecks](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.extlb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.ssh](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [null_resource.delay_actual_use](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.verify_with_curl](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [google_compute_zones.available](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
 ## Inputs
 

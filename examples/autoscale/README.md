@@ -32,15 +32,17 @@ terraform apply
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12, < 0.13 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | = 3.48 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.29, < 2.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.48 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | ~> 2.1 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 2.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | = 3.48 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.48 |
+| <a name="provider_null"></a> [null](#provider\_null) | ~> 2.1 |
 
 ## Modules
 
@@ -60,9 +62,9 @@ terraform apply
 
 | Name | Type |
 |------|------|
-| [google_compute_firewall.this](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/resources/compute_firewall) | resource |
+| [google_compute_firewall.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
 | [null_resource.jumphost_ssh_priv_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/3.48/docs/data-sources/compute_zones) | data source |
+| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
 ## Inputs
 
@@ -82,7 +84,10 @@ terraform apply
 | <a name="input_networks"></a> [networks](#input\_networks) | The list of maps describing the VPC networks and subnetworks | `any` | n/a | yes |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names, an arbitrary string | `string` | `"as4"` | no |
 | <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` | `any` | `null` | no |
+| <a name="input_project"></a> [project](#input\_project) | GCP Project ID | `string` | n/a | yes |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID | `string` | n/a | yes |
 | <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"id_rsa.pub"` | no |
+| <a name="input_region"></a> [region](#input\_region) | GCP Region | `string` | `"europe-west4"` | no |
 | <a name="input_service_account"></a> [service\_account](#input\_service\_account) | IAM Service Account for running firewall instances (just the identifier, without `@domain` part) | `string` | `"paloaltonetworks-fw"` | no |
 
 ## Outputs

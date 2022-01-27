@@ -1,54 +1,54 @@
-variable prefix {
+variable "prefix" {
   description = "Prefix to various GCP resource names"
   type        = string
 }
 
-variable subnetworks {
+variable "subnetworks" {
   type = list(string)
 }
 
-variable machine_type {
+variable "machine_type" {
   type = string
 }
 
-variable region {
+variable "region" {
   description = "GCP region to deploy to, if not set the default provider region is used."
   default     = null
   type        = string
 }
 
-variable zones {
+variable "zones" {
   description = "Map of zone names for the zonal IGMs"
   default     = {}
   type        = map(string)
 }
 
-variable deployment_name {
+variable "deployment_name" {
   description = "Deployment Name that matches what is specified in Panorama GCP Plugin"
   type        = string
 }
 
-variable min_cpu_platform {
+variable "min_cpu_platform" {
   type    = string
   default = "Intel Broadwell"
 }
 
-variable disk_type {
+variable "disk_type" {
   type    = string
   default = "pd-ssd"
 }
 
-variable bootstrap_bucket {
+variable "bootstrap_bucket" {
   type    = string
   default = ""
 }
 
-variable ssh_key {
+variable "ssh_key" {
   type    = string
   default = ""
 }
 
-variable scopes {
+variable "scopes" {
   type = list(string)
 
   default = [
@@ -60,63 +60,63 @@ variable scopes {
   ]
 }
 
-variable image {
+variable "image" {
   description = "Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
   default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"
   type        = string
 }
 
-variable tags {
+variable "tags" {
   type    = list(string)
   default = []
 }
 
-variable dependencies {
+variable "dependencies" {
   type    = list(string)
   default = []
 }
 
-variable nic0_ip {
+variable "nic0_ip" {
   type    = list(string)
   default = [""]
 }
 
-variable nic1_ip {
+variable "nic1_ip" {
   type    = list(string)
   default = [""]
 }
 
-variable nic2_ip {
+variable "nic2_ip" {
   type    = list(string)
   default = [""]
 }
 
-variable mgmt_interface_swap {
+variable "mgmt_interface_swap" {
   default = ""
 }
 
-variable nic0_public_ip {
+variable "nic0_public_ip" {
   type    = bool
   default = false
 }
 
-variable nic1_public_ip {
+variable "nic1_public_ip" {
   type    = bool
   default = false
 }
 
-variable nic2_public_ip {
+variable "nic2_public_ip" {
   type    = bool
   default = false
 }
 
-variable pool {
+variable "pool" {
   description = "The self_link of google_compute_target_pool where the auto-created instances will be placed for healtchecking of External Load Balancer"
   default     = null
   type        = string
 }
 
-variable autoscaler_metrics {
+variable "autoscaler_metrics" {
   description = <<-EOF
   The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).
   Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.
@@ -135,25 +135,25 @@ variable autoscaler_metrics {
   }
 }
 
-variable max_replicas_per_zone {
+variable "max_replicas_per_zone" {
   description = "Maximum number of VM-series instances per *each* of the zones"
   default     = 1
   type        = number
 }
 
-variable min_replicas_per_zone {
+variable "min_replicas_per_zone" {
   description = "Minimum number of VM-series instances per *each* of the zones"
   default     = 1
   type        = number
 }
 
-variable cooldown_period {
+variable "cooldown_period" {
   description = "How much tame does it take for a spawned PA-VM to become functional on the initialization boot"
   default     = 720
   type        = number
 }
 
-variable scale_in_control_time_window_sec {
+variable "scale_in_control_time_window_sec" {
   description = <<-EOF
   How many seconds autoscaling should look into the past when scaling in (down).
   Default 30 minutes corresponds to the default custom metrics period of 5 minutes
@@ -163,7 +163,7 @@ variable scale_in_control_time_window_sec {
   type        = number
 }
 
-variable scale_in_control_replicas_fixed {
+variable "scale_in_control_replicas_fixed" {
   description = <<-EOF
   Fixed number of VM instances that can be killed in each zone within the scale-in time window.
   See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler).
@@ -172,7 +172,7 @@ variable scale_in_control_replicas_fixed {
   type        = number
 }
 
-variable update_policy_min_ready_sec {
+variable "update_policy_min_ready_sec" {
   description = <<-EOF
   After underlying template changes (e.g. PAN-OS upgrade) and the new instance is being spawned,
   how long to wait after it becomes online.
@@ -182,7 +182,7 @@ variable update_policy_min_ready_sec {
   type        = number
 }
 
-variable update_policy_type {
+variable "update_policy_type" {
   description = <<-EOF
   What to do when the underlying template changes (e.g. PAN-OS upgrade).
   OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed: it immediately
@@ -195,7 +195,7 @@ variable update_policy_type {
   type        = string
 }
 
-variable named_ports {
+variable "named_ports" {
   description = <<-EOF
   (Optional) The list of named ports:
 
@@ -217,7 +217,7 @@ variable named_ports {
   default     = []
 }
 
-variable service_account {
+variable "service_account" {
   description = "IAM Service Account for running firewall instance (just the email)"
   default     = null
   type        = string

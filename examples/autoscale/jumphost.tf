@@ -11,7 +11,7 @@ module "jumpvpc" {
   region = "europe-west4"
 }
 
-resource google_compute_firewall this {
+resource "google_compute_firewall" "this" {
   for_each = module.jumpvpc.networks
 
   name          = "${each.value.name}-jumpbox-ingress"
@@ -47,11 +47,11 @@ module "jumphost" {
   service_account = module.iam_service_account.email
 }
 
-output jumphost_ssh_command {
+output "jumphost_ssh_command" {
   value = { for k, v in module.jumphost.nic0_ips : k => "ssh  -i ${var.private_key_path}  admin@${v}" }
 }
 
-resource null_resource jumphost_ssh_priv_key {
+resource "null_resource" "jumphost_ssh_priv_key" {
   for_each = module.jumphost.nic0_ips
 
   connection {

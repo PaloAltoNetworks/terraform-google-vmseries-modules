@@ -1,11 +1,6 @@
-terraform {
-  required_version = "~>0.12"
-}
-
 provider "google" {
   credentials = file(var.auth_file)
   project     = lower(var.project_id)
-  version     = "= 3.48"
 }
 
 #-----------------------------------------------------------------------------------------------

@@ -144,7 +144,7 @@ resource "google_compute_autoscaler" "this" {
 
     # cpu_utilization { target = 0.7 }
 
-    dynamic metric {
+    dynamic "metric" {
       for_each = var.autoscaler_metrics
       content {
         name   = metric.key

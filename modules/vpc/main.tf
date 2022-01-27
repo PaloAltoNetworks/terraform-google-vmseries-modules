@@ -13,7 +13,7 @@ locals {
   networks_to_create = {
     for k, v in local.networks
     : k => v
-    if ! (try(v.create_network == false, false))
+    if !(try(v.create_network == false, false))
   }
 
   // We have networks, now the same for subnetworks:
@@ -30,7 +30,7 @@ locals {
   subnetworks_to_create = {
     for k, v in local.subnetworks
     : k => v
-    if ! (try(v.create_subnetwork == false, false))
+    if !(try(v.create_subnetwork == false, false))
   }
 }
 
@@ -77,7 +77,7 @@ resource "google_compute_firewall" "this" {
     ports    = try(each.value.allowed_ports, var.allowed_ports, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = compact(try([each.value.log_metadata], []))
 
     content {
