@@ -56,11 +56,11 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ |  |
-| <a name="module_glb"></a> [glb](#module\_glb) | ../../modules/lb_http_ext_global |  |
-| <a name="module_ilb"></a> [ilb](#module\_ilb) | ../../modules/lb_tcp_internal |  |
-| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries/ |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc/ |  |
+| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_glb"></a> [glb](#module\_glb) | ../../modules/lb_http_ext_global | n/a |
+| <a name="module_ilb"></a> [ilb](#module\_ilb) | ../../modules/lb_tcp_internal | n/a |
+| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries/ | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc/ | n/a |
 
 ## Resources
 

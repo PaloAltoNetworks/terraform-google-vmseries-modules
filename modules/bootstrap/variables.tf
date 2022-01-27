@@ -1,4 +1,4 @@
-variable name_prefix {
+variable bucket_name_prefix {
   description = "Prefix of the name of Google Cloud Storage bucket, followed by 10 random characters"
   default     = "paloaltonetworks-firewall-bootstrap-"
   type        = string
