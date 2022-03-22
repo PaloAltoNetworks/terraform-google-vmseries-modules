@@ -1,105 +1,51 @@
-terraform {
-  required_providers {
-    google = {
-      version = "~> 3.30"
-    }
-  }
-}
-
-locals {
-  first_instance = try(keys(var.instances)[0], null)
-}
-
-# Optional bucket, when we upload panorama os from a custom *.tar.gz file.
-resource "google_storage_bucket" "this" {
-  count = var.panorama_image_file_name != "" ? 1 : 0
-
-  name                     = var.panorama_bucket_name
-  default_event_based_hold = false
-  location                 = data.google_compute_subnetwork.this[local.first_instance].region
-  storage_class            = "NEARLINE"
-}
-
-resource "google_storage_bucket_object" "this" {
-  count = var.panorama_image_file_name != "" ? 1 : 0
-
-  name   = var.panorama_image_file_name
-  source = "${var.panorama_image_file_path}/${var.panorama_image_file_name}"
-  bucket = google_storage_bucket.this[0].name
-}
-
-resource "google_compute_image" "this" {
-  count = var.panorama_image_file_name != "" ? 1 : 0
-
-  name   = var.image_uri
-  family = "custom-panorama"
-
-  raw_disk {
-    container_type = "TAR"
-    source         = "${var.storage_uri}/${var.panorama_bucket_name}/${var.panorama_image_file_name}?authuser=0"
-  }
-
-  timeouts {
-    create = var.image_create_timeout
-  }
-  depends_on = [google_storage_bucket_object.this]
-}
-
-data "google_compute_subnetwork" "this" {
-  for_each = var.instances
-
-  self_link = each.value.subnetwork
+data "google_compute_image" "this" {
+  family  = var.image_family
+  project = var.image_project
 }
 
 # Permanent private address, not ephemeral, because the managed firewalls keep it saved.
 resource "google_compute_address" "private" {
-  for_each = var.instances
-
   address_type = "INTERNAL"
-  name         = "${each.value.name}-nic0-private"
-  subnetwork   = each.value.subnetwork
-  address      = try(each.value.network_ip, null)
+  region       = var.region
+  name         = "${var.panorama_name}-nic0-private"
+  subnetwork   = var.subnet
+  address      = try(var.static_ip, null)
+
 }
 
 # Permanent public address, not ephemeral.
 resource "google_compute_address" "public" {
-  for_each = { for k, v in var.instances : k => v if var.public_nat }
+  count = var.attach_public_ip ? 1 : 0
 
-  name    = "${each.value.name}-nic0-public"
-  address = try(each.value.nat_ip, null)
-  region  = data.google_compute_subnetwork.this[each.key].region
+  region  = var.region
+  name    = "${var.panorama_name}-nic0-public"
+  address = try(var.public_static_ip, null)
 }
 
 resource "google_compute_disk" "panorama_logs1" {
-  for_each = var.instances
-
-  name = "${each.value.name}-logs1"
-  zone = each.value.zone
+  name = "${var.panorama_name}-logs1"
+  zone = var.zone
   type = var.log_disk_type
   size = var.log_disk_size
 }
 
 resource "google_compute_disk" "panorama_logs2" {
-  for_each = var.instances
-
-  name = "${each.value.name}-logs2"
-  zone = each.value.zone
+  name = "${var.panorama_name}-logs2"
+  zone = var.zone
   type = var.log_disk_type
   size = var.log_disk_size
 }
 
 resource "google_compute_instance" "this" {
-  for_each = var.instances
-
-  name                      = each.value.name
-  zone                      = each.value.zone
-  machine_type              = var.machine_type
-  min_cpu_platform          = var.min_cpu_platform
-  labels                    = var.labels
-  tags                      = var.tags
-  metadata_startup_script   = var.metadata_startup_script
-  project                   = var.project
-  resource_policies         = var.resource_policies
+  name             = var.panorama_name
+  zone             = var.zone
+  machine_type     = var.machine_type
+  min_cpu_platform = var.min_cpu_platform
+  labels           = var.labels
+  tags             = var.tags
+  # metadata_startup_script   = var.metadata_startup_script
+  project = var.project
+  # resource_policies         = var.resource_policies
   can_ip_forward            = false
   allow_stopping_for_update = true
 
@@ -108,39 +54,48 @@ resource "google_compute_instance" "this" {
     ssh-keys           = var.ssh_key
   }, var.metadata)
 
-  service_account {
-    email  = var.service_account
-    scopes = var.scopes
-  }
+  # service_account {
+  #   email  = var.service_account
+  #   scopes = var.scopes
+  # }
+
+  # network_interface {
+  #   dynamic "access_config" {
+  #     for_each = var.public_nat ? ["one"] : []
+  #     content {
+  #       nat_ip = try(google_compute_address.public[each.key].address, null)
+  #     }
+  #   }
+  #   network_ip = google_compute_address.private[each.key].address
+  #   subnetwork = each.value.subnetwork
+  # }
 
   network_interface {
-    dynamic "access_config" {
-      for_each = var.public_nat ? ["one"] : []
-      content {
-        nat_ip = try(google_compute_address.public[each.key].address, null)
-      }
+    network_ip = google_compute_address.private.address
+    subnetwork = var.subnet
+    access_config {
+      nat_ip = var.attach_public_ip ? google_compute_address.public[0].address : null
+
     }
-    network_ip = google_compute_address.private[each.key].address
-    subnetwork = each.value.subnetwork
   }
+
 
   boot_disk {
     initialize_params {
-      image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
-      size  = var.disk_size
-      type  = var.disk_type
+      image = data.google_compute_image.this.id //"debian-cloud/debian-10"
+      # https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/panorama-byol-1000
+      size = var.disk_size
+      type = var.disk_type
     }
   }
 
   attached_disk {
-    source = google_compute_disk.panorama_logs1[each.key].name
+    source = google_compute_disk.panorama_logs1.name
   }
 
   attached_disk {
-    source = google_compute_disk.panorama_logs2[each.key].name
+    source = google_compute_disk.panorama_logs2.name
   }
 
-  depends_on = [
-    google_compute_image.this
-  ]
+
 }

@@ -1,0 +1,23 @@
+### General
+project_id = "gcp-gcs-pso"
+project    = "gcp-gcs-pso"
+region     = "us-central1"
+
+### VPC
+vpc_name        = "kbechler-panorama-example"
+subnet_name     = "kbechler-panorama-example"
+cidr            = "172.21.21.0/24"
+allowed_sources = ["84.207.227.14/32"]
+static_ip       = "172.21.21.111"
+# image_name = "vmseries-flex-bundle1-919"
+
+# extlb_name = "example-external-lb"
+
+# service_account = "example-firewall"
+
+# ssh_key = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDdnhjA/9Y2nsWWIYN2Jn2swE1syUaJXES2WJHN2UKeWXvU6zfppvVjeqz4dB2N2euKdXimwxB6u8p0jjh7lnYRlDJeIxskrRd9jIkhk/NdABPFcUH2KPBfAh3PuJ86ENKBYMdpq38LgfWczDM4nbF2z+ORGNnrrAaSHEHnsg7K7FtbYtozWqsoa7Kdgi7Zx+IxsYjp5UcIRvc7jVB01TmY2QPJJCgANkdj8m72SErnkBzaSO8oQ0AKPhzWL/AmBSDsEgDUw9pGG6TxRyjHwvIaaqs7OBxU80A1sh/ookJBTw6f5Pj08w6p1SC2nSpReXHAJnTDTBj79WWB0LBAdm5y5nca4hmG4afjmtBp4IawbjkMNisNnd27hOqSI7p/LVtlGM1gtxCB+r3Fqp8GvKlLWve79S2H4lCOXp+RMnl9Be7cDjLaXiH580cjn2G1d3bPAjcFSgrhiCX9Tqe7oDvFqQdW+u19322sLCpV6ix3FN6KnPMvkzeOYY3ROkonzO8="
+
+# # Aid in initial troubleshooting:
+# # fw_image_uri = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+
+
