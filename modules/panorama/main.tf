@@ -1,4 +1,6 @@
 data "google_compute_image" "this" {
+  count = var.custom_image != null ? 0 : 1
+
   family  = var.image_family
   project = var.image_project
 }
@@ -43,8 +45,7 @@ resource "google_compute_instance" "this" {
   min_cpu_platform = var.min_cpu_platform
   labels           = var.labels
   tags             = var.tags
-  # metadata_startup_script   = var.metadata_startup_script
-  project = var.project
+  project          = var.project
   # resource_policies         = var.resource_policies
   can_ip_forward            = false
   allow_stopping_for_update = true
@@ -79,13 +80,11 @@ resource "google_compute_instance" "this" {
     }
   }
 
-
   boot_disk {
     initialize_params {
-      image = data.google_compute_image.this.id //"debian-cloud/debian-10"
-      # https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/panorama-byol-1000
-      size = var.disk_size
-      type = var.disk_type
+      image = coalesce(var.custom_image, data.google_compute_image.this[0].id)
+      size  = var.disk_size
+      type  = var.disk_type
     }
   }
 
@@ -96,6 +95,4 @@ resource "google_compute_instance" "this" {
   attached_disk {
     source = google_compute_disk.panorama_logs2.name
   }
-
-
 }

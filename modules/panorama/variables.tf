@@ -1,19 +1,28 @@
-variable "project" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = null
+variable "region" {
+  description = "Google Cloud region to deploy the resources into."
   type        = string
 }
 
-variable "region" {}
-variable "zone" {}
-
-variable "panorama_name" {
-  description = "The Panorama common name."
-  default     = "panorama"
+variable "zone" {
+  description = "Deployment area for Google Cloud resources within a region."
   type        = string
 }
 
 variable "subnet" {
+  description = "A regional resource, defining a range of IPv4 addresses. In Google Cloud, the terms subnet and subnetwork are synonymous."
+  type        = string
+}
+
+variable "project" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  type        = string
+  default     = null
+}
+
+variable "panorama_name" {
+  description = "Name of the Panorama instance."
+  type        = string
+  default     = "panorama"
 }
 
 variable "static_ip" {
@@ -80,8 +89,8 @@ variable "disk_size" {
 }
 
 variable "ssh_key" {
-  default = ""
-  type    = string
+  description = "Metadata key/value pairs to make available from within the instance."
+  type        = string
 }
 
 # variable "scopes" {
@@ -107,6 +116,16 @@ variable "ssh_key" {
 #   default     = null
 #   type        = string
 # }
+
+variable "custom_image" {
+  description = <<-EOF
+  Custom image type for your Panorama instances. Custom images are available only to your Cloud project. 
+  You can create a custom image from boot disks and other images.
+  By default `image_project` and `image_family` are used to determine a Public image to use for Panorama.
+  EOF
+  default     = null
+  type        = string
+}
 
 variable "image_project" {
   type    = string
