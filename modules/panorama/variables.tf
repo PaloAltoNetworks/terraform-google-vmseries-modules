@@ -14,9 +14,9 @@ variable "subnet" {
 }
 
 variable "project" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  description = "The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
   type        = string
-  default     = null
+  default     = "null"
 }
 
 variable "panorama_name" {
@@ -25,97 +25,86 @@ variable "panorama_name" {
   default     = "panorama"
 }
 
-variable "static_ip" {
-  description = "The static private IP address for Panorama instance. Only IPv4 is supported. An address may only be specified for INTERNAL address types."
+variable "private_static_ip" {
+  description = <<EOF
+  The static private IP address for Panorama. Only IPv4 is supported. An address may only be specified for INTERNAL address types.
+  The IP address must be inside the specified subnetwork, if any. Set by the API if undefined.
+  EOF
+  type        = string
   default     = null
 }
 
 variable "attach_public_ip" {
-  type    = bool
-  default = false
+  description = "Determines if a Public IP should be assigned to Panorama. Set by the API if the `public_static_ip` variable is not defined."
+  type        = bool
+  default     = false
 }
 
 variable "public_static_ip" {
-  description = "The static external IP address for Panorama instance. Only IPv4 is supported. An address may only be specified for INTERNAL address types."
+  description = "The static external IP address for Panorama instance. Only IPv4 is supported. Set by the API if undefined."
+  type        = string
   default     = null
 }
 
 variable "log_disk_type" {
   description = "Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced."
-  default     = "pd-standard"
   type        = string
+  default     = "pd-standard"
 }
 
 variable "log_disk_size" {
   description = "Size of disk holding traffic logs in gigabytes. Default is 2000."
-  default     = "2000"
   type        = string
+  default     = "2000"
 }
 
 variable "machine_type" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = "n1-standard-16"
   type        = string
+  default     = "n1-standard-16"
 }
 
 variable "min_cpu_platform" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = "Intel Broadwell"
   type        = string
+  default     = "Intel Broadwell"
 }
 
 variable "labels" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = {}
   type        = map(any)
+  default     = {}
 }
 
 variable "tags" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = []
   type        = list(string)
+  default     = []
 }
 
 variable "disk_type" {
   description = "Type of boot disk. Default is pd-ssd, alternative is pd-balanced."
-  default     = "pd-ssd"
   type        = string
+  default     = "pd-ssd"
 }
 
 variable "disk_size" {
   description = "Size of boot disk in gigabytes. Default is the same as the os image."
-  default     = null
   type        = string
+  default     = null
 }
 
 variable "ssh_key" {
-  description = "Metadata key/value pairs to make available from within the instance. In order to connect via SSH to Panorama, provide your SSH public key here."
+  description = <<EOF
+  In order to connect via SSH to Panorama, provide your SSH public key here.
+  Remember to add the `admin` prefix before you insert your public SSH key.
+
+  Example:
+
+  `ssh_key = "admin:ssh-rsa AAAAB4NzaC5yc9EAACABBACBgQDAcjYw6xa2zUZ6reqHqDp9bYDLTu7Rnk5Sa3hthIsIsFaKenFLe4w3mm5eF3ebsfAAnuzI9ua9g7aB/ThIsIsAlSoFaKeN2VhUMDmlBYO5m1D4ip6eugS6uM="`
+  EOF
   type        = string
 }
-
-# variable "scopes" {
-#   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-#   default = [
-#     "https://www.googleapis.com/auth/compute.readonly",
-#     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
-#     "https://www.googleapis.com/auth/devstorage.read_only",
-#     "https://www.googleapis.com/auth/logging.write",
-#     "https://www.googleapis.com/auth/monitoring.write",
-#   ]
-#   type = list(string)
-# }
-
-# variable "image_name" {
-#   description = "The image name from which to boot an instance, including the license type and the version, e.g. panorama-byol-901, panorama-byol-1000. Default is panorama-byol-912."
-#   default     = "panorama-byol-912"
-#   type        = string
-# }
-
-# variable "image_uri" {
-#   description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs."
-#   default     = null
-#   type        = string
-# }
 
 variable "custom_image" {
   description = <<-EOF
@@ -143,9 +132,33 @@ variable "image_family" {
 
 variable "metadata" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = {}
   type        = map(string)
+  default     = {}
 }
+
+# variable "scopes" {
+#   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+#   default = [
+#     "https://www.googleapis.com/auth/compute.readonly",
+#     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+#     "https://www.googleapis.com/auth/devstorage.read_only",
+#     "https://www.googleapis.com/auth/logging.write",
+#     "https://www.googleapis.com/auth/monitoring.write",
+#   ]
+#   type = list(string)
+# }
+
+# variable "image_name" {
+#   description = "The image name from which to boot an instance, including the license type and the version, e.g. panorama-byol-901, panorama-byol-1000. Default is panorama-byol-912."
+#   default     = "panorama-byol-912"
+#   type        = string
+# }
+
+# variable "image_uri" {
+#   description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs."
+#   default     = null
+#   type        = string
+# }
 
 # variable "metadata_startup_script" {
 #   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"

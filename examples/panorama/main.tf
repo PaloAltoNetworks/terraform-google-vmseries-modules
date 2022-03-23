@@ -23,17 +23,11 @@ module "vpc" {
 module "panorama" {
   source = "../../modules/panorama"
 
-  project   = var.project
-  region    = var.region
-  zone      = data.google_compute_zones.this.names[0]
-  subnet    = module.vpc.subnetworks["kbechler-panorama-example"].id
-  static_ip = var.static_ip
-
+  project           = var.project
+  region            = var.region
+  zone              = data.google_compute_zones.this.names[0]
+  ssh_key           = var.ssh_key
+  subnet            = module.vpc.subnetworks["panorama-example-subnet"].id
+  private_static_ip = var.private_static_ip
+  attach_public_ip  = var.attach_public_ip
 }
-
-output "panorama_private_ip" { value = module.panorama.nic0_private_ip }
-output "panorama_public_ip" { value = module.panorama.nic0_public_ip }
-
-
-
-# output "a" { value = data.google_compute_image.this }

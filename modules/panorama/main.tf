@@ -11,8 +11,7 @@ resource "google_compute_address" "private" {
   region       = var.region
   name         = "${var.panorama_name}-nic0-private"
   subnetwork   = var.subnet
-  address      = try(var.static_ip, null)
-
+  address      = try(var.private_static_ip, null)
 }
 
 # Permanent public address, not ephemeral.
