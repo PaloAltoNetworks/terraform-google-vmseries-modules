@@ -89,7 +89,7 @@ variable "disk_size" {
 }
 
 variable "ssh_key" {
-  description = "Metadata key/value pairs to make available from within the instance."
+  description = "Metadata key/value pairs to make available from within the instance. In order to connect via SSH to Panorama, provide your SSH public key here."
   type        = string
 }
 
@@ -119,22 +119,26 @@ variable "ssh_key" {
 
 variable "custom_image" {
   description = <<-EOF
-  Custom image type for your Panorama instances. Custom images are available only to your Cloud project. 
-  You can create a custom image from boot disks and other images.
-  By default `image_project` and `image_family` are used to determine a Public image to use for Panorama.
+  Custom image for your Panorama instances. Custom images are available only to your Cloud project. 
+  You can create a custom image from boot disks and other images. 
+  For more information, please check the provider [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image).
+  
+  If a `custom_image` is not specified, `image_project` and `image_family` are used to determine a Public image to use for Panorama.
   EOF
-  default     = null
   type        = string
+  default     = null
 }
 
 variable "image_project" {
-  type    = string
-  default = "paloaltonetworksgcp-public"
+  description = "For more information, please refer to the [Google Cloud documentation](https://cloud.google.com/compute/docs/images)"
+  type        = string
+  default     = "paloaltonetworksgcp-public"
 }
 
 variable "image_family" {
-  type    = string
-  default = "panorama-10"
+  description = "For more information, please refer to the [Google Cloud documentation](https://cloud.google.com/compute/docs/images)"
+  type        = string
+  default     = "panorama-10"
 }
 
 variable "metadata" {
