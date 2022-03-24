@@ -13,6 +13,6 @@ attach_public_ip  = true
 
 # Panorama
 panorama_name = "example-panorama"
-ssh_key       = "example-ssh-key
+ssh_key       = "example-ssh-key"
 
 
