@@ -27,10 +27,6 @@ jobs:
       - name: Run pre-commit framework as the developer should run it
         run: sudo ./scripts/install.sh && sudo ./scripts/run.sh
 
-      - name: The `git diff` showing whether the pre-commit mandated extra changes to the repository files
-        if: failure()
-        run: git diff
-
   validate:
     name: Validate
     runs-on: ubuntu-latest
@@ -45,19 +41,12 @@ jobs:
           terraform_version: 0.15.3
 
       - name: terraform validate
-        env:
-          AWS_DEFAULT_REGION: us-west-2
         run: |
+          mkdir -p ~/.ssh
+          echo dummy file required for terraform validate to pass >> ~/.ssh/id_rsa
           cd "$GITHUB_WORKSPACE"
-          for dir in $(find modules examples -type d -not \( -name ".?*" \) -maxdepth 1 -mindepth 1);
+          for dir in $(find modules examples -type d -not \( -name ".?*" -o -name regional_workspaces \) -maxdepth 1 -mindepth 1 );
           do
-            if [[ "$dir" == "modules/transit_gateway_peering" ]];
-            then
-              echo "Skipping directory: $dir"
-              echo "Terraform does not support validating a module which uses an aliased provider (module-specific; validating an entire configuration works fine)."
-              continue
-            fi
-
             echo "Processing directory: $dir"
             cd "$GITHUB_WORKSPACE/$dir"
             terraform init -backend=false
