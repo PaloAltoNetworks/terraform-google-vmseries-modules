@@ -22,7 +22,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.14.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.15.0 |
 
 ## Modules
 
@@ -58,5 +58,5 @@ No requirements.
 | Name | Description |
 |------|-------------|
 | <a name="output_panorama_private_ip"></a> [panorama\_private\_ip](#output\_panorama\_private\_ip) | Private IP address of the Panorama instance. |
-| <a name="output_panorama_public_ip"></a> [panorama\_public\_ip](#output\_panorama\_public\_ip) | Public IP address of the Panorama instance - available if `attach_public_ip` variable was set to `true` |
+| <a name="output_panorama_public_ip"></a> [panorama\_public\_ip](#output\_panorama\_public\_ip) | Public IP address of the Panorama instance. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

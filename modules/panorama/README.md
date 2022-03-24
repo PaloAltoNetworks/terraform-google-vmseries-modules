@@ -18,7 +18,7 @@ For usage, check the "examples" folder in the root of the repository.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.15.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | >= 3.30 |
 
 ## Modules
 
@@ -65,6 +65,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_nic0_private_ip"></a> [nic0\_private\_ip](#output\_nic0\_private\_ip) | Panorama private IP. |
-| <a name="output_nic0_public_ip"></a> [nic0\_public\_ip](#output\_nic0\_public\_ip) | Panorama public IP. |
+| <a name="output_nic0_private_ip"></a> [nic0\_private\_ip](#output\_nic0\_private\_ip) | Public IP address of the Panorama instance. |
+| <a name="output_nic0_public_ip"></a> [nic0\_public\_ip](#output\_nic0\_public\_ip) | Private IP address of the Panorama instance. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
