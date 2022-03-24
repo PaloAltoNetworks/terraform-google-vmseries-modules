@@ -38,14 +38,13 @@ resource "google_compute_disk" "panorama_logs2" {
 }
 
 resource "google_compute_instance" "this" {
-  name             = var.panorama_name
-  zone             = var.zone
-  machine_type     = var.machine_type
-  min_cpu_platform = var.min_cpu_platform
-  labels           = var.labels
-  tags             = var.tags
-  project          = var.project
-  # resource_policies         = var.resource_policies
+  name                      = var.panorama_name
+  zone                      = var.zone
+  machine_type              = var.machine_type
+  min_cpu_platform          = var.min_cpu_platform
+  labels                    = var.labels
+  tags                      = var.tags
+  project                   = var.project
   can_ip_forward            = false
   allow_stopping_for_update = true
 
@@ -53,22 +52,6 @@ resource "google_compute_instance" "this" {
     serial-port-enable = true
     ssh-keys           = var.ssh_key
   }, var.metadata)
-
-  # service_account {
-  #   email  = var.service_account
-  #   scopes = var.scopes
-  # }
-
-  # network_interface {
-  #   dynamic "access_config" {
-  #     for_each = var.public_nat ? ["one"] : []
-  #     content {
-  #       nat_ip = try(google_compute_address.public[each.key].address, null)
-  #     }
-  #   }
-  #   network_ip = google_compute_address.private[each.key].address
-  #   subnetwork = each.value.subnetwork
-  # }
 
   network_interface {
     network_ip = google_compute_address.private.address
