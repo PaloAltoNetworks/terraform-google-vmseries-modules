@@ -94,14 +94,14 @@ variable "disk_size" {
   default     = null
 }
 
-variable "ssh_key" {
+variable "ssh_keys" {
   description = <<EOF
   In order to connect via SSH to Panorama, provide your SSH public key here.
   Remember to add the `admin` prefix before you insert your public SSH key.
+  More than one key can be added.
 
   Example:
-
-  `ssh_key = "admin:ssh-rsa AAAAB4NzaC5yc9EAACABBACBgQDAcjYw6xa2zUZ6reqHqDp9bYDLTu7Rnk5Sa3hthIsIsFaKenFLe4w3mm5eF3ebsfAAnuzI9ua9g7aB/ThIsIsAlSoFaKeN2VhUMDmlBYO5m1D4ip6eugS6uM="`
+  `ssh_keys = "admin:ssh-rsa AAAAB4NzaC5yc9EAACABBACBgQDAcjYw6xa2zUZ6reqHqDp9bYDLTu7Rnk5Sa3hthIsIsFaKenFLe4w3mm5eF3ebsfAAnuzI9ua9g7aB/ThIsIsAlSoFaKeN2VhUMDmlBYO5m1D4ip6eugS6uM="`
   EOF
   type        = string
 }
@@ -110,7 +110,7 @@ variable "panorama_version" {
   description = <<EOF
   Panorama version - based on the name of the Panorama public image - allows to specify which Panorama version will be deployed.
   For more details regarding available Panorama versions in the Google Cloud Platform, please run the following command:
-  `gcloud compute images list --project paloaltonetworksgcp-public --no-standard-images | grep panorama`
+  `gcloud compute images list --filter="name ~ .*panorama.*" --project paloaltonetworksgcp-public --no-standard-images`
   EOF
   type        = string
   default     = "panorama-byol-1000"

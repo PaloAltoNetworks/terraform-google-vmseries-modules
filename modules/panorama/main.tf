@@ -50,7 +50,7 @@ resource "google_compute_instance" "this" {
 
   metadata = merge({
     serial-port-enable = true
-    ssh-keys           = var.ssh_key
+    ssh-keys           = var.ssh_keys
   }, var.metadata)
 
   network_interface {
