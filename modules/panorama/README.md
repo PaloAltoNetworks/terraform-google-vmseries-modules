@@ -18,7 +18,7 @@ For usage, check the "examples" folder in the root of the repository.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.15.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | >= 3.30 |
 
 ## Modules
 
