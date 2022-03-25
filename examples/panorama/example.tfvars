@@ -12,6 +12,7 @@ private_static_ip = "172.21.21.111"
 attach_public_ip  = true
 
 # Panorama
-panorama_name = "example-panorama"
-ssh_key       = "example-sshkey"
+panorama_name    = "example-panorama"
+panorama_version = "panorama-byol-1000"
+ssh_key          = "example-sshkey"
 

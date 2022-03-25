@@ -22,7 +22,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.15.0 |
 
 ## Modules
 
@@ -45,6 +45,7 @@ No requirements.
 | <a name="input_attach_public_ip"></a> [attach\_public\_ip](#input\_attach\_public\_ip) | n/a | `any` | n/a | yes |
 | <a name="input_cidr"></a> [cidr](#input\_cidr) | n/a | `any` | n/a | yes |
 | <a name="input_panorama_name"></a> [panorama\_name](#input\_panorama\_name) | Panorama | `any` | n/a | yes |
+| <a name="input_panorama_version"></a> [panorama\_version](#input\_panorama\_version) | n/a | `any` | n/a | yes |
 | <a name="input_private_static_ip"></a> [private\_static\_ip](#input\_private\_static\_ip) | n/a | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | General | `any` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | n/a | `any` | n/a | yes |

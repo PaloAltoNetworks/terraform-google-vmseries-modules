@@ -1,8 +1,8 @@
 data "google_compute_image" "this" {
   count = var.custom_image != null ? 0 : 1
 
-  project = var.image_project
-  name    = var.image_name
+  project = "paloaltonetworksgcp-public"
+  name    = var.panorama_version
 }
 
 # Permanent private address, not ephemeral, because the managed firewalls keep it saved.

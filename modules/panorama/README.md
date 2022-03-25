@@ -18,7 +18,7 @@ For usage, check the "examples" folder in the root of the repository.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 3.30 |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.15.0 |
 
 ## Modules
 
@@ -43,8 +43,6 @@ No modules.
 | <a name="input_custom_image"></a> [custom\_image](#input\_custom\_image) | Custom image for your Panorama instances. Custom images are available only to your Cloud project. <br>You can create a custom image from boot disks and other images. <br>For more information, please check the provider [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image).<br><br>If a `custom_image` is not specified, `image_project` and `image_family` are used to determine a Public image to use for Panorama. | `string` | `null` | no |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Size of boot disk in gigabytes. Default is the same as the os image. | `string` | `null` | no |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Type of boot disk. Default is pd-ssd, alternative is pd-balanced. | `string` | `"pd-ssd"` | no |
-| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | The name of the image - allows to specify the version of the image if more than one is available for the image family.<br>  For more details regarding available Panorama images versions, please run the following command:<br>  `gcloud compute images list --project paloaltonetworksgcp-public --no-standard-images | grep panorama` | `string` | `"panorama-byol-1000"` | no |
-| <a name="input_image_project"></a> [image\_project](#input\_image\_project) | For more information, please refer to the [Google Cloud documentation](https://cloud.google.com/compute/docs/images) | `string` | `"paloaltonetworksgcp-public"` | no |
 | <a name="input_labels"></a> [labels](#input\_labels) | See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | `map(any)` | `{}` | no |
 | <a name="input_log_disk_size"></a> [log\_disk\_size](#input\_log\_disk\_size) | Size of disk holding traffic logs in gigabytes. Default is 2000. | `string` | `"2000"` | no |
 | <a name="input_log_disk_type"></a> [log\_disk\_type](#input\_log\_disk\_type) | Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced. | `string` | `"pd-standard"` | no |
@@ -52,6 +50,7 @@ No modules.
 | <a name="input_metadata"></a> [metadata](#input\_metadata) | See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | `map(string)` | `{}` | no |
 | <a name="input_min_cpu_platform"></a> [min\_cpu\_platform](#input\_min\_cpu\_platform) | See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | `string` | `"Intel Broadwell"` | no |
 | <a name="input_panorama_name"></a> [panorama\_name](#input\_panorama\_name) | Name of the Panorama instance. | `string` | `"panorama"` | no |
+| <a name="input_panorama_version"></a> [panorama\_version](#input\_panorama\_version) | Panorama version - based on the name of the Panorama public image - allows to specify which Panorama version will be deployed.<br>  For more details regarding available Panorama versions in the Google Cloud Platform, please run the following command:<br>  `gcloud compute images list --project paloaltonetworksgcp-public --no-standard-images | grep panorama` | `string` | `"panorama-byol-1000"` | no |
 | <a name="input_private_static_ip"></a> [private\_static\_ip](#input\_private\_static\_ip) | The static private IP address for Panorama. Only IPv4 is supported. An address may only be specified for INTERNAL address types.<br>  The IP address must be inside the specified subnetwork, if any. Set by the API if undefined. | `string` | `null` | no |
 | <a name="input_project"></a> [project](#input\_project) | The ID of the project in which the resource belongs. If it is not provided, the provider project is used. | `string` | `null` | no |
 | <a name="input_public_static_ip"></a> [public\_static\_ip](#input\_public\_static\_ip) | The static external IP address for Panorama instance. Only IPv4 is supported. Set by the API if undefined. | `string` | `null` | no |
