@@ -15,8 +15,8 @@ variable "subnet" {
 
 variable "project" {
   description = "The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
+  default     = null
   type        = string
-  default     = "null"
 }
 
 variable "panorama_name" {
@@ -124,10 +124,15 @@ variable "image_project" {
   default     = "paloaltonetworksgcp-public"
 }
 
-variable "image_family" {
-  description = "For more information, please refer to the [Google Cloud documentation](https://cloud.google.com/compute/docs/images)"
+variable "image_name" {
+  description = <<EOF
+  The name of the image - allows to specify the version of the image if more than one is available for the image family.
+  For more details regarding available Panorama images versions, please run the following command:
+  `gcloud compute images list --project paloaltonetworksgcp-public --no-standard-images | grep panorama`
+  EOF
   type        = string
-  default     = "panorama-10"
+  default     = "panorama-byol-1000"
+
 }
 
 variable "metadata" {
