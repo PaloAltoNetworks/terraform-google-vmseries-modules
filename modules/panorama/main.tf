@@ -9,7 +9,7 @@ data "google_compute_image" "this" {
 resource "google_compute_address" "private" {
   address_type = "INTERNAL"
   region       = var.region
-  name         = "${var.panorama_name}-nic0-private"
+  name         = "${var.name}-private"
   subnetwork   = var.subnet
   address      = try(var.private_static_ip, null)
 }
@@ -19,26 +19,26 @@ resource "google_compute_address" "public" {
   count = var.attach_public_ip ? 1 : 0
 
   region  = var.region
-  name    = "${var.panorama_name}-nic0-public"
+  name    = "${var.name}-public"
   address = try(var.public_static_ip, null)
 }
 
 resource "google_compute_disk" "panorama_logs1" {
-  name = "${var.panorama_name}-logs1"
+  name = "${var.name}-logs1"
   zone = var.zone
   type = var.log_disk_type
   size = var.log_disk_size
 }
 
 resource "google_compute_disk" "panorama_logs2" {
-  name = "${var.panorama_name}-logs2"
+  name = "${var.name}-logs2"
   zone = var.zone
   type = var.log_disk_type
   size = var.log_disk_size
 }
 
 resource "google_compute_instance" "this" {
-  name                      = var.panorama_name
+  name                      = var.name
   zone                      = var.zone
   machine_type              = var.machine_type
   min_cpu_platform          = var.min_cpu_platform
@@ -58,7 +58,6 @@ resource "google_compute_instance" "this" {
     subnetwork = var.subnet
     access_config {
       nat_ip = var.attach_public_ip ? google_compute_address.public[0].address : null
-
     }
   }
 

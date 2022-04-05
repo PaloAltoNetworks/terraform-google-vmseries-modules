@@ -19,7 +19,7 @@ variable "project" {
   type        = string
 }
 
-variable "panorama_name" {
+variable "name" {
   description = "Name of the Panorama instance."
   type        = string
   default     = "panorama"
@@ -120,7 +120,8 @@ variable "custom_image" {
   description = <<-EOF
   Custom image for your Panorama instances. Custom images are available only to your Cloud project. 
   You can create a custom image from boot disks and other images. 
-  For more information, please check the provider [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image).
+  For more information, please check the provider [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)
+  as well as the [Panorama Administrator's Guide](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/set-up-panorama/set-up-the-panorama-virtual-appliance/install-the-panorama-virtual-appliance/install-panorama-on-gcp.html).
   
   If a `custom_image` is not specified, `image_project` and `image_family` are used to determine a Public image to use for Panorama.
   EOF
