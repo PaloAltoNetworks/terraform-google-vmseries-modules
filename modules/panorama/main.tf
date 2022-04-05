@@ -57,7 +57,9 @@ resource "google_compute_instance" "this" {
 
     dynamic "access_config" {
       for_each = var.attach_public_ip ? [""] : []
-      content {}
+      content {
+        nat_ip = google_compute_address.public[0].address
+      }
     }
 
     network_ip = google_compute_address.private.address
