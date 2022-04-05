@@ -54,11 +54,14 @@ resource "google_compute_instance" "this" {
   }, var.metadata)
 
   network_interface {
+
+    dynamic "access_config" {
+      for_each = var.attach_public_ip ? [""] : []
+      content {}
+    }
+
     network_ip = google_compute_address.private.address
     subnetwork = var.subnet
-    access_config {
-      nat_ip = var.attach_public_ip ? google_compute_address.public[0].address : null
-    }
   }
 
   boot_disk {
