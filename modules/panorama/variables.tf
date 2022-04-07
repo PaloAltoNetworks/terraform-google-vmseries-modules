@@ -1,152 +1,151 @@
-variable "panorama_image_file_name" {
-  description = "(Optional) Local filesystem file name (without the path component) of the file downloaded from https://support.paloaltonetworks.com from Software Updates - Panorama Base Images - GCP. The extension should be included (usually it is *.tar.gz). By default empty, which means to use either `image_name` or `image_uri` that point to a pre-existing image."
-  default     = ""
+variable "region" {
+  description = "Google Cloud region to deploy the resources into."
   type        = string
 }
 
-variable "panorama_image_file_path" {
-  description = "(Optional) Local filesystem path for the `panorama_image_file_name`. Used only when `panorama_image_file_name` is set. The *.tag.gz file is expected to be present at `panorama_image_file_path/panorama_image_file_name`."
-  default     = "."
+variable "zone" {
+  description = "Deployment area for Google Cloud resources within a region."
   type        = string
 }
 
-variable "panorama_bucket_name" {
-  description = "(Optional) Bucket name used to hold the customized Panorama OS image. Used only when `panorama_image_file_name` is set."
-  default     = "paloaltonetworks-panorama-os-image-bucket"
-  type        = string
-}
-
-variable "image_create_timeout" {
-  description = "(Optional) Timeout for uploading the *.tar.gz custom image file into the Google bucket. Default is `180m` (180 minutes)."
-  default     = "180m"
-  type        = string
-}
-
-variable "storage_uri" {
-  description = "(Optional) Custom URI prefix for Google Cloud Storage API."
-  default     = "https://storage.cloud.google.com"
-  type        = string
-}
-
-variable "instances" {
-  description = "Definition of Panorama cloud instances"
-  type        = map(any)
-}
-
-variable "public_nat" {
-  type    = bool
-  default = false
-}
-
-variable "machine_type" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = "n1-standard-16"
-  type        = string
-}
-
-variable "min_cpu_platform" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = "Intel Broadwell"
-  type        = string
-}
-
-variable "disk_type" {
-  description = "Type of boot disk. Default is pd-ssd, alternative is pd-balanced."
-  default     = "pd-ssd"
-  type        = string
-}
-
-variable "disk_size" {
-  description = "Size of boot disk in gigabytes. Default is the same as the os image."
-  default     = null
-  type        = string
-}
-
-variable "log_disk_type" {
-  description = "Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced."
-  default     = "pd-standard"
-  type        = string
-}
-
-variable "log_disk_size" {
-  description = "Size of disk holding traffic logs in gigabytes. Default is 2000."
-  default     = "2000"
-  type        = string
-}
-
-variable "ssh_key" {
-  default = ""
-  type    = string
-}
-
-variable "scopes" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default = [
-    "https://www.googleapis.com/auth/compute.readonly",
-    "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
-    "https://www.googleapis.com/auth/devstorage.read_only",
-    "https://www.googleapis.com/auth/logging.write",
-    "https://www.googleapis.com/auth/monitoring.write",
-  ]
-  type = list(string)
-}
-
-variable "image_prefix_uri" {
-  description = "The image URI prefix, by default https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/ string. When prepended to `image_name` it should result in a full valid Google Cloud Engine image resource URI."
-  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/"
-  type        = string
-}
-
-variable "image_name" {
-  description = "The image name from which to boot an instance, including the license type and the version, e.g. panorama-byol-901, panorama-byol-1000. Default is panorama-byol-912."
-  default     = "panorama-byol-912"
-  type        = string
-}
-
-variable "image_uri" {
-  description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs."
-  default     = null
-  type        = string
-}
-
-variable "labels" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = {}
-  type        = map(any)
-}
-
-variable "tags" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = []
-  type        = list(string)
-}
-
-variable "metadata" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = {}
-  type        = map(string)
-}
-
-variable "metadata_startup_script" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
-  default     = null
+variable "subnet" {
+  description = "A regional resource, defining a range of IPv4 addresses. In Google Cloud, the terms subnet and subnetwork are synonymous."
   type        = string
 }
 
 variable "project" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  description = "The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
   default     = null
   type        = string
 }
 
-variable "resource_policies" {
-  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+variable "name" {
+  description = "Name of the Panorama instance."
+  type        = string
+  default     = "panorama"
+}
+
+variable "private_static_ip" {
+  description = <<EOF
+  The static private IP address for Panorama. Only IPv4 is supported. An address may only be specified for INTERNAL address types.
+  The IP address must be inside the specified subnetwork, if any. Set by the API if undefined.
+  EOF
+  type        = string
+  default     = null
+}
+
+variable "attach_public_ip" {
+  description = "Determines if a Public IP should be assigned to Panorama. Set by the API if the `public_static_ip` variable is not defined."
+  type        = bool
+  default     = false
+}
+
+variable "public_static_ip" {
+  description = "The static external IP address for Panorama instance. Only IPv4 is supported. Set by the API if undefined."
+  type        = string
+  default     = null
+}
+
+variable "log_disks" {
+  description = <<-EOF
+  List of disks to create and attach to Panorama to store traffic logs.
+  Available options:
+  - `name`              (Required) Name of the resource. The name must be 1-63 characters long, and comply with [`RFC1035`](https://datatracker.ietf.org/doc/html/rfc1035).
+  - `type`              (Optional) Disk type resource describing which disk type to use to create the disk. For available options, check the providers [documentation](https://cloud.google.com/compute/docs/disks#disk-types).
+  - `size`              (Optional) Size of the disk for Panorama logs (Gigabytes).
+
+  Example:
+  ```
+  log_disks = [
+    {
+      name = "example-disk-1"
+      type = "pd-ssd"
+      size = "2000"
+    },
+    {
+      name = "example-disk-2"
+      type = "pd-ssd"
+      size = "3000"
+    },
+  ]
+  ```
+  EOF
   default     = []
-  type        = list(string)
 }
 
-variable "service_account" {
-  description = "IAM Service Account for running the instance (just the email)"
-  default     = null
+variable "machine_type" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
   type        = string
+  default     = "n1-standard-16"
+}
+
+variable "min_cpu_platform" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  type        = string
+  default     = "Intel Broadwell"
+}
+
+variable "labels" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tags" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  type        = list(string)
+  default     = []
+}
+
+variable "disk_type" {
+  description = "Type of boot disk. For available options, check the providers [documentation](https://cloud.google.com/compute/docs/disks#disk-types)."
+  type        = string
+  default     = "pd-ssd"
+}
+
+variable "disk_size" {
+  description = "Size of boot disk in gigabytes. Default is the same as the OS image."
+  type        = string
+  default     = null
+}
+
+variable "ssh_keys" {
+  description = <<EOF
+  In order to connect via SSH to Panorama, provide your SSH public key here.
+  Remember to add the `admin` prefix before you insert your public SSH key.
+  More than one key can be added.
+
+  Example:
+  `ssh_keys = "admin:ssh-rsa AAAAB4NzaC5yc9EAACABBACBgQDAcjYw6xa2zUZ6reqHqDp9bYDLTu7Rnk5Sa3hthIsIsFaKenFLe4w3mm5eF3ebsfAAnuzI9ua9g7aB/ThIsIsAlSoFaKeN2VhUMDmlBYO5m1D4ip6eugS6uM="`
+  EOF
+  type        = string
+}
+
+variable "panorama_version" {
+  description = <<EOF
+  Panorama version - based on the name of the Panorama public image - allows to specify which Panorama version will be deployed.
+  For more details regarding available Panorama versions in the Google Cloud Platform, please run the following command:
+  `gcloud compute images list --filter="name ~ .*panorama.*" --project paloaltonetworksgcp-public --no-standard-images`
+  EOF
+  type        = string
+  default     = "panorama-byol-1000"
+}
+
+variable "custom_image" {
+  description = <<-EOF
+  Custom image for your Panorama instances. Custom images are available only to your Cloud project. 
+  You can create a custom image from boot disks and other images. 
+  For more information, please check the provider [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)
+  as well as the [Panorama Administrator's Guide](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/set-up-panorama/set-up-the-panorama-virtual-appliance/install-the-panorama-virtual-appliance/install-panorama-on-gcp.html).
+  
+  If a `custom_image` is not specified, `image_project` and `image_family` are used to determine a Public image to use for Panorama.
+  EOF
+  type        = string
+  default     = null
+}
+
+variable "metadata" {
+  description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
+  type        = map(string)
+  default     = {}
 }

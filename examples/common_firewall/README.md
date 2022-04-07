@@ -15,13 +15,13 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ |  |
-| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ |  |
-| <a name="module_lb_tcp_external"></a> [lb\_tcp\_external](#module\_lb\_tcp\_external) | ../../modules/lb_tcp_external/ |  |
-| <a name="module_lb_tcp_internal"></a> [lb\_tcp\_internal](#module\_lb\_tcp\_internal) | ../../modules/lb_tcp_internal |  |
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
+| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
+| <a name="module_lb_tcp_external"></a> [lb\_tcp\_external](#module\_lb\_tcp\_external) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_lb_tcp_internal"></a> [lb\_tcp\_internal](#module\_lb\_tcp\_internal) | ../../modules/lb_tcp_internal | n/a |
 | <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
-| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc |  |
+| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
