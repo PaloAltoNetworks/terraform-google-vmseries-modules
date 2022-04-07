@@ -44,6 +44,7 @@ No requirements.
 | <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | n/a | `any` | n/a | yes |
 | <a name="input_attach_public_ip"></a> [attach\_public\_ip](#input\_attach\_public\_ip) | n/a | `any` | n/a | yes |
 | <a name="input_cidr"></a> [cidr](#input\_cidr) | n/a | `any` | n/a | yes |
+| <a name="input_log_disks"></a> [log\_disks](#input\_log\_disks) | n/a | `any` | n/a | yes |
 | <a name="input_panorama_name"></a> [panorama\_name](#input\_panorama\_name) | Panorama | `any` | n/a | yes |
 | <a name="input_panorama_version"></a> [panorama\_version](#input\_panorama\_version) | n/a | `any` | n/a | yes |
 | <a name="input_private_static_ip"></a> [private\_static\_ip](#input\_private\_static\_ip) | n/a | `any` | n/a | yes |

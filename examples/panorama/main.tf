@@ -23,6 +23,7 @@ module "vpc" {
 module "panorama" {
   source = "../../modules/panorama"
 
+  name              = var.panorama_name
   project           = var.project
   region            = var.region
   zone              = data.google_compute_zones.this.names[0]
@@ -31,4 +32,5 @@ module "panorama" {
   subnet            = module.vpc.subnetworks["panorama-example-subnet"].id
   private_static_ip = var.private_static_ip
   attach_public_ip  = var.attach_public_ip
+  log_disks         = var.log_disks
 }

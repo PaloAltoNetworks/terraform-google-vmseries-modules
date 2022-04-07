@@ -15,3 +15,4 @@ variable "panorama_version" {}
 variable "ssh_keys" {}
 variable "attach_public_ip" {}
 variable "private_static_ip" {}
+variable "log_disks" {}

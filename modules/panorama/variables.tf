@@ -46,16 +46,31 @@ variable "public_static_ip" {
   default     = null
 }
 
-variable "log_disk_type" {
-  description = "Type of disk holding traffic logs. Default is pd-standard, alternative is pd-ssd or pd-balanced."
-  type        = string
-  default     = "pd-standard"
-}
+variable "log_disks" {
+  description = <<-EOF
+  List of disks to create and attach to Panorama to store traffic logs.
+  Available options:
+  - `name`              (Required) Name of the resource. The name must be 1-63 characters long, and comply with [`RFC1035`](https://datatracker.ietf.org/doc/html/rfc1035).
+  - `type`              (Optional) Disk type resource describing which disk type to use to create the disk. For available options, check the providers [documentation](https://cloud.google.com/compute/docs/disks#disk-types).
+  - `size`              (Optional) Size of the disk for Panorama logs (Gigabytes).
 
-variable "log_disk_size" {
-  description = "Size of disk holding traffic logs in gigabytes. Default is 2000."
-  type        = string
-  default     = "2000"
+  Example:
+  ```
+  log_disks = [
+    {
+      name = "example-disk-1"
+      type = "pd-ssd"
+      size = "2000"
+    },
+    {
+      name = "example-disk-2"
+      type = "pd-ssd"
+      size = "3000"
+    },
+  ]
+  ```
+  EOF
+  default     = []
 }
 
 variable "machine_type" {
@@ -83,13 +98,13 @@ variable "tags" {
 }
 
 variable "disk_type" {
-  description = "Type of boot disk. Default is pd-ssd, alternative is pd-balanced."
+  description = "Type of boot disk. For available options, check the providers [documentation](https://cloud.google.com/compute/docs/disks#disk-types)."
   type        = string
   default     = "pd-ssd"
 }
 
 variable "disk_size" {
-  description = "Size of boot disk in gigabytes. Default is the same as the os image."
+  description = "Size of boot disk in gigabytes. Default is the same as the OS image."
   type        = string
   default     = null
 }

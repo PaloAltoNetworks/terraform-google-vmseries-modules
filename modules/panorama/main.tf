@@ -23,18 +23,20 @@ resource "google_compute_address" "public" {
   address = try(var.public_static_ip, null)
 }
 
-resource "google_compute_disk" "panorama_logs1" {
-  name = "${var.name}-logs1"
+resource "google_compute_disk" "this" {
+  for_each = { for k, v in var.log_disks : k => v }
+
+  name = each.value.name
   zone = var.zone
-  type = var.log_disk_type
-  size = var.log_disk_size
+  type = each.value.type
+  size = each.value.size
 }
 
-resource "google_compute_disk" "panorama_logs2" {
-  name = "${var.name}-logs2"
-  zone = var.zone
-  type = var.log_disk_type
-  size = var.log_disk_size
+resource "google_compute_attached_disk" "default" {
+  for_each = { for k, v in var.log_disks : k => v }
+
+  disk     = google_compute_disk.this[each.key].id
+  instance = google_compute_instance.this.id
 }
 
 resource "google_compute_instance" "this" {
@@ -72,13 +74,5 @@ resource "google_compute_instance" "this" {
       size  = var.disk_size
       type  = var.disk_type
     }
-  }
-
-  attached_disk {
-    source = google_compute_disk.panorama_logs1.name
-  }
-
-  attached_disk {
-    source = google_compute_disk.panorama_logs2.name
   }
 }

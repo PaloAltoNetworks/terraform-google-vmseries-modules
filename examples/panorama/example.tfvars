@@ -14,5 +14,17 @@ attach_public_ip  = true
 # Panorama
 panorama_name    = "example-panorama"
 panorama_version = "panorama-byol-1000"
-ssh_key          = "example-sshkey"
+ssh_keys         = "example-sshkey"
+log_disks = [
+  {
+    name = "example-disk-1"
+    type = "pd-ssd"
+    size = "2000"
+  },
+  {
+    name = "example-disk-2"
+    type = "pd-ssd"
+    size = "3000"
+  },
+]
 
