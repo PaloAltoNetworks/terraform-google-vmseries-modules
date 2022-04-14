@@ -29,30 +29,24 @@ resource "google_compute_firewall" "this" {
 # Spawn the VM-series firewall as a Google Cloud Engine Instance.
 module "jumphost" {
   source = "../../modules/vmseries"
-  instances = {
-    "as4-jumphost01" = {
-      name = "as4-jumphost01"
-      zone = "europe-west4-c"
-      network_interfaces = [
-        {
-          subnetwork = try(module.vpc.subnetworks[var.mgmt_network].self_link, null)
-          public_nat = true
-        },
-      ]
-    }
-  }
-  ssh_key         = "admin:${file(var.public_key_path)}"
-  image_uri       = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+
+  name            = "as4-jumphost01"
+  zone            = "us-central1-c"
+  ssh_keys        = "admin:${file(var.public_key_path)}"
+  custom_image    = "https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-7-v20220303"
   tags            = ["jumphost"]
   service_account = module.iam_service_account.email
-}
-
-output "jumphost_ssh_command" {
-  value = { for k, v in module.jumphost.nic0_ips : k => "ssh  -i ${var.private_key_path}  admin@${v}" }
+  network_interfaces = [
+    {
+      name             = "as4-jumphost01-mgmt"
+      subnetwork       = try(module.vpc.subnetworks[var.mgmt_network].self_link, null)
+      create_public_ip = true
+    }
+  ]
 }
 
 resource "null_resource" "jumphost_ssh_priv_key" {
-  for_each = module.jumphost.nic0_ips
+  for_each = module.jumphost.public_ips[0]
 
   connection {
     type        = "ssh"

@@ -1,5 +1,3 @@
-provider "google" {}
-
 data "google_compute_zones" "this" {}
 
 #-----------------------------------------------------------------------------------------------
@@ -19,9 +17,8 @@ module "bootstrap" {
 
   service_account = module.iam_service_account.email
   files = {
-    "bootstrap_files/init-cfg.txt"    = "config/init-cfg.txt"
-    "bootstrap_files/authcodes"       = "license/authcodes"
-    "bootstrap_files/vm_series-2.0.2" = "plugins/vm_series-2.0.2"
+    "bootstrap_files/init-cfg.txt" = "config/init-cfg.txt"
+    "bootstrap_files/authcodes"    = "license/authcodes"
   }
 }
 
@@ -53,7 +50,7 @@ module "autoscale" {
   machine_type          = var.fw_machine_type
   mgmt_interface_swap   = "enable"
   ssh_key               = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
-  image                 = var.fw_image_uri
+  image                 = var.vmseries_image
   nic0_public_ip        = true
   nic1_public_ip        = false
   nic2_public_ip        = false
