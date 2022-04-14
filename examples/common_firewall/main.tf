@@ -1,17 +1,7 @@
-provider "google" {
-  project = var.project
-  region  = var.region
-}
-
-data "google_compute_zones" "this" {
-  region = var.region
-}
-
 #-----------------------------------------------------------------------------------------------
 # Dedicated IAM service account for running GCP instances of Palo Alto Networks VM-Series.
 # Applying this module requires IAM roles Security Admin and Service Account Admin or their equivalents.
-# The account will not only be used for running the instances, but also for their GCP plugin access.
-# This part should be prepared by Client !
+# The account will not only be used for running the instances, but also for the GCP plugin access.
 
 module "iam_service_account" {
   source = "../../modules/iam_service_account/"
@@ -19,7 +9,7 @@ module "iam_service_account" {
   service_account_id = var.service_account
 }
 
-# Create  buckets for bootstrapping the fresh firewall VM.
+# Create bucket for bootstrapping the fresh firewall VM.
 module "bootstrap" {
   source = "../../modules/bootstrap/"
 
@@ -27,7 +17,6 @@ module "bootstrap" {
   files = {
     "bootstrap_files/init-cfg.txt" = "config/init-cfg.txt"
     "bootstrap_files/authcodes"    = "license/authcodes"
-    #    "bootstrap_files/vm_series-2.0.2" = "plugins/vm_series-2.0.2"
   }
 }
 
@@ -36,31 +25,31 @@ module "vpc" {
 
   networks = [
     {
-      name            = "example-fw-untrust"
-      subnetwork_name = "example-fw-untrust"
+      name            = "${var.name_prefix}fw-untrust"
+      subnetwork_name = "${var.name_prefix}fw-untrust"
       ip_cidr_range   = "10.236.64.16/28"
       allowed_sources = var.allowed_sources
     },
     {
-      name            = "example-fw-mgmt"
-      subnetwork_name = "example-fw-mgmt"
+      name            = "${var.name_prefix}fw-mgmt"
+      subnetwork_name = "${var.name_prefix}fw-mgmt"
       ip_cidr_range   = "10.236.64.0/28"
       allowed_sources = var.allowed_sources
     },
     {
-      name            = "example-fw-trust"
-      subnetwork_name = "example-fw-trust"
+      name            = "${var.name_prefix}fw-trust"
+      subnetwork_name = "${var.name_prefix}fw-trust"
       ip_cidr_range   = "10.236.64.32/28"
     },
     {
-      name            = "example-common-vdi"
-      subnetwork_name = "example-common-vdi"
+      name            = "${var.name_prefix}common-vdi"
+      subnetwork_name = "${var.name_prefix}common-vdi"
       ip_cidr_range   = "10.236.65.0/24"
       allowed_sources = var.allowed_sources
     },
     {
-      name            = "example-vdi"
-      subnetwork_name = "example-vdi"
+      name            = "${var.name_prefix}vdi"
+      subnetwork_name = "${var.name_prefix}vdi"
       ip_cidr_range   = "10.236.68.0/23"
       allowed_sources = var.allowed_sources
     },
@@ -68,110 +57,91 @@ module "vpc" {
 }
 
 resource "google_compute_network_peering" "from_trust_to_common_vdi" {
-  name                 = "from-trust-to-common-vdi"
-  network              = module.vpc.networks["example-fw-trust"].id
-  peer_network         = module.vpc.networks["example-common-vdi"].id
+  name                 = "${var.name_prefix}trust-to-common-vdi"
+  network              = module.vpc.networks["${var.name_prefix}fw-trust"].id
+  peer_network         = module.vpc.networks["${var.name_prefix}common-vdi"].id
   export_custom_routes = true
   import_custom_routes = false
 }
 
 resource "google_compute_network_peering" "from_common_vdi_to_trust" {
-  name                 = "from-common-vdi-to-trust"
-  network              = module.vpc.networks["example-common-vdi"].id
-  peer_network         = module.vpc.networks["example-fw-trust"].id
+  name                 = "${var.name_prefix}common-vdi-to-trust"
+  network              = module.vpc.networks["${var.name_prefix}common-vdi"].id
+  peer_network         = module.vpc.networks["${var.name_prefix}fw-trust"].id
   export_custom_routes = false
   import_custom_routes = true
 }
 
 resource "google_compute_network_peering" "from_trust_to_vdi" {
-  name                 = "from-inside-to-vdi"
-  network              = module.vpc.networks["example-fw-trust"].id
-  peer_network         = module.vpc.networks["example-vdi"].id
+  name                 = "${var.name_prefix}inside-to-vdi"
+  network              = module.vpc.networks["${var.name_prefix}fw-trust"].id
+  peer_network         = module.vpc.networks["${var.name_prefix}vdi"].id
   export_custom_routes = true
   import_custom_routes = false
 }
 
 resource "google_compute_network_peering" "from_vdi_to_trust" {
-  name                 = "from-vdi-to-inside"
-  network              = module.vpc.networks["example-vdi"].id
-  peer_network         = module.vpc.networks["example-fw-trust"].id
+  name                 = "${var.name_prefix}vdi-to-inside"
+  network              = module.vpc.networks["${var.name_prefix}vdi"].id
+  peer_network         = module.vpc.networks["${var.name_prefix}fw-trust"].id
   export_custom_routes = false
   import_custom_routes = true
 }
 
 # Spawn the VM-series firewall as a Google Cloud Engine Instance.
 module "vmseries" {
-  source                = "../../modules/vmseries"
+  for_each = var.vmseries
+  source   = "../../modules/vmseries"
+
+  name = "${var.name_prefix}${each.key}"
+  zone = each.value.zone
+
+  ssh_keys = var.ssh_keys
+  # vmseries_image = var.vmseries_common.vmseries_image
+  custom_image = "https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-7-v20220303"
+
   create_instance_group = true
-  bootstrap_bucket      = module.bootstrap.bucket_name
 
-  instances = {
-    "example-fw-fw01" = {
-      name = "example-fw-fw01"
-      zone = data.google_compute_zones.this.names[2]
-      network_interfaces = [
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-untrust"].self_link
-          public_nat = false
-          ip_address = "10.236.64.20"
-        },
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-mgmt"].self_link
-          ip_address = "10.236.64.2"
-          public_nat = false
-        },
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-trust"].self_link
-          public_nat = false
-          ip_address = "10.236.64.35"
-        },
-      ]
-    }
-    "example-fw-fw02" = {
-      name = "example-fw-fw02"
-      zone = data.google_compute_zones.this.names[1]
-      network_interfaces = [
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-untrust"].self_link
-          public_nat = false
-          ip_address = "10.236.64.21"
-        },
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-mgmt"].self_link
-          ip_address = "10.236.64.3"
-          public_nat = false
-        },
-        {
-          subnetwork = module.vpc.subnetworks["example-fw-trust"].self_link
-          public_nat = false
-          ip_address = "10.236.64.36"
-        },
-      ]
-    }
-  }
+  bootstrap_options = merge({
+    vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
+    },
+    var.vmseries_common.bootstrap_options,
+  )
 
-  ssh_key   = var.ssh_key
-  image_uri = var.image_uri
+  network_interfaces = [
+    {
+      subnetwork      = module.vpc.subnetworks["${var.name_prefix}fw-untrust"].self_link
+      private_address = each.value.private_ips["untrust"]
+    },
+    {
+      subnetwork       = module.vpc.subnetworks["${var.name_prefix}fw-mgmt"].self_link
+      private_address  = each.value.private_ips["mgmt"]
+      create_public_ip = true
+    },
+    {
+      subnetwork      = module.vpc.subnetworks["${var.name_prefix}fw-trust"].self_link
+      private_address = each.value.private_ips["trust"]
+    },
+  ]
 }
 
 # Due to intranet load balancer solution - DNAT for healthchecks traffic should be configured on firewall.
 # Source: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PP9QCAW
-
 module "lb_tcp_internal" {
   source = "../../modules/lb_tcp_internal"
 
-  name       = "example-fw-ilb"
-  backends   = module.vmseries.instance_group_self_links
+  name       = "${var.name_prefix}fw-ilb"
+  backends   = { for k, v in module.vmseries : k => v.instance_group_self_link }
   ip_address = "10.236.64.40"
-  subnetwork = module.vpc.subnetworks["example-fw-trust"].self_link
-  network    = "example-fw-trust"
+  subnetwork = module.vpc.subnetworks["${var.name_prefix}fw-trust"].self_link
+  network    = "${var.name_prefix}fw-trust"
   all_ports  = true
 }
 
 module "lb_tcp_external" {
   source = "../../modules/lb_tcp_external/"
 
-  instances = [for k, v in module.vmseries.instances : module.vmseries.instances[k].self_link]
+  instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
 
   name  = var.extlb_name
   rules = { (var.extlb_name) = { port_range = 80 } }
@@ -183,7 +153,6 @@ module "lb_tcp_external" {
 # -----------------------------------------------------------------------------------------------
 # Cloud Nat for the management interfaces.
 # Needed to reach bootstrap bucket or to log to Cortex DataLake.
-
 module "mgmt_cloud_nat" {
   source  = "terraform-google-modules/cloud-nat/google"
   version = "=1.2"
@@ -192,16 +161,8 @@ module "mgmt_cloud_nat" {
   project_id    = var.project
   region        = var.region
   create_router = true
-  router        = "example-fw-router"
-  network       = "example-fw-mgmt"
+  router        = "${var.name_prefix}fw-router"
+  network       = "${var.name_prefix}fw-mgmt"
 
   depends_on = [module.vpc]
-}
-
-output "self_link" {
-  value = { for k, v in module.vmseries.self_links : k => v }
-}
-
-output "ssh_command" {
-  value = { for k, v in module.vmseries.nic1_ips : k => "ssh admin@${v}" }
 }

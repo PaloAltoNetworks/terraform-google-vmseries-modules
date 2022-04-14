@@ -31,7 +31,6 @@ No requirements.
 | [google_compute_network_peering.from_trust_to_common_vdi](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
 | [google_compute_network_peering.from_trust_to_vdi](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
 | [google_compute_network_peering.from_vdi_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
 ## Inputs
 
@@ -39,18 +38,19 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | n/a | `any` | n/a | yes |
 | <a name="input_extlb_name"></a> [extlb\_name](#input\_extlb\_name) | n/a | `any` | n/a | yes |
-| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | n/a | `any` | n/a | yes |
-| <a name="input_image_uri"></a> [image\_uri](#input\_image\_uri) | n/a | `any` | `null` | no |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | n/a | `string` | `"example-"` | no |
 | <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | n/a | `any` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | n/a | `any` | n/a | yes |
 | <a name="input_service_account"></a> [service\_account](#input\_service\_account) | n/a | `any` | n/a | yes |
-| <a name="input_ssh_key"></a> [ssh\_key](#input\_ssh\_key) | n/a | `any` | n/a | yes |
+| <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | n/a | `any` | n/a | yes |
+| <a name="input_vmseries"></a> [vmseries](#input\_vmseries) | n/a | `any` | n/a | yes |
+| <a name="input_vmseries_common"></a> [vmseries\_common](#input\_vmseries\_common) | n/a | `any` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_self_link"></a> [self\_link](#output\_self\_link) | n/a |
-| <a name="output_ssh_command"></a> [ssh\_command](#output\_ssh\_command) | n/a |
+| <a name="output_vmseries_private_ips"></a> [vmseries\_private\_ips](#output\_vmseries\_private\_ips) | n/a |
+| <a name="output_vmseries_public_ips"></a> [vmseries\_public\_ips](#output\_vmseries\_public\_ips) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
