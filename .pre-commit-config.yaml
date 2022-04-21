@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.43.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+    rev: v1.68.1 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
@@ -18,13 +18,9 @@ repos:
             # --args=--only=terraform_unused_declarations,
             --args=--only=terraform_workspace_remote,
           ]
-      - id: terraform_tfsec
-        args: ["--args=-e GCP001,GCP002,GCP003,GCP004"]
-        # GCP001 Unencrypted disk.
-        #   Ignore for transitional period. TODO enable it after encrypting all panorama log-disks.
-        # GCP002 Unencrypted bucket.
-        #   Ignore for transitional period. TODO enable it after encrypting all buckets.
-        # GCP003 An inbound vpc rule allows traffic from /0.
-        #   Ignore it because we rarely use traditional rules for security. Instead we do it with our own firewalls-as-VMs.
-        # GCP004 An outbound vpc rule allows traffic from /0.
-        #   Ignore it because we rarely use traditional rules for security. Instead we do it with our own firewalls-as-VMs.
+  - repo: https://github.com/bridgecrewio/checkov.git
+    rev: '2.0.1075'
+    hooks:
+    - id: checkov
+      verbose: true
+      args: [--soft-fail]
