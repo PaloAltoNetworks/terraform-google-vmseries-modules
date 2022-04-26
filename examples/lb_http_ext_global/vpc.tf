@@ -9,9 +9,9 @@ module "vpc" {
 
 
   networks = {
-    "my-vpc" = {
-      name            = "my-vpc"
-      subnetwork_name = "my-subnet"
+    "${var.name_prefix}vpc" = {
+      name            = "${var.name_prefix}vpc"
+      subnetwork_name = "${var.name_prefix}subnet"
       ip_cidr_range   = "192.168.1.0/24"
       allowed_sources = var.mgmt_sources
     }
@@ -19,14 +19,14 @@ module "vpc" {
 }
 
 locals {
-  my_vpc    = module.vpc.networks["my-vpc"].self_link
-  my_subnet = try(module.vpc.subnetworks["my-subnet"].self_link, null)
+  vpc    = module.vpc.networks["${var.name_prefix}vpc"].self_link
+  subnet = try(module.vpc.subnetworks["${var.name_prefix}subnet"].self_link, null)
 }
 
 #  Google's own health checkers use a set of known address ranges
 resource "google_compute_firewall" "builtin_healthchecks" {
-  name          = "my-vpc-builtin-healthchecks"
-  network       = local.my_vpc
+  name          = "${var.name_prefix}vpc-builtin-healthchecks"
+  network       = local.vpc
   direction     = "INGRESS"
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
   # The "169.254.169.254/32" is also used, but it is always allowed anyway.
@@ -39,8 +39,8 @@ resource "google_compute_firewall" "builtin_healthchecks" {
 
 # Connect from outside to extlb.
 resource "google_compute_firewall" "extlb" {
-  name          = "my-vpc-extlb"
-  network       = local.my_vpc
+  name          = "${var.name_prefix}vpc-extlb"
+  network       = local.vpc
   direction     = "INGRESS"
   source_ranges = var.mgmt_sources
 
@@ -52,8 +52,8 @@ resource "google_compute_firewall" "extlb" {
 
 # We need ssh to run our own verification code.
 resource "google_compute_firewall" "ssh" {
-  name          = "my-vpc-ssh"
-  network       = local.my_vpc
+  name          = "${var.name_prefix}vpc-ssh"
+  network       = local.vpc
   direction     = "INGRESS"
   source_ranges = var.mgmt_sources
 
