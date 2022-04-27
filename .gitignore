@@ -29,6 +29,8 @@
 *.tfstate.*
 .vscode
 .idea
+# Terraform crash log files
+crash.*.log
 
 # Palo auth codes
 authcodes
