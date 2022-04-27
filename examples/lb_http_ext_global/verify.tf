@@ -1,13 +1,13 @@
 # TODO: unfeasible to have it 3-4 minutes, see README.md
 resource "null_resource" "delay_actual_use" {
-  for_each = module.vmseries.nic0_ips
+  for_each = module.vmseries
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = each.value
+      host        = each.value.public_ips["0"]
       private_key = file("~/.ssh/id_rsa")
-      user        = "demo"
+      user        = "centos"
     }
 
     inline = [
@@ -18,14 +18,14 @@ resource "null_resource" "delay_actual_use" {
 }
 
 resource "null_resource" "verify_with_curl" {
-  for_each = module.vmseries.nic0_ips
+  for_each = module.vmseries
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = each.value
+      host        = each.value.public_ips["0"]
       private_key = file("~/.ssh/id_rsa")
-      user        = "demo"
+      user        = "centos"
     }
 
     inline = [

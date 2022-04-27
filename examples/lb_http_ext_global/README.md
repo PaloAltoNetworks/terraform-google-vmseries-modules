@@ -1,41 +1,6 @@
 
 # Example of various GCP load balancers
 
-Initialize:
-
-```bash
-terraform init
-```
-
-First, apply only the instances (the step is only obligatory on Terraform version 0.12).
-
-```bash
-terraform apply --refresh=false --target modules.vmseries
-```
-
-Because of deficiencies of Terraform's `google` provider, often the resources are deemed created when in fact they cannot be used
-for quite a long time. This is why deployment will likely require manual repeats:
-
-```bash
-terraform apply --refresh=false
-# ... wait some seconds ...
-terraform apply --refresh=false
-# ... wait some seconds ...
-terraform apply --refresh=false
-```
-
-Same for destruction:
-
-```bash
-terraform destroy
-# ... wait some seconds ...
-terraform destroy
-# ... wait some seconds ...
-terraform destroy
-```
-
-Setting `depends_on` doesn't seem to solve this deficiency. In particular the GLB healthcheck, even after `depends_on` succeeds, can sometimes take about 3-4 minutes more to become usable (during the wait it returns a mix of `404 Not Found` and `502 Bad Gateway`).
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -79,6 +44,10 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_mgmt_sources"></a> [mgmt\_sources](#input\_mgmt\_sources) | n/a | `list` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | n/a | `string` | `"example-"` | no |
+| <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | n/a | `any` | n/a | yes |
+| <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | n/a | `any` | n/a | yes |
 
 ## Outputs
 
@@ -86,5 +55,6 @@ Setting `depends_on` doesn't seem to solve this deficiency. In particular the GL
 |------|-------------|
 | <a name="output_global_url"></a> [global\_url](#output\_global\_url) | n/a |
 | <a name="output_internal_url"></a> [internal\_url](#output\_internal\_url) | n/a |
+| <a name="output_public_ips"></a> [public\_ips](#output\_public\_ips) | n/a |
 | <a name="output_regional_url"></a> [regional\_url](#output\_regional\_url) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

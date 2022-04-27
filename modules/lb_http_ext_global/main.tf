@@ -57,7 +57,7 @@ resource "google_compute_url_map" "default" {
 }
 
 resource "google_compute_backend_service" "default" {
-  name        = "${var.name}-0"
+  name        = var.name
   port_name   = var.backend_port_name
   protocol    = var.backend_protocol
   timeout_sec = var.timeout_sec

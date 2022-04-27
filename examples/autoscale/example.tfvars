@@ -41,6 +41,3 @@ intlb_network       = "as4-trust"
 intlb_global_access = true
 
 service_account = "paloaltonetworks-fw"
-
-# Aid in initial troubleshooting:
-# fw_image_uri = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"

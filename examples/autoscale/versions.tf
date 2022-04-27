@@ -6,3 +6,8 @@ terraform {
     google = { version = "~> 3.48" }
   }
 }
+
+provider "google" {
+  project = var.project
+  region  = var.region
+}

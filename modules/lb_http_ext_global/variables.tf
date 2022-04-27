@@ -9,9 +9,10 @@ variable "name" {
   type        = string
 }
 
-variable "backend_protocol" {
-  description = "The protocol used to talk to the backend service"
-  default     = "HTTP"
+variable "backend_groups" {
+  description = "The map containing the names of instance groups (IGs) or network endpoint groups (NEGs) to serve. The IGs can be managed or unmanaged or a mix of both. All IGs must handle named port `backend_port_name`. The NEGs just handle unnamed port."
+  default     = {}
+  type        = map(string)
 }
 
 variable "backend_port_name" {
@@ -20,16 +21,16 @@ variable "backend_port_name" {
   type        = string
 }
 
+variable "backend_protocol" {
+  description = "The protocol used to talk to the backend service"
+  default     = "HTTP"
+  type        = string
+}
+
 variable "timeout_sec" {
   description = "Timeout to consider a connection dead, in seconds (default 30)"
   default     = null
   type        = number
-}
-
-variable "backend_groups" {
-  description = "The map containing the names of instance groups (IGs) or network endpoint groups (NEGs) to serve. The IGs can be managed or unmanaged or a mix of both. All IGs must handle named port `backend_port_name`. The NEGs just handle unnamed port."
-  default     = {}
-  type        = map(string)
 }
 
 variable "balancing_mode" {
