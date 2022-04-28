@@ -96,9 +96,8 @@ module "vmseries" {
   name = "${var.name_prefix}${each.key}"
   zone = each.value.zone
 
-  ssh_keys = var.ssh_keys
-  # vmseries_image = var.vmseries_common.vmseries_image
-  custom_image = "https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-7-v20220303"
+  ssh_keys       = var.ssh_keys
+  vmseries_image = var.vmseries_common.vmseries_image
 
   create_instance_group = true
 

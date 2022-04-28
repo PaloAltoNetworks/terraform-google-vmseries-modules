@@ -99,7 +99,7 @@ resource "google_compute_instance" "this" {
 
   boot_disk {
     initialize_params {
-      image = try(var.custom_image, data.google_compute_image.vmseries[0].self_link)
+      image = coalesce(var.custom_image, data.google_compute_image.vmseries[0].self_link)
       type  = var.disk_type
     }
   }
