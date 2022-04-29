@@ -29,6 +29,7 @@
 *.tfstate.*
 .vscode
 .idea
+*.tfsec
 # Terraform crash log files
 crash.*.log
 
