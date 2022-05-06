@@ -25,6 +25,10 @@ The compatibility with Terraform is defined individually per each module. In gen
 Terraform version to be 0.15.3 across most of the modules.
 <!-- [FUTURE] If you need to stay on Terraform 0.15.3 and need to use these modules, the recommended last compatible release is 1.2.3. -->
 
+## Roadmap
+
+We are maintaining a [public roadmap](https://github.com/orgs/PaloAltoNetworks/projects/33/views/8) to help users understand when we will release new features, bug fixes and enhancements.
+
 ## Versioning
 
 These modules follow the principles of [Semantic Versioning](http://semver.org/). You can find each new release,
@@ -37,7 +41,7 @@ along with the changelog, on the GitHub [Releases](../../releases) page.
 ## Contributing
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps,
-and credit will always be given. Please follow our [contributing guide](./docs/contributing.md).
+and credit will always be given. Please follow our [contributing guide](https://github.com/PaloAltoNetworks/terraform-best-practices/blob/main/CONTRIBUTING.md).
 
 <!-- ## Who maintains these modules?
 
