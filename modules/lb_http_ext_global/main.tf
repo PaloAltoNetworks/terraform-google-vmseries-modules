@@ -41,7 +41,7 @@ resource "google_compute_target_https_proxy" "default" {
 }
 
 resource "google_compute_ssl_certificate" "default" {
-  count       = var.ssl && ! var.use_ssl_certificates ? 1 : 0
+  count       = var.ssl && !var.use_ssl_certificates ? 1 : 0
   name_prefix = "${var.name}-certificate"
   private_key = var.private_key
   certificate = var.certificate
@@ -57,7 +57,7 @@ resource "google_compute_url_map" "default" {
 }
 
 resource "google_compute_backend_service" "default" {
-  name        = "${var.name}-0"
+  name        = var.name
   port_name   = var.backend_port_name
   protocol    = var.backend_protocol
   timeout_sec = var.timeout_sec
