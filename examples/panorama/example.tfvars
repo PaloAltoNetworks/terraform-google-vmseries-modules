@@ -7,7 +7,7 @@ region     = "us-central1"
 vpc_name          = "example-panorama-vpc"
 subnet_name       = "example-panorama-subnet"
 cidr              = "172.21.21.0/24"
-allowed_sources   = ["0.0.0.0/0"]
+allowed_sources   = ["<list of IP CIDRs>"]
 private_static_ip = "172.21.21.111"
 attach_public_ip  = true
 
