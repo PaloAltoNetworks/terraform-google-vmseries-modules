@@ -1,8 +1,4 @@
-# Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
-
-The firewalls are created and destroyed by the GCP managed instance group.
-
-For enhanced security, the firewalls' management interfaces are unreachable through public IP addresses (there is however a jumphost to aid initial troubleshooting).
+# Example for GCP Auto-Scaling of Firewalls
 
 ## Caveat
 
@@ -11,12 +7,35 @@ For enhanced security, the firewalls' management interfaces are unreachable thro
 
 ## Instruction
 
-- Set up Panorama and its VPC (consider using `examples/panorama`).
-- Configure Panorama. This example assumes it exists with proper settings.
-- Optionally, restart Panorama with `request restart system` to ensure the vm-auth-key is saved properly.
-- Go to the main directory of the example (i.e. where this `README.md` is placed).
-- Copy the `example.tfvars` into `terraform.tfvars` and modify it to your needs.
-- Generate the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
+- Set up all the VPCs.
+- Set up Panorama. This example assumes it exists with proper settings.
+- Set the GCP Service Account with the sufficient permissions. The account will not only be used for GCP plugin access, but also for actually running the instances.
+- Go to the main directory of the example (i.e. where this README.md is placed)
+- Put the created items into your `terraform.tfvars`:
+
+```ini
+
+mgmt_vpc          = "as4-mgmt-vpc"
+mgmt_subnet       = ["as4-mgmt"]
+mgmt_cidr         = ["192.168.0.0/24"]
+untrust_vpc       = "as4-untrust-vpc"
+untrust_subnet    = ["as4-untrust"]
+untrust_cidr      = ["192.168.1.0/24"]
+trust_vpc         = "as4-trust-vpc"
+trust_subnet      = ["as4-trust"]
+trust_cidr        = ["192.168.2.0/24"]
+
+service_account   = "my-service-account@my-project.iam.gserviceaccount.com"
+```
+
+- Optionally, restrict the access to where your laptop(s) will access the example:
+
+```ini
+mgmt_sources      = ["199.167.52.0/22", "8.47.64.2/32", "208.184.7.0/24", "67.154.150.32/28", "208.184.44.128/27", "64.0.175.110/32", "64.124.146.186/32", "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22", "124.33.177.32/28", "150.249.195.35/32", "203.116.44.82/32", "118.201.32.208/28", "111.223.77.192/27", "119.73.179.160/28", "125.17.6.254/32", "115.114.47.125/32", "96.92.92.64/28", "63.226.86.16/32", "213.39.97.34/32", "18.130.7.245/32", "84.207.227.0/28", "84.207.230.24/29", "213.208.209.160/30", "155.160.255.8/29", "182.74.171.144/29", "119.225.22.94/32", "13.239.13.13/32", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+                   # These are for GCP healthchecks: "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22", "169.254.169.254/32"
+```
+
+- Put the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
 - Manually edit the settings in `bootstrap_files/authcodes`
 - Manually edit the settings in `bootstrap_files/init-cfg.txt`
 - Deploy Terraform:
@@ -26,73 +45,3 @@ terraform init
 terraform plan
 terraform apply
 ```
-
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.48 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | ~> 2.1 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 2.3 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.48 |
-| <a name="provider_null"></a> [null](#provider\_null) | ~> 2.1 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale | n/a |
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ | n/a |
-| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
-| <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_tcp_internal/ | n/a |
-| <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries | n/a |
-| <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc | n/a |
-| <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [google_compute_firewall.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
-| [null_resource.jumphost_ssh_priv_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_autoscaler_metrics"></a> [autoscaler\_metrics](#input\_autoscaler\_metrics) | The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).<br>Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.<br>Each zonal group grows until it satisfies all the targets.<br><br>Additional optional attribute `type` defines the metric as either `GAUGE` (the default), `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.<br>For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `map` | <pre>{<br>  "custom.googleapis.com/VMSeries/panSessionActive": {<br>    "target": 100<br>  }<br>}</pre> | no |
-| <a name="input_extlb_healthcheck_port"></a> [extlb\_healthcheck\_port](#input\_extlb\_healthcheck\_port) | n/a | `number` | `80` | no |
-| <a name="input_extlb_name"></a> [extlb\_name](#input\_extlb\_name) | n/a | `string` | `"as4-fw-extlb"` | no |
-| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | n/a | `string` | `"n1-standard-4"` | no |
-| <a name="input_fw_network_ordering"></a> [fw\_network\_ordering](#input\_fw\_network\_ordering) | A list of names from the `networks[*].name` attributes. | `list` | `[]` | no |
-| <a name="input_intlb_global_access"></a> [intlb\_global\_access](#input\_intlb\_global\_access) | (Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route. | `bool` | `false` | no |
-| <a name="input_intlb_name"></a> [intlb\_name](#input\_intlb\_name) | n/a | `string` | `"as4-fw-intlb"` | no |
-| <a name="input_intlb_network"></a> [intlb\_network](#input\_intlb\_network) | Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
-| <a name="input_mgmt_network"></a> [mgmt\_network](#input\_mgmt\_network) | Name of the network to create for firewall management. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
-| <a name="input_mgmt_sources"></a> [mgmt\_sources](#input\_mgmt\_sources) | n/a | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| <a name="input_networks"></a> [networks](#input\_networks) | The list of maps describing the VPC networks and subnetworks | `any` | n/a | yes |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names, an arbitrary string | `string` | `"as4"` | no |
-| <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` | `any` | `null` | no |
-| <a name="input_project"></a> [project](#input\_project) | GCP Project ID | `string` | n/a | yes |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID | `string` | n/a | yes |
-| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"id_rsa.pub"` | no |
-| <a name="input_region"></a> [region](#input\_region) | GCP Region | `string` | `"europe-west4"` | no |
-| <a name="input_service_account"></a> [service\_account](#input\_service\_account) | IAM Service Account for running firewall instances (just the identifier, without `@domain` part) | `string` | `"paloaltonetworks-fw"` | no |
-| <a name="input_vmseries_image"></a> [vmseries\_image](#input\_vmseries\_image) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"` | no |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| <a name="output_jumphost_ssh_command"></a> [jumphost\_ssh\_command](#output\_jumphost\_ssh\_command) | n/a |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

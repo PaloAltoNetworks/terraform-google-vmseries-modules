@@ -1,24 +1,8 @@
-locals {
-  access_configs = {
-    for k, v in var.network_interfaces : k => {
-      nat_ip                 = try(v.public_ip, google_compute_address.public[k].address, null)
-      public_ptr_domain_name = try(v.public_ptr_domain_name, google_compute_address.public[k].public_ptr_domain_name, null)
-    }
-    if can(v.public_ip) || can(v.create_public_ip)
+terraform {
+  required_providers {
+    null   = { version = "~> 2.1" }
+    google = { version = "~> 3.30" }
   }
-}
-
-data "google_compute_image" "vmseries" {
-  count = var.custom_image == null ? 1 : 0
-
-  name    = var.vmseries_image
-  project = "paloaltonetworksgcp-public"
-}
-
-data "google_compute_subnetwork" "this" {
-  for_each = { for k, v in var.network_interfaces : k => v }
-
-  self_link = each.value.subnetwork
 }
 
 resource "null_resource" "dependency_getter" {
@@ -27,45 +11,22 @@ resource "null_resource" "dependency_getter" {
   }
 }
 
-resource "google_compute_address" "private" {
-  for_each = { for k, v in var.network_interfaces : k => v }
-
-  name         = try(each.value.private_ip_name, "${var.name}-${each.key}-private")
-  address_type = "INTERNAL"
-  address      = try(each.value.private_address, null)
-  subnetwork   = each.value.subnetwork
-  region       = data.google_compute_subnetwork.this[each.key].region
-}
-
-resource "google_compute_address" "public" {
-  for_each = { for k, v in var.network_interfaces : k => v if try(v.create_public_ip, false) && try(v.public_ip, null) == null }
-
-  name         = try(each.value.public_ip_name, "${var.name}-${each.key}-public")
-  address_type = "EXTERNAL"
-  region       = data.google_compute_subnetwork.this[each.key].region
-}
-
 resource "google_compute_instance" "this" {
-
-  name                      = var.name
-  zone                      = var.zone
+  for_each                  = var.instances
+  name                      = each.value.name
+  zone                      = each.value.zone
   machine_type              = var.machine_type
   min_cpu_platform          = var.min_cpu_platform
-  labels                    = var.labels
   tags                      = var.tags
-  metadata_startup_script   = var.metadata_startup_script
-  project                   = var.project
-  resource_policies         = var.resource_policies
   can_ip_forward            = true
   allow_stopping_for_update = true
 
-  metadata = merge({
-    serial-port-enable = true
-    ssh-keys           = var.ssh_keys
-    },
-    var.bootstrap_options,
-    var.metadata
-  )
+  metadata = {
+    mgmt-interface-swap                  = "enable"
+    vmseries-bootstrap-gce-storagebucket = var.bootstrap_bucket
+    serial-port-enable                   = true
+    ssh-keys                             = var.ssh_key
+  }
 
   service_account {
     email  = var.service_account
@@ -73,33 +34,31 @@ resource "google_compute_instance" "this" {
   }
 
   dynamic "network_interface" {
-    for_each = var.network_interfaces
+    for_each = { for k, v in each.value.network_interfaces : k => merge(
+      try(each.value.network_interfaces_base[k], {}),
+      each.value.network_interfaces[k],
+      try(each.value.network_interfaces_custom[k], {}),
+    ) }
 
     content {
-      network_ip = google_compute_address.private[network_interface.key].address
-      subnetwork = network_interface.value.subnetwork
-
       dynamic "access_config" {
-        for_each = try(local.access_configs[network_interface.key] != null, false) ? ["one"] : []
+        # the "access_config", if present, creates a public IP address
+        for_each = try(network_interface.value.public_nat, false) ? ["one"] : []
         content {
-          nat_ip                 = local.access_configs[network_interface.key].nat_ip
-          public_ptr_domain_name = local.access_configs[network_interface.key].public_ptr_domain_name
+          nat_ip = try(network_interface.value.nat_ip, null)
         }
       }
 
-      dynamic "alias_ip_range" {
-        for_each = try(network_interface.value.alias_ip_ranges, [])
-        content {
-          ip_cidr_range         = alias_ip_ranges.value.ip_cidr_range
-          subnetwork_range_name = try(alias_ip_ranges.value.subnetwork_range_name, null)
-        }
-      }
+      network_ip = try(network_interface.value.ip_address, null)
+      subnetwork = network_interface.value.subnetwork
     }
   }
 
+  # TODO: var.linux_fake  -> 0.0/0 route for both nic0 and nic1 -> ip vrf add nic1 ; ip ro add 0.0.0.0/0
+
   boot_disk {
     initialize_params {
-      image = coalesce(var.custom_image, try(data.google_compute_image.vmseries[0].self_link, null))
+      image = coalesce(var.image_uri, "${var.image_prefix_uri}${var.image_name}")
       type  = var.disk_type
     }
   }
@@ -109,21 +68,20 @@ resource "google_compute_instance" "this" {
   ]
 }
 
-# The Deployment Guide Jan 2020 recommends per-zone instance groups (instead of regional IGMs).
+// The Deployment Guide Jan 2020 recommends per-zone instance groups (instead of regional IGMs).
 resource "google_compute_instance_group" "this" {
-  count = var.create_instance_group ? 1 : 0
+  for_each  = var.instances
+  name      = "${each.value.name}-${each.value.zone}-ig"
+  zone      = each.value.zone
+  instances = [google_compute_instance.this[each.key].self_link]
 
-  name      = "${var.name}-${var.zone}"
-  zone      = var.zone
-  project   = var.project
-  instances = [google_compute_instance.this.self_link]
+  named_port {
+    name = "http"
+    port = "80"
+  }
 
-  dynamic "named_port" {
-    for_each = var.named_ports
-    content {
-      name = named_port.value.name
-      port = named_port.value.port
-    }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 

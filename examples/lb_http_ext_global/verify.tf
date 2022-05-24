@@ -1,13 +1,13 @@
 # TODO: unfeasible to have it 3-4 minutes, see README.md
 resource "null_resource" "delay_actual_use" {
-  for_each = module.vmseries
+  for_each = module.vm.nic0_public_ip
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = each.value.public_ips["0"]
+      host        = each.value
       private_key = file("~/.ssh/id_rsa")
-      user        = "centos"
+      user        = "demo"
     }
 
     inline = [
@@ -18,21 +18,20 @@ resource "null_resource" "delay_actual_use" {
 }
 
 resource "null_resource" "verify_with_curl" {
-  for_each = module.vmseries
+  for_each = module.vm.nic0_public_ip
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = each.value.public_ips["0"]
+      host        = each.value
       private_key = file("~/.ssh/id_rsa")
-      user        = "centos"
+      user        = "demo"
     }
 
     inline = [
-      "printf '127:   '  &&  curl -m5 -sSi http://127.0.0.1 | head -1",
       "printf 'glb:   '  &&  curl -m5 -sSi http://${module.glb.address} | head -1",
       "printf 'ilb:   '  &&  curl -m5 -sSi http://${module.ilb.address} | head -1",
-      "printf 'extlb: '  &&  curl -m5 -sSi http://${local.extlb_address} | head -1",
+      "printf 'extlb: '  &&  curl -m5 -sSi http://${module.extlb.address} | head -1",
     ]
   }
 

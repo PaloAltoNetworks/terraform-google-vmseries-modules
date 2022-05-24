@@ -1,94 +1,37 @@
-variable "name" {
-  description = "Name of the VM-Series instance."
-  type        = string
+variable instances {
+  description = "Definition of firewalls that will be deployed"
+  type        = map(any)
+  # Why `any` here: don't use object() because then every element must then have exactly the same nested structure.
+  # It thus becomes unwieldy. There can be no optional attributes. Even if there is a non-optional attribute that
+  # is a nested list, it needs to have same number of elements for each firewall.
 }
 
-variable "project" {
-  default = null
+variable machine_type {
+  default = "n1-standard-4"
   type    = string
 }
 
-variable "zone" {
-  description = "Zone to deploy instance in."
-  type        = string
+variable min_cpu_platform {
+  default = "Intel Broadwell"
+  type    = string
 }
 
-variable "network_interfaces" {
-  description = <<-EOF
-  List of the network interface specifications.
-  Available options:
-  - `subnetwork`             - (Required|string) Self-link of a subnetwork to create interface in.
-  - `private_ip_name`        - (Optional|string) Name for a private address to reserve.
-  - `private_ip`             - (Optional|string) Private address to reserve.
-  - `create_public_ip`       - (Optional|boolean) Whether to reserve public IP for the interface. Ignored if `public_ip` is provided. Defaults to 'false'.
-  - `public_ip_name`         - (Optional|string) Name for a public address to reserve.
-  - `public_ip`              - (Optional|string) Existing public IP to use.
-  - `public_ptr_domain_name` - (Optional|string) Existing public PTR name to use.
-  - `alias_ip_ranges`        - (Optional|list) List of objects that define additional IP ranges for an interface, as specified [here](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#ip_cidr_range)
-  EOF
-  type        = list(any)
+variable disk_type {
+  description = "Default is pd-ssd, alternative is pd-balanced."
+  default     = "pd-ssd"
 }
 
-variable "bootstrap_options" {
-  description = "VM-Series bootstrap options to pass using instance metadata."
-  default     = {}
-  type        = map(string)
+variable bootstrap_bucket {
+  default = ""
+  type    = string
 }
 
-variable "ssh_keys" {
-  description = "Public keys to allow SSH access for, separated by newlines."
-  default     = null
-  type        = string
+variable ssh_key {
+  default = ""
+  type    = string
 }
 
-variable "metadata" {
-  description = "Other, not VM-Series specific, metadata to set for an instance."
-  default     = {}
-  type        = map(string)
-}
-
-variable "metadata_startup_script" {
-  description = "See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
-  default     = null
-  type        = string
-}
-
-variable "create_instance_group" {
-  description = "Create an instance group, that can be used in a load balancer setup."
-  default     = false
-  type        = bool
-}
-
-variable "named_ports" {
-  description = <<-EOF
-  The list of named ports to create in the instance group:
-
-  ```
-  named_ports = [
-    {
-      name = "http"
-      port = "80"
-    },
-    {
-      name = "app42"
-      port = "4242"
-    },
-  ]
-  ```
-
-  The name identifies the backend port to receive the traffic from the global load balancers.
-  Practically, tcp port 80 named "http" works even when not defined here, but it's not a documented provider's behavior.
-  EOF
-  default     = []
-}
-
-variable "service_account" {
-  description = "IAM Service Account for running firewall instance (just the email)"
-  default     = null
-  type        = string
-}
-
-variable "scopes" {
+variable scopes {
   default = [
     "https://www.googleapis.com/auth/compute.readonly",
     "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -99,56 +42,41 @@ variable "scopes" {
   type = list(string)
 }
 
-variable "vmseries_image" {
-  description = <<EOF
-  The image name from which to boot an instance, including the license type and the version.
-  To get a list of available official images, please run the following command:
-  `gcloud compute images list --filter="name ~ vmseries" --project paloaltonetworksgcp-public --no-standard-images`
-  EOF
-  default     = "vmseries-flex-bundle1-1008h8"
+variable image_prefix_uri {
+  description = "The image URI prefix, by default https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/ string. When prepended to `image_name` it should result in a full valid Google Cloud Engine image resource URI."
+  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/"
   type        = string
 }
 
-variable "custom_image" {
-  description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides official image specified using `vmseries_image`."
+variable image_name {
+  description = "The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913."
+  default     = "vmseries-flex-bundle1-913"
+  type        = string
+}
+
+variable image_uri {
+  description = "The full URI to GCE image resource, the output of `gcloud compute images list --uri`. Overrides `image_name` and `image_prefix_uri` inputs."
   default     = null
   type        = string
 }
 
-variable "machine_type" {
-  description = "Firewall instance machine type, which depends on the license used. See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
-  default     = "n1-standard-4"
-  type        = string
-}
-
-variable "min_cpu_platform" {
-  default = "Intel Broadwell"
-  type    = string
-}
-
-variable "disk_type" {
-  description = "Boot disk type. See [provider documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#type) for available values."
-  default     = "pd-standard"
-}
-
-variable "labels" {
-  description = "GCP instance lables."
-  default     = {}
-  type        = map(any)
-}
-
-variable "tags" {
-  description = "GCP instance tags."
-  default     = []
-  type        = list(string)
-}
-
-variable "resource_policies" {
+variable tags {
   default = []
   type    = list(string)
 }
 
-variable "dependencies" {
+variable create_instance_group {
+  default = false
+  type    = bool
+}
+
+variable service_account {
+  description = "IAM Service Account for running firewall instance (just the email)"
+  default     = null
+  type        = string
+}
+
+variable dependencies {
   default = []
   type    = list(string)
 }
