@@ -1,33 +1,23 @@
-output names {
-  value = { for k, v in google_compute_instance.this : k => v.name }
+output "instance" {
+  value = google_compute_instance.this
 }
 
-output self_links {
-  value = { for k, v in google_compute_instance.this : k => v.self_link }
+output "self_link" {
+  value = google_compute_instance.this.self_link
 }
 
-output public_ips {
-  value = { for k, v in google_compute_instance.this :
-    k => [
-      for nic in v.network_interface :
-      try(nic.access_config.0.nat_ip, null)
-  ] }
+output "instance_group" {
+  value = try(google_compute_instance_group.this[0], null)
 }
 
-output nic0_public_ips {
-  value = { for k, v in google_compute_instance.this :
-    k => v.network_interface.0.access_config.0.nat_ip
-    if try(v.network_interface.0.access_config.0.nat_ip, null) != null
-  }
+output "instance_group_self_link" {
+  value = try(google_compute_instance_group.this[0].self_link, null)
 }
 
-output nic1_public_ips {
-  value = { for k, v in google_compute_instance.this :
-    k => v.network_interface.1.access_config.0.nat_ip
-    if try(v.network_interface.1.access_config.0.nat_ip, null) != null
-  }
+output "private_ips" {
+  value = { for k, v in google_compute_instance.this.network_interface : k => v.network_ip }
 }
 
-output instance_groups {
-  value = { for k, v in google_compute_instance_group.this : k => v.self_link }
+output "public_ips" {
+  value = { for k, v in google_compute_instance.this.network_interface : k => v.access_config[0].nat_ip if length(v.access_config) != 0 }
 }

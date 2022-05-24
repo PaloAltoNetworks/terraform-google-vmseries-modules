@@ -1,25 +1,38 @@
-module "vm" {
-  source = "../../modules/vm/"
-
-  instances = {
-    "a" = {
-      name       = "my-vm01"
-      zone       = data.google_compute_zones.available.names[0]
-      subnetwork = local.my_subnet
+module "vmseries" {
+  for_each = {
+    "${var.name_prefix}vm01" = {
+      name = "${var.name_prefix}vm01"
+      zone = data.google_compute_zones.available.names[0]
+      network_interfaces = [
+        {
+          subnetwork       = local.subnet
+          create_public_ip = true
+        },
+      ]
     }
-    "b" = {
-      name       = "my-vm02"
-      zone       = data.google_compute_zones.available.names[1]
-      subnetwork = local.my_subnet
+    "${var.name_prefix}vm02" = {
+      name = "${var.name_prefix}vm02"
+      zone = data.google_compute_zones.available.names[1]
+      network_interfaces = [
+        {
+          subnetwork       = local.subnet
+          create_public_ip = true
+        },
+      ]
     }
   }
+  source = "../../modules/vmseries/"
+
+  name = each.value.name
+  zone = each.value.zone
+
+  network_interfaces = each.value.network_interfaces
 
   ## Any image will do, if only it exposes on port 80 the http url `/`:
-  image        = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
+  custom_image = "https://console.cloud.google.com/compute/imagesDetail/projects/nginx-public/global/images/nginx-plus-centos7-developer-v2019070118"
   machine_type = "g1-small"
 
-  ## The part before the colon is the ssh user name. The part after is intended to be replaced with your own ssh-rsa public key.
-  ssh_key = "demo:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbUVRz+1iNWsTVly/Xou2BUe8+ZEYmWymClLmFbQXsoFLcAGlK+NuixTq6joS+svuKokrb2Cmje6OyGG2wNgb8AsEvzExd+zbNz7Dsz+beSbYaqVjz22853+uY59CSrgdQU4a5py+tDghZPe1EpoYGfhXiD9Y+zxOIhkk+RWl2UKSW7fUe23UdXC4f+YbA0+Xy2l19g/tOVFgThHJn9FFdlQqlJC6a/0mWfudRNLCaiO5IbOlXIKvkLluWZ2GIMkr8uC5wldHyutF20EdAF9A4n72FssHCvB+WhrMCLspIgMfQA3ZMEfQ+/N5sh0c8vCZXV8GumlV4rN9xhjLXtTwf"
+  ssh_keys = var.ssh_keys
 
   create_instance_group = true
 }
@@ -29,13 +42,9 @@ module "vm" {
 
 module "glb" {
   source                = "../../modules/lb_http_ext_global"
-  name                  = "my-glb"
-  backend_groups        = module.vm.instance_group
+  name                  = "${var.name_prefix}glb"
+  backend_groups        = { for k, v in module.vmseries : k => module.vmseries[k].instance_group_self_link }
   max_rate_per_instance = 50000
-}
-
-output "global_url" {
-  value = "http://${module.glb.address}"
 }
 
 #########################################################################
@@ -45,15 +54,11 @@ output "global_url" {
 
 module "ilb" {
   source     = "../../modules/lb_tcp_internal"
-  name       = "my-ilb"
-  network    = local.my_vpc
-  subnetwork = local.my_subnet
+  name       = "${var.name_prefix}ilb"
+  network    = local.vpc
+  subnetwork = local.subnet
   all_ports  = true
-  backends   = module.vm.instance_group
-}
-
-output "internal_url" {
-  value = "http://${module.ilb.address}"
+  backends   = { for k, v in module.vmseries : k => module.vmseries[k].instance_group_self_link }
 }
 
 #########################################################################
@@ -62,21 +67,38 @@ output "internal_url" {
 # It's optional, just showing it can co-exist with other load balancers.
 
 module "extlb" {
-  source       = "../../modules/lb_tcp_external/"
-  name         = "my-extlb"
-  service_port = 80
-  instances    = module.vm.vm_self_link_list
-  health_check = {
-    check_interval_sec  = 10
-    healthy_threshold   = 2
-    timeout_sec         = 5
-    unhealthy_threshold = 3
-    port                = 80
-    request_path        = "/"
-    host                = "anything"
+  source    = "../../modules/lb_tcp_external/"
+  name      = "${var.name_prefix}extlb"
+  instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
+  rules = {
+    # Standard HTTP port:
+    "tcp-80" = {
+      port_range  = "80"
+      ip_protocol = "TCP"
+    }
+    # A range of ports is possible as well:
+    "tcp-4000-4002" = {
+      port_range  = "4000-4002"
+      ip_protocol = "TCP"
+    }
+    # Example of ICMP, it has no concept of ports:
+    "icmp" = {
+      port_range  = null
+      ip_protocol = "ICMP"
+    }
   }
+
+  health_check_interval_sec        = 10
+  health_check_healthy_threshold   = 2
+  health_check_timeout_sec         = 5
+  health_check_unhealthy_threshold = 3
+
+  health_check_http_port         = 80
+  health_check_http_request_path = "/"
+  health_check_http_host         = "anything"
 }
 
-output "regional_url" {
-  value = "http://${module.extlb.address}"
+locals {
+  # Ensure that `terraform destroy` can pass again even when the map is already destroyed.
+  extlb_address = try(module.extlb.ip_addresses["tcp-80"], "")
 }
