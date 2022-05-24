@@ -70,7 +70,7 @@ resource "google_compute_instance" "this" {
 
   boot_disk {
     initialize_params {
-      image = coalesce(var.custom_image, data.google_compute_image.this[0].id)
+      image = coalesce(var.custom_image, try(data.google_compute_image.this[0].id, null))
       size  = var.disk_size
       type  = var.disk_type
     }

@@ -29,7 +29,7 @@ module "panorama" {
   zone              = data.google_compute_zones.this.names[0]
   panorama_version  = var.panorama_version
   ssh_keys          = var.ssh_keys
-  subnet            = module.vpc.subnetworks["panorama-example-subnet"].id
+  subnet            = module.vpc.subnetworks[var.subnet_name].id
   private_static_ip = var.private_static_ip
   attach_public_ip  = var.attach_public_ip
   log_disks         = var.log_disks
