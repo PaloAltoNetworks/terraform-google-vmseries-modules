@@ -269,7 +269,7 @@ curl http://10.1.0.10/?[1-100]
 3. Enter the following into the log search bar.  The filter shows all traffic between spoke2-vm1 and the internal load balancer in spoke1.
 
 ```
-( addr.src in 10.2.0.10 ) and  ( addr.dst in 10.1.0.10 )
+( addr.src in 10.2.0.10 ) and ( addr.dst in 10.1.0.10 )
 ```
 
 <p align="center"><i>Traffic Logs: vmseries01</i></p>
