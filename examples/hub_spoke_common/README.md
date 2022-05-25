@@ -89,8 +89,8 @@ ssh-keygen -f ~/.ssh/gcp-demo -t rsa -C gcp-demo
 3. Copy and paste the following to clone the repository and to apply the Terraform plan.
 
 ```
-git clone https://github.com/wwce/google-cloud-vmseries-builds
-cd google-cloud-vmseries-builds/blueprints/vmseries-hub-spoke-vpc-peering
+git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
+cd terraform-google-vmseries-modules/examples/hub_spoke_common
 terraform init
 terraform apply
 ```
@@ -269,7 +269,7 @@ curl http://10.1.0.10/?[1-100]
 3. Enter the following into the log search bar.  The filter shows all traffic between spoke2-vm1 and the internal load balancer in spoke1.
 
 ```
-( addr.src in 10.2.0.10 ) and  ( addr.dst in 10.1.0.10 )
+( addr.src in 10.2.0.10 ) and ( addr.dst in 10.1.0.10 )
 ```
 
 <p align="center"><i>Traffic Logs: vmseries01</i></p>
@@ -291,7 +291,7 @@ curl http://10.1.0.10/?[1-100]
 If you would like to destroy the environment, enter the following in Google cloud shell.
 
 ```
-cd google-cloud-vmseries-builds/blueprints/vmseries-hub-spoke-vpc-peering
+cd terraform-google-vmseries-modules/examples/hub_spoke_common
 terraform destroy -auto-approve
 rm ~/.ssh/gcp-demo
 ```
@@ -299,3 +299,81 @@ rm ~/.ssh/gcp-demo
 ## Conclusion
 
 You have completed the architecture blueprint guide.  You have learned how to secure a hub and spoke architecture using the VM-Series and VPC network peering.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
+| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
+| <a name="module_lb_tcp_external"></a> [lb\_tcp\_external](#module\_lb\_tcp\_external) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_lb_tcp_internal"></a> [lb\_tcp\_internal](#module\_lb\_tcp\_internal) | ../../modules/lb_tcp_internal | n/a |
+| <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_tcp_internal | n/a |
+| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
+| <a name="module_vpc_mgmt"></a> [vpc\_mgmt](#module\_vpc\_mgmt) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_spoke1"></a> [vpc\_spoke1](#module\_vpc\_spoke1) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_spoke2"></a> [vpc\_spoke2](#module\_vpc\_spoke2) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [google_compute_instance.spoke1_vm](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | resource |
+| [google_compute_instance.spoke2_vm1](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | resource |
+| [google_compute_instance_group.spoke1_ig](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group) | resource |
+| [google_compute_network_peering.spoke1_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
+| [google_compute_network_peering.spoke2_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
+| [google_compute_network_peering.trust_to_spoke1](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
+| [google_compute_network_peering.trust_to_spoke2](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
+| [random_string.main](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [google_client_config.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
+| [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | n/a | `list(string)` | n/a | yes |
+| <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | n/a | `any` | n/a | yes |
+| <a name="input_cidr_spoke1"></a> [cidr\_spoke1](#input\_cidr\_spoke1) | n/a | `any` | n/a | yes |
+| <a name="input_cidr_spoke2"></a> [cidr\_spoke2](#input\_cidr\_spoke2) | n/a | `any` | n/a | yes |
+| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | n/a | `any` | n/a | yes |
+| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | n/a | `any` | n/a | yes |
+| <a name="input_fw_image_name"></a> [fw\_image\_name](#input\_fw\_image\_name) | The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913. | `string` | `"vmseries-flex-bundle1-1010"` | no |
+| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | n/a | `any` | n/a | yes |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Arbitrary string used to prefix resource names. | `string` | `null` | no |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP project ID | `any` | `null` | no |
+| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key.  If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `any` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | n/a | `any` | n/a | yes |
+| <a name="input_spoke_vm_image"></a> [spoke\_vm\_image](#input\_spoke\_vm\_image) | n/a | `string` | `"ubuntu-os-cloud/ubuntu-1604-lts"` | no |
+| <a name="input_spoke_vm_scopes"></a> [spoke\_vm\_scopes](#input\_spoke\_vm\_scopes) | n/a | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
+| <a name="input_spoke_vm_type"></a> [spoke\_vm\_type](#input\_spoke\_vm\_type) | n/a | `any` | n/a | yes |
+| <a name="input_spoke_vm_user"></a> [spoke\_vm\_user](#input\_spoke\_vm\_user) | n/a | `any` | n/a | yes |
+| <a name="input_vmseries"></a> [vmseries](#input\_vmseries) | n/a | `any` | n/a | yes |
+| <a name="input_vmseries_common"></a> [vmseries\_common](#input\_vmseries\_common) | n/a | `any` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_ext_lb_url"></a> [ext\_lb\_url](#output\_ext\_lb\_url) | n/a |
+| <a name="output_ssh_to_spoke2"></a> [ssh\_to\_spoke2](#output\_ssh\_to\_spoke2) | n/a |
+| <a name="output_vmseries01_access"></a> [vmseries01\_access](#output\_vmseries01\_access) | n/a |
+| <a name="output_vmseries02_access"></a> [vmseries02\_access](#output\_vmseries02\_access) | n/a |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
