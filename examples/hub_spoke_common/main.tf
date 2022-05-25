@@ -197,7 +197,7 @@ module "lb_tcp_external" {
   source = "../../modules/lb_tcp_external/"
 
   instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
-  name = "${local.prefix}fw-extlb"
+  name      = "${local.prefix}fw-extlb"
   rules = {
     "rule1" = { port_range = 80 },
     "rule2" = { port_range = 22 }
@@ -326,7 +326,7 @@ resource "google_compute_network_peering" "trust_to_spoke2" {
 # Create spoke1 compute instances with internal load balancer
 
 resource "google_compute_instance" "spoke1_vm" {
-  count = 2
+  count                     = 2
   name                      = "${local.prefix}spoke1-vm${count.index + 1}"
   machine_type              = var.spoke_vm_type
   zone                      = data.google_compute_zones.main.names[0]
@@ -365,17 +365,17 @@ resource "google_compute_instance_group" "spoke1_ig" {
 module "spoke1_ilb" {
   source = "../../modules/lb_tcp_internal"
 
-  name       = "${local.prefix}spoke1-ilb"
-  backends =  { 0 = google_compute_instance_group.spoke1_lb.self_link }
+  name     = "${local.prefix}spoke1-ilb"
+  backends = { 0 = google_compute_instance_group.spoke1_lb.self_link }
   # backends = tomap({"0" = google_compute_instance_group.spoke1_lb.self_link})
   ip_address = cidrhost(var.cidr_spoke1, 10)
   subnetwork = module.vpc_spoke1.subnets_self_links[0]
   network    = module.vpc_spoke1.network_id
-  
-  all_ports  = false
-  
-  timeout_sec = 1
-  ports = [80]
+
+  all_ports = false
+
+  timeout_sec       = 1
+  ports             = [80]
   health_check_port = 80
 
 }
