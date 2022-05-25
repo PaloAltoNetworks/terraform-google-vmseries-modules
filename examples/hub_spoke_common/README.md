@@ -89,8 +89,8 @@ ssh-keygen -f ~/.ssh/gcp-demo -t rsa -C gcp-demo
 3. Copy and paste the following to clone the repository and to apply the Terraform plan.
 
 ```
-git clone https://github.com/wwce/google-cloud-vmseries-builds
-cd google-cloud-vmseries-builds/blueprints/vmseries-hub-spoke-vpc-peering
+git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
+cd terraform-google-vmseries-modules/examples/hub_spoke_common
 terraform init
 terraform apply
 ```
@@ -291,7 +291,7 @@ curl http://10.1.0.10/?[1-100]
 If you would like to destroy the environment, enter the following in Google cloud shell.
 
 ```
-cd google-cloud-vmseries-builds/blueprints/vmseries-hub-spoke-vpc-peering
+cd terraform-google-vmseries-modules/examples/hub_spoke_common
 terraform destroy -auto-approve
 rm ~/.ssh/gcp-demo
 ```
@@ -299,3 +299,6 @@ rm ~/.ssh/gcp-demo
 ## Conclusion
 
 You have completed the architecture blueprint guide.  You have learned how to secure a hub and spoke architecture using the VM-Series and VPC network peering.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
