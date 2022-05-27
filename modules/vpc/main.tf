@@ -70,8 +70,7 @@ resource "google_compute_subnetwork" "this" {
 }
 
 resource "google_compute_firewall" "this" {
-  for_each = { for k, v in local.networks : k => v if can(v.allowed_sources) }
-
+  for_each      = { for k, v in local.networks_to_create : k => v if can(v.allowed_sources) }
   name          = "${each.value.name}-ingress"
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
   direction     = "INGRESS"

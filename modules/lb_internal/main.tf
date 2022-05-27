@@ -9,7 +9,9 @@ resource "google_compute_health_check" "this" {
 }
 
 resource "google_compute_region_backend_service" "this" {
-  name             = var.name
+  name   = var.name
+  region = var.region
+
   health_checks    = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
   network          = var.network
   session_affinity = var.session_affinity
@@ -43,7 +45,9 @@ resource "google_compute_region_backend_service" "this" {
 }
 
 resource "google_compute_forwarding_rule" "this" {
-  name                  = var.name
+  name   = var.name
+  region = var.region
+
   load_balancing_scheme = "INTERNAL"
   ip_address            = var.ip_address
   ip_protocol           = var.ip_protocol
