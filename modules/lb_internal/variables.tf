@@ -4,9 +4,7 @@ variable "name" {
 }
 
 variable "region" {
-  description = "Region to create ILB in."
-  type        = string
-  default     = null
+  description = "A reference to the region where the ilb will be implemented"
 }
 
 variable "health_check_port" {

@@ -39,11 +39,10 @@ module "vpc_region0" {
       region          = var.region0
     },
     {
-      name                            = "${var.name_prefix}fw-trust"
-      subnetwork_name                 = "${var.name_prefix}fw-trust-${var.region0}"
-      ip_cidr_range                   = "10.236.64.32/28"
-      region                          = var.region0
-      delete_default_routes_on_create = true
+      name            = "${var.name_prefix}fw-trust"
+      subnetwork_name = "${var.name_prefix}fw-trust-${var.region0}"
+      ip_cidr_range   = "10.236.64.32/28"
+      region          = var.region0
     },
   ]
 }
@@ -91,7 +90,8 @@ module "vmseries_region0" {
   vmseries_image = var.vmseries_common.vmseries_image
 
   create_instance_group = true
-  service_account       = module.iam_service_account.email
+
+  tags = [each.value.region]
 
   bootstrap_options = merge({
     vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
@@ -127,6 +127,8 @@ module "vmseries_region1" {
   vmseries_image = var.vmseries_common.vmseries_image
 
   create_instance_group = true
+
+  tags = [each.value.region]
 
   bootstrap_options = merge({
     vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
