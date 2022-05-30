@@ -78,6 +78,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_backends"></a> [backends](#output\_backends) | Map of instance group (IG) identifiers, suitable for use in module lb\_tcp\_internal as input `backends`. |
+| <a name="output_backends"></a> [backends](#output\_backends) | Map of instance group (IG) identifiers, suitable for use in module lb\_internal as input `backends`. |
 | <a name="output_instance_group_manager"></a> [instance\_group\_manager](#output\_instance\_group\_manager) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
