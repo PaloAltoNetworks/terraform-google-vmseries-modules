@@ -62,12 +62,12 @@ module "ilb" {
 }
 
 #########################################################################
-# External Regional TCP Load Balancer
+# External Regional Network Load Balancer
 #
 # It's optional, just showing it can co-exist with other load balancers.
 
 module "extlb" {
-  source    = "../../modules/lb_tcp_external/"
+  source    = "../../modules/lb_external/"
   name      = "${var.name_prefix}extlb"
   instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
   rules = {

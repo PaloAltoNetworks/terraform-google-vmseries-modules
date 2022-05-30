@@ -91,13 +91,13 @@ module "intlb" {
 }
 
 #-----------------------------------------------------------------------------------------------
-# Regional External TCP Network Load Balancer
+# Regional External Network Load Balancer
 #
 # It is not strictly required part of this example.
 # It's here just to show how to integrate it with auto-scaling.
 
 module "extlb" {
-  source = "../../modules/lb_tcp_external/"
+  source = "../../modules/lb_external/"
 
   name  = var.extlb_name
   rules = { (var.extlb_name) = { port_range = 80 } }

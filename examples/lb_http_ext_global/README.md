@@ -22,7 +22,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_external/ | n/a |
 | <a name="module_glb"></a> [glb](#module\_glb) | ../../modules/lb_http_ext_global | n/a |
 | <a name="module_ilb"></a> [ilb](#module\_ilb) | ../../modules/lb_tcp_internal | n/a |
 | <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries/ | n/a |

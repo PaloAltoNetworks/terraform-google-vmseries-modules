@@ -50,7 +50,7 @@ terraform apply
 |------|--------|---------|
 | <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale | n/a |
 | <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_tcp_external/ | n/a |
+| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_external/ | n/a |
 | <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
 | <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_tcp_internal/ | n/a |
 | <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries | n/a |

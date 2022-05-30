@@ -137,8 +137,8 @@ module "lb_tcp_internal" {
   all_ports  = true
 }
 
-module "lb_tcp_external" {
-  source = "../../modules/lb_tcp_external/"
+module "lb_external" {
+  source = "../../modules/lb_external/"
 
   instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
 
