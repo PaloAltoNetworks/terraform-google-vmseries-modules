@@ -39,10 +39,11 @@ module "vpc_region0" {
       region          = var.region0
     },
     {
-      name            = "${var.name_prefix}fw-trust"
-      subnetwork_name = "${var.name_prefix}fw-trust-${var.region0}"
-      ip_cidr_range   = "10.236.64.32/28"
-      region          = var.region0
+      name                            = "${var.name_prefix}fw-trust"
+      subnetwork_name                 = "${var.name_prefix}fw-trust-${var.region0}"
+      ip_cidr_range                   = "10.236.64.32/28"
+      region                          = var.region0
+      delete_default_routes_on_create = true
     },
   ]
 }
@@ -90,6 +91,7 @@ module "vmseries_region0" {
   vmseries_image = var.vmseries_common.vmseries_image
 
   create_instance_group = true
+  service_account       = module.iam_service_account.email
 
   tags = [each.value.region]
 
@@ -198,3 +200,19 @@ resource "google_compute_route" "region1" {
   priority     = 1000
   tags         = [var.region1]
 }
+
+# Cloud Nat for the management interfaces.
+# Needed to reach bootstrap bucket or to log to Cortex DataLake.
+#module "mgmt_cloud_nat" {
+#  source  = "terraform-google-modules/cloud-nat/google"
+#  version = "=1.2"
+#
+#  name          = "cloud-mgmnt-nat"
+#  project_id    = var.project
+#  region        = var.region0
+#  create_router = true
+#  router        = "${var.name_prefix}fw-router"
+#  network       = "${var.name_prefix}fw-mgmt"
+#
+#  depends_on = [module.vpc_region0]
+#}
