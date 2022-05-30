@@ -73,13 +73,13 @@ module "autoscale" {
 }
 
 #-----------------------------------------------------------------------------------------------
-# Regional Internal TCP Load Balancer
+# Regional Internal TCP/UDP Load Balancer
 #
 # It is not strictly required part of this example.
 # It's here just to show how to integrate it with auto-scaling.
 
 module "intlb" {
-  source = "../../modules/lb_tcp_internal/"
+  source = "../../modules/lb_internal/"
 
   name       = var.intlb_name
   network    = module.vpc.networks[var.intlb_network].name

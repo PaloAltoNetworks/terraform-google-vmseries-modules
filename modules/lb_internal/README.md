@@ -41,7 +41,7 @@ No modules.
 | <a name="input_health_check"></a> [health\_check](#input\_health\_check) | (Optional) Name of either the global google\_compute\_health\_check or google\_compute\_region\_health\_check to use. Conflicts with health\_check\_port. | `string` | `null` | no |
 | <a name="input_health_check_port"></a> [health\_check\_port](#input\_health\_check\_port) | (Optional) Port number for TCP healthchecking, default 22. This setting is ignored when `health_check` is provided. | `number` | `22` | no |
 | <a name="input_ip_address"></a> [ip\_address](#input\_ip\_address) | n/a | `any` | `null` | no |
-| <a name="input_ip_protocol"></a> [ip\_protocol](#input\_ip\_protocol) | n/a | `string` | `"TCP"` | no |
+| <a name="input_ip_protocol"></a> [ip\_protocol](#input\_ip\_protocol) | The IP protocol for the frontend forwarding rule, valid values are TCP and UDP. | `string` | `"TCP"` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the load balancer (that is, both the forwarding rule and the backend service) | `string` | n/a | yes |
 | <a name="input_network"></a> [network](#input\_network) | n/a | `any` | `null` | no |
 | <a name="input_ports"></a> [ports](#input\_ports) | Which port numbers are forwarded to the backends (up to 5 ports). Conflicts with all\_ports. | `list(number)` | `[]` | no |

@@ -48,12 +48,12 @@ module "glb" {
 }
 
 #########################################################################
-# Internal TCP Load Balancer
+# Internal TCP/UDP Load Balancer
 # 
 # It's optional, just showing it can co-exist with a Global one.
 
 module "ilb" {
-  source     = "../../modules/lb_tcp_internal"
+  source     = "../../modules/lb_internal"
   name       = "${var.name_prefix}ilb"
   network    = local.vpc
   subnetwork = local.subnet

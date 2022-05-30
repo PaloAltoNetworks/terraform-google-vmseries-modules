@@ -126,8 +126,8 @@ module "vmseries" {
 
 # Due to intranet load balancer solution - DNAT for healthchecks traffic should be configured on firewall.
 # Source: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PP9QCAW
-module "lb_tcp_internal" {
-  source = "../../modules/lb_tcp_internal"
+module "lb_internal" {
+  source = "../../modules/lb_internal"
 
   name       = "${var.name_prefix}fw-ilb"
   backends   = { for k, v in module.vmseries : k => v.instance_group_self_link }
