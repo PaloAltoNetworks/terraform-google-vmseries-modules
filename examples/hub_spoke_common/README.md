@@ -311,9 +311,9 @@ rm ~/.ssh/gcp-demo
 |------|--------|---------|
 | <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
 | <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
-| <a name="module_lb_tcp_external"></a> [lb\_tcp\_external](#module\_lb\_tcp\_external) | ../../modules/lb_tcp_external/ | n/a |
-| <a name="module_lb_tcp_internal"></a> [lb\_tcp\_internal](#module\_lb\_tcp\_internal) | ../../modules/lb_tcp_internal | n/a |
-| <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_tcp_internal | n/a |
+| <a name="module_lb_external"></a> [lb\_external](#module\_lb\_external) | ../../modules/lb_external/ | n/a |
+| <a name="module_lb_internal"></a> [lb\_internal](#module\_lb\_internal) | ../../modules/lb_internal | n/a |
+| <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_internal | n/a |
 | <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
 | <a name="module_vpc_mgmt"></a> [vpc\_mgmt](#module\_vpc\_mgmt) | terraform-google-modules/network/google | ~> 4.0 |
 | <a name="module_vpc_spoke1"></a> [vpc\_spoke1](#module\_vpc\_spoke1) | terraform-google-modules/network/google | ~> 4.0 |

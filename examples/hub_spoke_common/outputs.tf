@@ -1,11 +1,11 @@
 output "ext_lb_url" {
   description = "External load balancer's frontend URL that resolves to spoke1 web servers after VM-Series inspection."
-  value       = "http://${module.lb_tcp_external.ip_addresses["rule1"]}"
+  value       = "http://${module.lb_external.ip_addresses["rule1"]}"
 }
 
 output "ssh_to_spoke2" {
   description = "External load balancer's frontend address that opens SSH session to spoke2-vm1 after VM-Series inspection."
-  value       = "ssh paloalto@${module.lb_tcp_external.ip_addresses["rule2"]}"
+  value       = "ssh ${var.spoke_vm_user}@${module.lb_external.ip_addresses["rule2"]}"
 }
 
 output "vmseries01_access" {
