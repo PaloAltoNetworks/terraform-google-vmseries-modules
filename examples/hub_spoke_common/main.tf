@@ -1,5 +1,5 @@
-# --------------------------------------------------------------------------------------------------------------------------
-# Setup Terraform providers, pull the regions availability zones, and create naming prefix as local variable
+# ----------------------------------------------------------------------------------------------------------------
+# Setup providers, pull availability zones, and create name prefix.
 
 data "google_client_config" "main" {
 }
@@ -31,6 +31,8 @@ locals {
 }
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# Create mgmt, untrust, and trust networks
 
 module "vpc_mgmt" {
   source       = "terraform-google-modules/network/google"
@@ -64,10 +66,8 @@ module "vpc_mgmt" {
   ]
 }
 
-
 module "vpc_untrust" {
-  source = "terraform-google-modules/network/google"
-
+  source       = "terraform-google-modules/network/google"
   version      = "~> 4.0"
   project_id   = var.project_id
   network_name = "${local.prefix}untrust-vpc"
@@ -98,8 +98,7 @@ module "vpc_untrust" {
 }
 
 module "vpc_trust" {
-  source = "terraform-google-modules/network/google"
-
+  source                                 = "terraform-google-modules/network/google"
   version                                = "~> 4.0"
   project_id                             = var.project_id
   network_name                           = "${local.prefix}trust-vpc"
@@ -130,13 +129,18 @@ module "vpc_trust" {
   ]
 }
 
+
+# ----------------------------------------------------------------------------------------------------------------
+# Create VM-Series
+
+# Create IAM service account for accessing bootstrap bucket
 module "iam_service_account" {
   source = "../../modules/iam_service_account/"
 
   service_account_id = "${local.prefix}panw-sa"
 }
 
-# Create bucket for bootstrapping the fresh firewall VM.
+# Create storage bucket to bootstrap VM-Series.
 module "bootstrap" {
   source = "../../modules/bootstrap/"
 
@@ -147,6 +151,7 @@ module "bootstrap" {
   }
 }
 
+# Create 2 VM-Series firewalls
 module "vmseries" {
   for_each = local.vmseries
   source   = "../../modules/vmseries"
@@ -154,19 +159,19 @@ module "vmseries" {
   name                  = "${local.prefix}${each.key}"
   zone                  = each.value.zone
   ssh_keys              = fileexists(var.public_key_path) ? "admin:${file(var.public_key_path)}" : ""
-  vmseries_image        = var.vmseries_common.vmseries_image
+  vmseries_image        = var.fw_image_name
   create_instance_group = true
 
-  bootstrap_options = merge({
+  metadata = {
+    mgmt-interface-swap                  = "enable"
     vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
-    },
-    var.vmseries_common.bootstrap_options,
-  )
+    serial-port-enable                   = true
+  }
 
   network_interfaces = [
     {
       subnetwork       = module.vpc_untrust.subnets_self_links[0]
-      create_public_ip = true
+      create_public_ip = false
     },
     {
       subnetwork       = module.vpc_mgmt.subnets_self_links[0]
@@ -179,6 +184,8 @@ module "vmseries" {
 }
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# Create internal and external load balancer to distribute traffic to VM-Series
 
 # Due to intranet load balancer solution - DNAT for healthchecks traffic should be configured on firewall.
 # Source: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PP9QCAW
@@ -205,6 +212,7 @@ module "lb_external" {
 
   health_check_http_port         = 80
   health_check_http_request_path = "/"
+
 }
 
 module "vpc_spoke1" {
@@ -410,4 +418,5 @@ resource "google_compute_instance" "spoke2_vm1" {
   service_account {
     scopes = var.spoke_vm_scopes
   }
+
 }
