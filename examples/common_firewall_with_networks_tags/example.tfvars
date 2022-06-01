@@ -1,5 +1,5 @@
-project_id      = "gcp-gcs-pso"
-project         = "gcp-gcs-pso"
+project_id      = "example"
+project         = "example"
 region          = "us-central1"
 region0         = "us-central1"
 region1         = "us-east1"
