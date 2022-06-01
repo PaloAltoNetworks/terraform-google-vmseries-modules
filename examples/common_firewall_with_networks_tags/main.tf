@@ -200,19 +200,3 @@ resource "google_compute_route" "region1" {
   priority     = 1000
   tags         = [var.region1]
 }
-
-# Cloud Nat for the management interfaces.
-# Needed to reach bootstrap bucket or to log to Cortex DataLake.
-#module "mgmt_cloud_nat" {
-#  source  = "terraform-google-modules/cloud-nat/google"
-#  version = "=1.2"
-#
-#  name          = "cloud-mgmnt-nat"
-#  project_id    = var.project
-#  region        = var.region0
-#  create_router = true
-#  router        = "${var.name_prefix}fw-router"
-#  network       = "${var.name_prefix}fw-mgmt"
-#
-#  depends_on = [module.vpc_region0]
-#}

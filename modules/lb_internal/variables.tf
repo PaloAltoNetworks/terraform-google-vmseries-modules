@@ -4,7 +4,7 @@ variable "name" {
 }
 
 variable "region" {
-  description = "A reference to the region where the ilb will be implemented"
+  description = "Region to create ILB in."
   type        = string
   default     = null
 }
