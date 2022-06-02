@@ -93,8 +93,6 @@ module "vmseries_region0" {
   create_instance_group = true
   service_account       = module.iam_service_account.email
 
-  tags = [each.value.region]
-
   bootstrap_options = merge({
     vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
     },
@@ -129,8 +127,6 @@ module "vmseries_region1" {
   vmseries_image = var.vmseries_common.vmseries_image
 
   create_instance_group = true
-
-  tags = [each.value.region]
 
   bootstrap_options = merge({
     vmseries-bootstrap-gce-storagebucket = module.bootstrap.bucket_name
