@@ -73,6 +73,12 @@ variable "spoke_vm_image" {
   default     = "ubuntu-os-cloud/ubuntu-2004-lts"
 }
 
+variable "spoke_vm_user" {
+  description = "The username for the compute instance in the spoke networks."
+  type        = string
+  default     = null
+}
+
 variable "spoke_vm_scopes" {
   description = "A list of service scopes. Both OAuth2 URLs and gcloud short names are supported. To allow full access to all Cloud APIs, use the cloud-platform"
   type        = list(string)
