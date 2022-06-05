@@ -10,10 +10,15 @@ output "ip_addresses" {
 
 output "target_pool" {
   description = "The self-link of the target pool."
-  value       = google_compute_target_pool.this.self_link
+  value       = try(google_compute_target_pool.this[0].self_link, null)
 }
 
-output "created_health_check" {
+output "created_google_compute_http_health_check" {
   description = "The created health check resource. Null if `create_health_check` option was false."
-  value       = var.create_health_check ? google_compute_http_health_check.this[0] : null
+  value       = var.create_health_check ? try(google_compute_http_health_check.this[0], null) : null
+}
+
+output "created_google_compute_region_health_check" {
+  description = "The created health check resource. Null if `create_health_check` option was false."
+  value       = var.create_health_check ? try(google_compute_region_health_check.this[0], null) : null
 }
