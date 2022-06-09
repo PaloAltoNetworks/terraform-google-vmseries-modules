@@ -83,6 +83,7 @@ variable "cidr_untrust" {
   type        = string
   default     = null
 }
+
 variable "cidr_trust" {
   description = "The CIDR range of the trust subnetwork."
   type        = string
