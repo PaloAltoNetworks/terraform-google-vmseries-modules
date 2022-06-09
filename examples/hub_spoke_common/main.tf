@@ -137,7 +137,7 @@ module "vpc_trust" {
 module "iam_service_account" {
   source = "../../modules/iam_service_account/"
 
-  service_account_id = "${local.prefix}panw-sa"
+  service_account_id = "${local.prefix}vmseries-sa"
 }
 
 # Create storage bucket to bootstrap VM-Series.
@@ -171,7 +171,7 @@ module "vmseries" {
   network_interfaces = [
     {
       subnetwork       = module.vpc_untrust.subnets_self_links[0]
-      create_public_ip = false
+      create_public_ip = true
     },
     {
       subnetwork       = module.vpc_mgmt.subnets_self_links[0]
@@ -190,7 +190,7 @@ module "vmseries" {
 # Due to intranet load balancer solution - DNAT for healthchecks traffic should be configured on firewall.
 # Source: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PP9QCAW
 module "lb_internal" {
-  source = "../../modules/lb_internal"
+  source = "../../modules/lb_internal/"
 
   name       = "${local.prefix}fw-ilb"
   backends   = { for k, v in module.vmseries : k => v.instance_group_self_link }
@@ -371,11 +371,10 @@ resource "google_compute_instance_group" "spoke1_ig" {
 }
 
 module "spoke1_ilb" {
-  source = "../../modules/lb_internal"
+  source = "../../modules/lb_internal/"
 
-  name     = "${local.prefix}spoke1-ilb"
-  backends = { 0 = google_compute_instance_group.spoke1_lb.self_link }
-  # backends = tomap({"0" = google_compute_instance_group.spoke1_lb.self_link})
+  name       = "${local.prefix}spoke1-ilb"
+  backends   = { 0 = google_compute_instance_group.spoke1_ig.self_link }
   ip_address = cidrhost(var.cidr_spoke1, 10)
   subnetwork = module.vpc_spoke1.subnets_self_links[0]
   network    = module.vpc_spoke1.network_id
