@@ -1,27 +1,71 @@
 # Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
-The firewalls are created and destroyed by the GCP managed instance group.
+This example deploys VM-Series firewalls into a managed instance group.  The VM-Series firewalls can be scaled horizontally based on custom PAN-OS metrics delivered to Google Stackdriver.
 
-For enhanced security, the firewalls' management interfaces are unreachable through public IP addresses (there is however a jumphost to aid initial troubleshooting).
+For managed instance group deployments, it is highly recommended to bootstrap the VM-Series firewalls to Panorama for automatic configuration.  
 
-## Caveat
+## Instructions
 
-1. The auto-scaling happens independently in each zone (it appears to be a limitation of GCP plugin 2.0.0 on Panorama, it simply does not check for the regional instance groups). The test was on Panorama 9.1.4.
-2. The PanOS custom GCP metrics like `panSessionActive` require more work. See the GCP Metric Explorer.
+1. Set up Panorama on-premises or in a VPC network (consider using `examples/panorama`).  
+   * Panorama must have network connectivity to the management VPC network created in this example build. 
+   * If you already have a management VPC network, perform the following in `main.tf`:
+     1. Replace `module "vpc_mgmt"` with <a href="https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork">`data google_compute_subnetwork`</a> to pull your existing management subnetwork.  
+     2. Within the the VM-Series `autoscale` module, set the management NIC to use your data resource in the previous step.  For example:
 
-## Instruction
+<pre><b>
+data "google_compute_subnetwork" "mgmt" {
+    name   = "default-us-east1"
+    region = var.region
+}</b>
 
-- Set up Panorama and its VPC (consider using `examples/panorama`).
-- Configure Panorama. This example assumes it exists with proper settings.
-- Optionally, restart Panorama with `request restart system` to ensure the vm-auth-key is saved properly.
-- Go to the main directory of the example (i.e. where this `README.md` is placed).
-- Copy the `example.tfvars` into `terraform.tfvars` and modify it to your needs.
-- Generate the SSH keys in the example's directory e.g.: `ssh-keygen -t rsa -C admin -N '' -f id_rsa`
-- Manually edit the settings in `bootstrap_files/authcodes`
-- Manually edit the settings in `bootstrap_files/init-cfg.txt`
-- Deploy Terraform:
+....
+....
 
-```sh
+module "autoscale" {
+source = "../../modules/autoscale"
+
+zones = {
+    zone1 = data.google_compute_zones.main.names[0]
+    zone2 = data.google_compute_zones.main.names[1]
+}
+
+prefix                = "${local.prefix}vmseries-mig"
+deployment_name       = "${local.prefix}vmseries-mig-deployment"
+machine_type          = var.vmseries_machine_type
+image                 = var.vmseries_image_name
+pool                  = module.extlb.target_pool
+scopes                = ["https://www.googleapis.com/auth/cloud-platform"]
+service_account_email = module.iam_service_account.email
+min_replicas_per_zone = var.vmseries_per_zone_min  // min firewalls per zone.
+max_replicas_per_zone = var.vmseries_per_zone_max  // max firewalls per zone.
+autoscaler_metrics    = var.autoscaler_metrics
+
+network_interfaces = [
+    {
+        subnetwork       = module.vpc_untrust.subnets_self_links[0]
+        create_public_ip = true
+    },
+    {
+        subnetwork       = <b>data.google_compute_subnetwork.mgmt.self_link</b>
+        create_public_ip = false 
+    },
+    {
+        subnetwork       = module.vpc_trust.subnets_self_links[0]
+        create_public_ip = false
+    }
+]
+
+....
+....
+</pre>
+
+3. On Panorama, create a <a href="https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-firewalls/manage-device-groups/add-a-device-group">Device Group</a>, <a href="https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-firewalls/manage-templates-and-template-stacks/configure-a-template-stack">Template Stack</a>, and generate a <a href="https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama">VM Auth Key</a>.
+4. Copy the example.tfvars into terraform.tfvars. Modify the values within terraform.tfvars to match your deployment.
+
+
+## Deploy Terraform
+
+```
 terraform init
 terraform plan
 terraform apply
@@ -42,57 +86,49 @@ terraform apply
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 3.48 |
-| <a name="provider_null"></a> [null](#provider\_null) | ~> 2.1 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale | n/a |
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
 | <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_external/ | n/a |
 | <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
 | <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_internal/ | n/a |
-| <a name="module_jumphost"></a> [jumphost](#module\_jumphost) | ../../modules/vmseries | n/a |
-| <a name="module_jumpvpc"></a> [jumpvpc](#module\_jumpvpc) | ../../modules/vpc | n/a |
 | <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
+| <a name="module_vpc_mgmt"></a> [vpc\_mgmt](#module\_vpc\_mgmt) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [google_compute_firewall.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
-| [null_resource.jumphost_ssh_priv_key](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
+| [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface. | `list(string)` | `null` | no |
 | <a name="input_autoscaler_metrics"></a> [autoscaler\_metrics](#input\_autoscaler\_metrics) | The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).<br>Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.<br>Each zonal group grows until it satisfies all the targets.<br><br>Additional optional attribute `type` defines the metric as either `GAUGE` (the default), `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.<br>For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `map` | <pre>{<br>  "custom.googleapis.com/VMSeries/panSessionActive": {<br>    "target": 100<br>  }<br>}</pre> | no |
-| <a name="input_extlb_healthcheck_port"></a> [extlb\_healthcheck\_port](#input\_extlb\_healthcheck\_port) | n/a | `number` | `80` | no |
-| <a name="input_extlb_name"></a> [extlb\_name](#input\_extlb\_name) | n/a | `string` | `"as4-fw-extlb"` | no |
-| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | n/a | `string` | `"n1-standard-4"` | no |
-| <a name="input_fw_network_ordering"></a> [fw\_network\_ordering](#input\_fw\_network\_ordering) | A list of names from the `networks[*].name` attributes. | `list` | `[]` | no |
-| <a name="input_intlb_global_access"></a> [intlb\_global\_access](#input\_intlb\_global\_access) | (Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route. | `bool` | `false` | no |
-| <a name="input_intlb_name"></a> [intlb\_name](#input\_intlb\_name) | n/a | `string` | `"as4-fw-intlb"` | no |
-| <a name="input_intlb_network"></a> [intlb\_network](#input\_intlb\_network) | Name of the defined network that will host the Internal Load Balancer. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
-| <a name="input_mgmt_network"></a> [mgmt\_network](#input\_mgmt\_network) | Name of the network to create for firewall management. One of the names from the `networks[*].name` attribute. | `any` | n/a | yes |
-| <a name="input_mgmt_sources"></a> [mgmt\_sources](#input\_mgmt\_sources) | n/a | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| <a name="input_networks"></a> [networks](#input\_networks) | The list of maps describing the VPC networks and subnetworks | `any` | n/a | yes |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names, an arbitrary string | `string` | `"as4"` | no |
-| <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | Local path to private SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa` | `any` | `null` | no |
-| <a name="input_project"></a> [project](#input\_project) | GCP Project ID | `string` | n/a | yes |
+| <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | The CIDR range of the management subnetwork. | `string` | `null` | no |
+| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `null` | no |
+| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `null` | no |
+| <a name="input_panorama_address"></a> [panorama\_address](#input\_panorama\_address) | The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC.<br>This build assumes Panorama is reachable via the internet. The management VPC network uses a <br>NAT gateway to communicate to Panorama's external IP addresses. | `string` | n/a | yes |
+| <a name="input_panorama_device_group"></a> [panorama\_device\_group](#input\_panorama\_device\_group) | The name of the Panorama device group that will bootstrap the VM-Series firewalls. | `string` | n/a | yes |
+| <a name="input_panorama_template_stack"></a> [panorama\_template\_stack](#input\_panorama\_template\_stack) | The name of the Panorama template stack that will bootstrap the VM-Series firewalls. | `string` | n/a | yes |
+| <a name="input_panorama_vm_auth_key"></a> [panorama\_vm\_auth\_key](#input\_panorama\_vm\_auth\_key) | Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html | `string` | n/a | yes |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names, an arbitrary string | `string` | `null` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID | `string` | n/a | yes |
-| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"id_rsa.pub"` | no |
-| <a name="input_region"></a> [region](#input\_region) | GCP Region | `string` | `"europe-west4"` | no |
-| <a name="input_service_account"></a> [service\_account](#input\_service\_account) | IAM Service Account for running firewall instances (just the identifier, without `@domain` part) | `string` | `"paloaltonetworks-fw"` | no |
-| <a name="input_vmseries_image"></a> [vmseries\_image](#input\_vmseries\_image) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"` | no |
+| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"~/.ssh/gcp-demo.pub"` | no |
+| <a name="input_region"></a> [region](#input\_region) | GCP Region | `string` | `"us-east1"` | no |
+| <a name="input_vmseries_image_name"></a> [vmseries\_image\_name](#input\_vmseries\_image\_name) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-byol-1014"` | no |
+| <a name="input_vmseries_machine_type"></a> [vmseries\_machine\_type](#input\_vmseries\_machine\_type) | The Google Compute instance type to run the VM-Series firewall.  N1 and N2 instance types are supported. | `string` | `"n1-standard-4"` | no |
+| <a name="input_vmseries_per_zone_max"></a> [vmseries\_per\_zone\_max](#input\_vmseries\_per\_zone\_max) | The max number of firewalls to run in each zone. | `number` | `2` | no |
+| <a name="input_vmseries_per_zone_min"></a> [vmseries\_per\_zone\_min](#input\_vmseries\_per\_zone\_min) | The minimum number of firewalls to run in each zone. | `number` | `1` | no |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_jumphost_ssh_command"></a> [jumphost\_ssh\_command](#output\_jumphost\_ssh\_command) | n/a |
+No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
