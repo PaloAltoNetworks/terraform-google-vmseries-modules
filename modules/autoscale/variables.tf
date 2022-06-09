@@ -8,6 +8,7 @@ variable "region" {
   default     = null
   type        = string
 }
+
 variable "machine_type" {
   type = string
 }
