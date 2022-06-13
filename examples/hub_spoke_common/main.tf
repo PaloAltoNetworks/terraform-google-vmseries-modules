@@ -18,13 +18,11 @@ resource "random_string" "main" {
 locals {
   prefix = var.prefix != null && var.prefix != "" ? "${var.prefix}-" : ""
 
-  vmseries = {
-    fw01 = {
-      name = "vmseries01"
+  vmseries_vms = {
+    vmseries01 = {
       zone = data.google_compute_zones.main.names[0]
     }
-    fw02 = {
-      name = "vmseries02"
+    vmseries02 = {
       zone = data.google_compute_zones.main.names[1]
     }
   }
@@ -146,14 +144,14 @@ module "bootstrap" {
 
   service_account = module.iam_service_account.email
   files = {
-    "bootstrap_files/init-cfg.txt"  = "config/init-cfg.txt"
-    "bootstrap_files/bootstrap.xml" = "config/bootstrap.xml"
+    "bootstrap_files/init-cfg.txt.sample"  = "config/init-cfg.txt"
+    "bootstrap_files/bootstrap.xml.sample" = "config/bootstrap.xml"
   }
 }
 
 # Create 2 VM-Series firewalls
 module "vmseries" {
-  for_each = local.vmseries
+  for_each = local.vmseries_vms
   source   = "../../modules/vmseries"
 
   name                  = "${local.prefix}${each.key}"
@@ -180,6 +178,10 @@ module "vmseries" {
     {
       subnetwork = module.vpc_trust.subnets_self_links[0]
     }
+  ]
+
+  depends_on = [
+    module.bootstrap
   ]
 }
 
