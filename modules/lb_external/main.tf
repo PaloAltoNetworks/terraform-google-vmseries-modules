@@ -122,7 +122,7 @@ resource "google_compute_region_health_check" "this" {
 
   name                = "${var.name}-${local.region}"
   project             = var.project
-  region              = var.region
+  region              = local.region
   check_interval_sec  = var.health_check_interval_sec
   healthy_threshold   = var.health_check_healthy_threshold
   timeout_sec         = var.health_check_timeout_sec
