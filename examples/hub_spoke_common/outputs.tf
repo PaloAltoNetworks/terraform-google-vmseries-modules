@@ -10,10 +10,10 @@ output "ssh_to_spoke2" {
 
 output "vmseries01_access" {
   description = "Management URL for vmseries01."
-  value       = "https://${module.vmseries["fw01"].public_ips[1]}"
+  value       = "https://${module.vmseries["vmseries01"].public_ips[1]}"
 }
 
 output "vmseries02_access" {
   description = "Management URL for vmseries02."
-  value       = "https://${module.vmseries["fw02"].public_ips[1]}"
+  value       = "https://${module.vmseries["vmseries02"].public_ips[1]}"
 }
