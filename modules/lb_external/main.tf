@@ -15,7 +15,7 @@ locals {
 
   # Check for protocols that require a `google_compute_target_pool` backend and `google_compute_http_health_check` health check
   target_pool_protocols = ["TCP", "UDP", "ESP", "AH", "SCTP", "ICMP"]
-  target_pool_needed    = contains([for v in values(var.rules) : contains(local.target_pool_protocols, lookup(v, "ip_protocol", "TCP"))], true)
+  target_pool_needed    = contains([for k, v in var.rules : contains(local.target_pool_protocols, lookup(v, "ip_protocol", "TCP"))], true)
 }
 
 # Create external IP addresses if non-specified
