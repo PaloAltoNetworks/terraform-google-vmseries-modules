@@ -15,10 +15,10 @@ output "target_pool" {
 
 output "created_google_compute_http_health_check" {
   description = "The created health check resource. Null if `create_health_check` option was false."
-  value       = var.create_health_check ? try(google_compute_http_health_check.this[0], null) : null
+  value       = try(google_compute_http_health_check.this[0], null)
 }
 
 output "created_google_compute_region_health_check" {
   description = "The created health check resource. Null if `create_health_check` option was false."
-  value       = var.create_health_check ? try(google_compute_region_health_check.this[0], null) : null
+  value       = try(google_compute_region_health_check.this[0], null)
 }
