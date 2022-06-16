@@ -11,7 +11,7 @@ locals {
   region = coalesce(var.region, data.google_client_config.this.region)
 
   # Check for `L3_DEFAULT` as this requires a `google_compute_region_backend_service` resource and `google_compute_region_health_check` health check
-  backend_service_needed = contains([for v in values(var.rules) : lookup(v, "ip_protocol", null)], "L3_DEFAULT")
+  backend_service_needed = contains([for k, v in var.rules : lookup(v, "ip_protocol", null)], "L3_DEFAULT")
 
   # Check for protocols that require a `google_compute_target_pool` backend and `google_compute_http_health_check` health check
   target_pool_protocols = ["TCP", "UDP", "ESP", "AH", "SCTP", "ICMP"]
