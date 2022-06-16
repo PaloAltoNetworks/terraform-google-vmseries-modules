@@ -95,7 +95,7 @@ resource "google_compute_region_backend_service" "this" {
   count = local.backend_service_needed ? 1 : 0
 
   name                  = var.name
-  region                = var.region
+  region                = local.region
   load_balancing_scheme = "EXTERNAL"
   health_checks         = var.create_health_check ? [google_compute_region_health_check.this[0].self_link] : []
   protocol              = "UNSPECIFIED"
