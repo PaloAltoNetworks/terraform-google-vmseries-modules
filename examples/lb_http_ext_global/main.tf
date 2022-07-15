@@ -48,12 +48,12 @@ module "glb" {
 }
 
 #########################################################################
-# Internal TCP Load Balancer
+# Internal TCP/UDP Load Balancer
 # 
 # It's optional, just showing it can co-exist with a Global one.
 
 module "ilb" {
-  source     = "../../modules/lb_tcp_internal"
+  source     = "../../modules/lb_internal"
   name       = "${var.name_prefix}ilb"
   network    = local.vpc
   subnetwork = local.subnet
@@ -62,12 +62,12 @@ module "ilb" {
 }
 
 #########################################################################
-# External Regional TCP Load Balancer
+# External Regional Network Load Balancer
 #
 # It's optional, just showing it can co-exist with other load balancers.
 
 module "extlb" {
-  source    = "../../modules/lb_tcp_external/"
+  source    = "../../modules/lb_external/"
   name      = "${var.name_prefix}extlb"
   instances = [for k, v in module.vmseries : module.vmseries[k].self_link]
   rules = {

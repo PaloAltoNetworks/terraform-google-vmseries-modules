@@ -35,7 +35,9 @@ variable "ip_address" {
 }
 
 variable "ip_protocol" {
-  default = "TCP"
+  description = "The IP protocol for the frontend forwarding rule, valid values are TCP and UDP."
+  default     = "TCP"
+  type        = string
 }
 
 variable "all_ports" {

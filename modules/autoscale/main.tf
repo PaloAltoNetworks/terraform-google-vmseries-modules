@@ -12,60 +12,30 @@ terraform {
   }
 }
 
-resource "null_resource" "dependency_getter" {
-  provisioner "local-exec" {
-    command = "echo ${length(var.dependencies)}"
-  }
-}
-
 resource "google_compute_instance_template" "this" {
   name_prefix      = var.prefix
   machine_type     = var.machine_type
   min_cpu_platform = var.min_cpu_platform
   can_ip_forward   = true
   tags             = var.tags
-
-  metadata = {
-    mgmt-interface-swap                  = var.mgmt_interface_swap
-    vmseries-bootstrap-gce-storagebucket = var.bootstrap_bucket
-    serial-port-enable                   = true
-    ssh-keys                             = var.ssh_key
-  }
+  metadata         = var.metadata
 
   service_account {
     scopes = var.scopes
-    email  = var.service_account
+    email  = var.service_account_email
   }
 
-  network_interface {
-
-    dynamic "access_config" {
-      for_each = var.nic0_public_ip ? [""] : []
-      content {}
-    }
-    network_ip = var.nic0_ip[0]
-    subnetwork = var.subnetworks[0]
-  }
-
-  network_interface {
-    dynamic "access_config" {
-      for_each = var.nic1_public_ip ? [""] : []
-      content {}
-    }
-    network_ip = var.nic1_ip[0]
-    subnetwork = var.subnetworks[1]
-  }
-
+  // Create multiple interfaces (max 8)
   dynamic "network_interface" {
-    for_each = try([var.subnetworks[2]], [])
+    for_each = var.network_interfaces
 
     content {
+      subnetwork = network_interface.value.subnetwork
+
       dynamic "access_config" {
-        for_each = var.nic2_public_ip ? [""] : []
+        for_each = try(network_interface.value.create_public_ip, false) ? ["one"] : []
         content {}
       }
-      network_ip = var.nic2_ip[0]
-      subnetwork = var.subnetworks[2]
     }
   }
 
@@ -103,8 +73,9 @@ resource "google_compute_instance_group_manager" "this" {
   }
 
   update_policy {
-    type            = var.update_policy_type
-    min_ready_sec   = var.update_policy_min_ready_sec
+    type = var.update_policy_type
+    // Currently in google-beta provider.  Will merge when it becomes GA.
+    #min_ready_sec   = var.update_policy_min_ready_sec
     max_surge_fixed = 1
     minimal_action  = "REPLACE"
   }
@@ -116,10 +87,6 @@ resource "google_compute_instance_group_manager" "this" {
       port = named_port.value.port
     }
   }
-
-  depends_on = [
-    null_resource.dependency_getter
-  ]
 }
 
 resource "random_id" "autoscaler" {
@@ -162,32 +129,23 @@ resource "google_compute_autoscaler" "this" {
   }
 }
 
-data "google_project" "this" {}
-
-locals {
-  // Bug: `terraform plan` fails on an empty tfstate, because it says google_project.this.project_id is null
-  // Workaround: use this.id instead
-  project_id = replace(data.google_project.this.id, "projects/", "")
-}
-
 #---------------------------------------------------------------------------------
 # Pub-Sub is intended to be used by various cloud applications to register
 # new ip/port that would be consumed by Panorama and automatically onboarded.
 
 resource "google_pubsub_topic" "this" {
-  name = "${var.deployment_name}-${local.project_id}-panorama-apps-deployment"
+  name = "${var.deployment_name}-panorama-apps-deployment"
 }
 
-
 resource "google_pubsub_subscription" "this" {
-  name  = "${var.deployment_name}-${local.project_id}-panorama-plugin-subscription"
+  name  = "${var.deployment_name}-panorama-plugin-subscription"
   topic = google_pubsub_topic.this.id
 }
 
 resource "google_pubsub_subscription_iam_member" "this" {
   subscription = google_pubsub_subscription.this.id
   role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${coalesce(var.service_account, data.google_compute_default_service_account.this.email)}"
+  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.this.email)}"
 }
 
 data "google_compute_default_service_account" "this" {}

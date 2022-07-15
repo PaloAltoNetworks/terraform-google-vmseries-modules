@@ -3,18 +3,14 @@ variable "prefix" {
   type        = string
 }
 
-variable "subnetworks" {
-  type = list(string)
+variable "region" {
+  description = "The Google Cloud region for the resources.  If null is provided, provider region will be used."
+  default     = null
+  type        = string
 }
 
 variable "machine_type" {
   type = string
-}
-
-variable "region" {
-  description = "GCP region to deploy to, if not set the default provider region is used."
-  default     = null
-  type        = string
 }
 
 variable "zones" {
@@ -36,16 +32,6 @@ variable "min_cpu_platform" {
 variable "disk_type" {
   type    = string
   default = "pd-ssd"
-}
-
-variable "bootstrap_bucket" {
-  type    = string
-  default = ""
-}
-
-variable "ssh_key" {
-  type    = string
-  default = ""
 }
 
 variable "scopes" {
@@ -71,44 +57,12 @@ variable "tags" {
   default = []
 }
 
-variable "dependencies" {
-  type    = list(string)
-  default = []
+variable "metadata" {
+  description = "Metadata for VM-Series firewall.  Commented examples below show two examples: 1. partial bootstrap to Panorama 2. Full configuration bootstrap from Google storage bucket."
+  default     = {}
+  type        = map(string)
 }
 
-variable "nic0_ip" {
-  type    = list(string)
-  default = [""]
-}
-
-variable "nic1_ip" {
-  type    = list(string)
-  default = [""]
-}
-
-variable "nic2_ip" {
-  type    = list(string)
-  default = [""]
-}
-
-variable "mgmt_interface_swap" {
-  default = ""
-}
-
-variable "nic0_public_ip" {
-  type    = bool
-  default = false
-}
-
-variable "nic1_public_ip" {
-  type    = bool
-  default = false
-}
-
-variable "nic2_public_ip" {
-  type    = bool
-  default = false
-}
 
 variable "pool" {
   description = "The self_link of google_compute_target_pool where the auto-created instances will be placed for healtchecking of External Load Balancer"
@@ -149,7 +103,7 @@ variable "min_replicas_per_zone" {
 
 variable "cooldown_period" {
   description = "How much tame does it take for a spawned PA-VM to become functional on the initialization boot"
-  default     = 720
+  default     = 480
   type        = number
 }
 
@@ -172,15 +126,16 @@ variable "scale_in_control_replicas_fixed" {
   type        = number
 }
 
-variable "update_policy_min_ready_sec" {
-  description = <<-EOF
-  After underlying template changes (e.g. PAN-OS upgrade) and the new instance is being spawned,
-  how long to wait after it becomes online.
-  See `update_policy` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager)."
-  EOF
-  default     = 720
-  type        = number
-}
+// Currently in google-beta provider.  Will merge once it is GA.
+# variable "update_policy_min_ready_sec" {
+#   description = <<-EOF
+#   After underlying template changes (e.g. PAN-OS upgrade) and the new instance is being spawned,
+#   how long to wait after it becomes online.
+#   See `update_policy` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager)."
+#   EOF
+#   default     = 720
+#   type        = number
+# }
 
 variable "update_policy_type" {
   description = <<-EOF
@@ -217,8 +172,18 @@ variable "named_ports" {
   default     = []
 }
 
-variable "service_account" {
+variable "service_account_email" {
   description = "IAM Service Account for running firewall instance (just the email)"
   default     = null
   type        = string
+}
+
+variable "network_interfaces" {
+  description = <<-EOF
+  List of the network interface specifications.
+  Available options:
+  - `subnetwork`             - (Required|string) Self-link of a subnetwork to create interface in.
+  - `create_public_ip`       - (Optional|boolean) Whether to reserve public IP for the interface. Ignored if `public_ip` is provided. Defaults to 'false'.
+  EOF
+  type        = list(any)
 }
