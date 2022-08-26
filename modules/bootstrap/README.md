@@ -7,16 +7,13 @@
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.30 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | ~> 3.1 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 3.30 |
-| <a name="provider_null"></a> [null](#provider\_null) | ~> 3.1 |
-| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -33,7 +30,6 @@ No modules.
 | [google_storage_bucket_object.file](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
 | [google_storage_bucket_object.license_empty](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
 | [google_storage_bucket_object.software_empty](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
-| [null_resource.dependency_setter](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.randomstring](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [google_compute_default_service_account.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_default_service_account) | data source |
 
@@ -51,5 +47,4 @@ No modules.
 |------|-------------|
 | <a name="output_bucket"></a> [bucket](#output\_bucket) | n/a |
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
-| <a name="output_completion"></a> [completion](#output\_completion) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
