@@ -50,17 +50,6 @@ resource "google_storage_bucket_object" "software_empty" {
   bucket  = google_storage_bucket.this.name
 }
 
-resource "null_resource" "dependency_setter" {
-  depends_on = [
-    google_storage_bucket.this,
-    google_storage_bucket_object.file,
-    google_storage_bucket_object.config_empty,
-    google_storage_bucket_object.content_empty,
-    google_storage_bucket_object.license_empty,
-    google_storage_bucket_object.software_empty,
-  ]
-}
-
 data "google_compute_default_service_account" "this" {}
 
 resource "google_storage_bucket_iam_member" "member" {
