@@ -1,17 +1,3 @@
-terraform {
-  required_providers {
-    null = {
-      version = "~> 2.1"
-    }
-    random = {
-      version = "~> 2.3"
-    }
-    google = {
-      version = "~> 3.48"
-    }
-  }
-}
-
 resource "google_compute_instance_template" "this" {
   name_prefix      = var.prefix
   machine_type     = var.machine_type
