@@ -81,20 +81,17 @@ variable "autoscaler_metrics" {
   }
 }
 
-variable "cidr_mgmt" {
-  description = "The CIDR range of the management subnetwork."
-  type        = string
-  default     = "10.0.0.0/28"
+variable "existing_mgmt_subnet_name" {
+    description = "The name of your existing management subnet."
+    type = string
 }
 
-variable "cidr_untrust" {
-  description = "The CIDR range of the untrust subnetwork."
-  type        = string
-  default     = "10.0.1.0/28"
+variable "existing_untrust_subnet_name" {
+    description = "The name of your existing untrust/public subnet."
+    type = string
 }
 
-variable "cidr_trust" {
-  description = "The CIDR range of the trust subnetwork."
-  type        = string
-  default     = "10.0.2.0/28"
+variable "existing_trust_subnet_name" {
+    description = "The name of your existing trust subnet."
+    type = string
 }
