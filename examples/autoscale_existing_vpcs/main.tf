@@ -38,8 +38,8 @@ module "iam_service_account" {
 
 # Create VM-Series managed instance group for autoscaling
 module "autoscale" {
-  #source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
-  source = "../../modules/autoscale"
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
+
   name                   = "${local.prefix}vmseries"
   region                 = var.region
   use_regional_mig       = true
