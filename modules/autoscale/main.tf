@@ -1,5 +1,29 @@
-resource "google_compute_instance_template" "this" {
-  name_prefix      = var.prefix
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# Create Pub/Sub for Panorama Plugin & create instance template
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+resource "google_pubsub_topic" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+  name  = "${var.name}-mig-topic"
+}
+
+resource "google_pubsub_subscription" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+  name  = "${var.name}-mig-subscription"
+  topic = google_pubsub_topic.main[0].id
+}
+
+resource "google_pubsub_subscription_iam_member" "main" {
+  count        = var.create_pubsub_topic ? 1 : 0
+  subscription = google_pubsub_subscription.main[0].id
+  role         = "roles/pubsub.subscriber"
+  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
+}
+
+data "google_compute_default_service_account" "main" {}
+
+resource "google_compute_instance_template" "main" {
+  name_prefix      = "${var.name}-template"
   machine_type     = var.machine_type
   min_cpu_platform = var.min_cpu_platform
   can_ip_forward   = true
@@ -11,7 +35,6 @@ resource "google_compute_instance_template" "this" {
     email  = var.service_account_email
   }
 
-  // Create multiple interfaces (max 8)
   dynamic "network_interface" {
     for_each = var.network_interfaces
 
@@ -37,21 +60,23 @@ resource "google_compute_instance_template" "this" {
   }
 }
 
-resource "google_compute_instance_group_manager" "this" {
-  for_each = var.zones
 
-  base_instance_name = "${var.prefix}-fw"
-  name               = "${var.prefix}-igm-${each.value}"
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# Zone-based managed instance group creation 
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+resource "google_compute_instance_group_manager" "zonal" {
+  for_each           = var.use_regional_mig ? {} : var.zones
+  name               = "${var.name}-mig-${each.value}"
+  target_pools       = var.target_pool_self_links
+  base_instance_name = var.name
   zone               = each.value
-  target_pools       = compact([var.pool])
 
   version {
-    instance_template = google_compute_instance_template.this.id
+    instance_template = google_compute_instance_template.main.id
   }
 
   lifecycle {
-    # Ignore the name changes and only react to the version.instance_template changes.
-    # Google webui uses dummy name changes to implement Rolling Restart.
     ignore_changes = [
       version[0].name,
       version[1].name,
@@ -59,9 +84,7 @@ resource "google_compute_instance_group_manager" "this" {
   }
 
   update_policy {
-    type = var.update_policy_type
-    // Currently in google-beta provider.  Will merge when it becomes GA.
-    #min_ready_sec   = var.update_policy_min_ready_sec
+    type            = var.update_policy_type
     max_surge_fixed = 1
     minimal_action  = "REPLACE"
   }
@@ -75,27 +98,16 @@ resource "google_compute_instance_group_manager" "this" {
   }
 }
 
-resource "random_id" "autoscaler" {
-  for_each = var.zones
-  keepers = {
-    # Re-randomize on igm change. It forcibly recreates all users of this random_id.
-    google_compute_instance_group_manager = try(google_compute_instance_group_manager.this[each.key].id, null)
-  }
-  byte_length = 3
-}
-
-resource "google_compute_autoscaler" "this" {
-  for_each = var.zones
-  name     = "${var.prefix}-${random_id.autoscaler[each.key].hex}-as-${each.value}"
-  target   = try(google_compute_instance_group_manager.this[each.key].id, "")
+resource "google_compute_autoscaler" "zonal" {
+  for_each = var.use_regional_mig ? {} : var.zones
+  name     = "${var.name}-autoscaler-${each.value}"
+  target   = try(google_compute_instance_group_manager.zonal[each.key].id, "")
   zone     = each.value
 
   autoscaling_policy {
-    max_replicas    = var.max_replicas_per_zone
-    min_replicas    = var.min_replicas_per_zone
+    min_replicas    = var.min_vmseries_replicas
+    max_replicas    = var.max_vmseries_replicas
     cooldown_period = var.cooldown_period
-
-    # cpu_utilization { target = 0.7 }
 
     dynamic "metric" {
       for_each = var.autoscaler_metrics
@@ -115,23 +127,65 @@ resource "google_compute_autoscaler" "this" {
   }
 }
 
-#---------------------------------------------------------------------------------
-# Pub-Sub is intended to be used by various cloud applications to register
-# new ip/port that would be consumed by Panorama and automatically onboarded.
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# Regional managed instance group creation
+# --------------------------------------------------------------------------------------------------------------------------------------------
 
-resource "google_pubsub_topic" "this" {
-  name = "${var.deployment_name}-panorama-apps-deployment"
+data "google_compute_zones" "main" {
+  region = var.region
 }
 
-resource "google_pubsub_subscription" "this" {
-  name  = "${var.deployment_name}-panorama-plugin-subscription"
-  topic = google_pubsub_topic.this.id
+resource "google_compute_region_instance_group_manager" "regional" {
+  count              = var.use_regional_mig ? 1 : 0
+  name               = "${var.name}-mig"
+  target_pools       = var.target_pool_self_links
+  base_instance_name = var.name
+  region             = var.region
+
+  version {
+    instance_template = google_compute_instance_template.main.id
+  }
+
+  update_policy {
+    type            = var.update_policy_type
+    max_surge_fixed = length(data.google_compute_zones.main)
+    minimal_action  = "REPLACE"
+  }
+
+  dynamic "named_port" {
+    for_each = var.named_ports
+    content {
+      name = named_port.value.name
+      port = named_port.value.port
+    }
+  }
 }
 
-resource "google_pubsub_subscription_iam_member" "this" {
-  subscription = google_pubsub_subscription.this.id
-  role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.this.email)}"
-}
+resource "google_compute_region_autoscaler" "regional" {
+  count  = var.use_regional_mig ? 1 : 0
+  name   = "${var.name}-autoscaler"
+  target = google_compute_region_instance_group_manager.regional[0].id
+  region = var.region
 
-data "google_compute_default_service_account" "this" {}
+  autoscaling_policy {
+    min_replicas    = var.min_vmseries_replicas
+    max_replicas    = var.max_vmseries_replicas
+    cooldown_period = var.cooldown_period
+
+    dynamic "metric" {
+      for_each = var.autoscaler_metrics
+      content {
+        name   = metric.key
+        type   = try(metric.value.type, "GAUGE")
+        target = metric.value.target
+      }
+    }
+
+    scale_in_control {
+      time_window_sec = var.scale_in_control_time_window_sec
+      max_scaled_in_replicas {
+        fixed = var.scale_in_control_replicas_fixed
+      }
+    }
+  }
+}

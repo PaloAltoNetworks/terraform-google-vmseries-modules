@@ -2,9 +2,6 @@ locals {
   prefix = var.prefix != null && var.prefix != "" ? "${var.prefix}-" : ""
 }
 
-data "google_compute_zones" "main" {}
-
-
 #-----------------------------------------------------------------------------------------------
 # Create Mgmt, untrust, and trust VPC networks.  
 #-----------------------------------------------------------------------------------------------
@@ -118,39 +115,36 @@ module "vpc_trust" {
 */
 
 module "iam_service_account" {
-  source = "../../modules/iam_service_account/"
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/iam_service_account"
 
   service_account_id = "${local.prefix}vmseries-mig-sa"
 }
 
 # Create VM-Series managed instance group for autoscaling
 module "autoscale" {
+  #source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
   source = "../../modules/autoscale"
 
-  zones = {
-    zone1 = data.google_compute_zones.main.names[0]
-    zone2 = data.google_compute_zones.main.names[1]
-  }
-
-  prefix                = "${local.prefix}vmseries-mig"
-  deployment_name       = "${local.prefix}vmseries-mig-deployment"
-  machine_type          = var.vmseries_machine_type
-  image                 = var.vmseries_image_name
-  pool                  = module.extlb.target_pool
-  scopes                = ["https://www.googleapis.com/auth/cloud-platform"]
-  service_account_email = module.iam_service_account.email
-  min_replicas_per_zone = var.vmseries_per_zone_min // min firewalls per zone.
-  max_replicas_per_zone = var.vmseries_per_zone_max // max firewalls per zone.
-  autoscaler_metrics    = var.autoscaler_metrics
+  name                   = "${local.prefix}vmseries"
+  region                 = var.region
+  use_regional_mig       = true
+  min_vmseries_replicas  = var.vmseries_instances_min // min firewalls per region.
+  max_vmseries_replicas  = var.vmseries_instances_max // max firewalls per region.
+  image                  = var.vmseries_image_name
+  machine_type           = var.vmseries_machine_type
+  create_pubsub_topic    = true
+  target_pool_self_links = [module.extlb.target_pool]
+  service_account_email  = module.iam_service_account.email
+  autoscaler_metrics     = var.autoscaler_metrics
 
   network_interfaces = [
     {
       subnetwork       = module.vpc_untrust.subnets_self_links[0]
-      create_public_ip = true // Used for outbound internet traffic.
+      create_public_ip = true
     },
     {
       subnetwork       = module.vpc_mgmt.subnets_self_links[0]
-      create_public_ip = false // Set to true if you want to access the firewalls over the internet (not recommended).
+      create_public_ip = false
     },
     {
       subnetwork       = module.vpc_trust.subnets_self_links[0]
@@ -169,24 +163,12 @@ module "autoscale" {
     dhcp-send-client-id         = "yes"
     dhcp-accept-server-hostname = "yes"
     dhcp-accept-server-domain   = "yes"
-    dns-primary                 = "8.8.8.8"
+    dns-primary                 = "169.254.169.254" // Google DNS required to deliver PAN-OS metrics to Cloud Monitoring
     dns-secondary               = "4.2.2.2"
   }
 
-  # Example of full bootstrap with Google storage bucket.
-  /*
-  metadata = {
-    mgmt-interface-swap                  = "enable"
-    vmseries-bootstrap-gce-storagebucket = "my-google-bootstrap-bucket"
-    serial-port-enable                   = true
-    ssh-keys                             = "~/.ssh/vmseries-ssh-key.pub"
-  }
-  */
-  named_ports = [
-    {
-      name = "http"
-      port = "80"
-    },
+  depends_on = [
+    module.mgmt_cloud_nat
   ]
 }
 
@@ -200,13 +182,20 @@ module "autoscale" {
 */
 
 module "intlb" {
-  source = "../../modules/lb_internal/"
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/lb_internal"
 
-  name                = "${local.prefix}intlb"
-  network             = module.vpc_trust.network_id
-  subnetwork          = module.vpc_trust.subnets_self_links[0]
-  all_ports           = true
-  backends            = module.autoscale.backends
+  name              = "${local.prefix}internal-lb"
+  network           = module.vpc_trust.network_id
+  subnetwork        = module.vpc_trust.subnets_self_links[0]
+  all_ports         = true
+  health_check_port = 80
+  backends = {
+    #backend = module.autoscale.regional_instance_group_id
+
+    backend1 = module.autoscale.zone_instance_group_id["zone1"]
+    backend2 = module.autoscale.zone_instance_group_id["zone2"]
+
+  }
   allow_global_access = true
 }
 
@@ -215,9 +204,9 @@ module "intlb" {
 #-----------------------------------------------------------------------------------------------
 
 module "extlb" {
-  source = "../../modules/lb_external/"
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/lb_external"
 
-  name  = "${local.prefix}extlb"
+  name  = "${local.prefix}external-lb"
   rules = { ("${local.prefix}rule0") = { port_range = 80 } }
 
   health_check_http_port         = 80
