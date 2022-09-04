@@ -77,11 +77,11 @@ module "autoscale" {
   source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
 
   name             = "${local.prefix}vmseries"
-  region           = "us-west1"
+  region           = "us-central1"
   <b>use_regional_mig = false</b>
   <b>zones = {
-    zone1 = "us-west1-a"
-    zone2 = "us-west1-b"
+    zone1 = "us-central1-a"
+    zone2 = "us-central1-b"
   }</b>
   ...
   ...
