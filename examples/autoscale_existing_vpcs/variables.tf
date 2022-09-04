@@ -82,16 +82,16 @@ variable "autoscaler_metrics" {
 }
 
 variable "existing_mgmt_subnet_name" {
-    description = "The name of your existing management subnet."
-    type = string
+  description = "The name of your existing management subnet."
+  type        = string
 }
 
 variable "existing_untrust_subnet_name" {
-    description = "The name of your existing untrust/public subnet."
-    type = string
+  description = "The name of your existing untrust/public subnet."
+  type        = string
 }
 
 variable "existing_trust_subnet_name" {
-    description = "The name of your existing trust subnet."
-    type = string
+  description = "The name of your existing trust subnet."
+  type        = string
 }
