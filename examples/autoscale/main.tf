@@ -189,11 +189,7 @@ module "intlb" {
   all_ports         = true
   health_check_port = 80
   backends = {
-    #backend = module.autoscale.regional_instance_group_id
-
-    backend1 = module.autoscale.zone_instance_group_id["zone1"]
-    backend2 = module.autoscale.zone_instance_group_id["zone2"]
-
+    backend = module.autoscale.regional_instance_group_id
   }
   allow_global_access = true
 }
