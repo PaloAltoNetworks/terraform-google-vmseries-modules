@@ -116,7 +116,7 @@ module "vpc_trust" {
 
 module "iam_service_account" {
   source = "../../modules/iam_service_account/"
-  
+
   service_account_id = "${local.prefix}vmseries-mig-sa"
 }
 

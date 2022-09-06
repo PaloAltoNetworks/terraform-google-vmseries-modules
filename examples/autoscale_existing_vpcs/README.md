@@ -132,10 +132,10 @@ terraform apply
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | PaloAltoNetworks/vmseries-modules/google//modules/autoscale | n/a |
-| <a name="module_extlb"></a> [extlb](#module\_extlb) | PaloAltoNetworks/vmseries-modules/google//modules/lb_external | n/a |
-| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | PaloAltoNetworks/vmseries-modules/google//modules/iam_service_account | n/a |
-| <a name="module_intlb"></a> [intlb](#module\_intlb) | PaloAltoNetworks/vmseries-modules/google//modules/lb_internal | n/a |
+| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale/ | n/a |
+| <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_external/ | n/a |
+| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
+| <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_internal/ | n/a |
 
 ## Resources
 
