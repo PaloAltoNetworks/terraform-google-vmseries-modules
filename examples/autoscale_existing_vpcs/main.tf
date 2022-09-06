@@ -31,14 +31,14 @@ data "google_compute_subnetwork" "trust" {
 */
 
 module "iam_service_account" {
-  source = "PaloAltoNetworks/vmseries-modules/google//modules/iam_service_account"
+  source = "../../modules/iam_service_account/"
 
   service_account_id = "${local.prefix}vmseries-mig-sa"
 }
 
 # Create VM-Series managed instance group for autoscaling
 module "autoscale" {
-  source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
+  source = "../../modules/autoscale/"
 
   name                   = "${local.prefix}vmseries"
   region                 = var.region
@@ -92,7 +92,7 @@ module "autoscale" {
 */
 
 module "intlb" {
-  source = "PaloAltoNetworks/vmseries-modules/google//modules/lb_internal"
+  source = "../../modules/lb_internal/"
 
   name              = "${local.prefix}internal-lb"
   network           = data.google_compute_subnetwork.trust.network
@@ -110,7 +110,7 @@ module "intlb" {
 #-----------------------------------------------------------------------------------------------
 
 module "extlb" {
-  source = "PaloAltoNetworks/vmseries-modules/google//modules/lb_external"
+  source = "../../modules/lb_external/"
 
   name  = "${local.prefix}external-lb"
   rules = { ("${local.prefix}rule0") = { port_range = 80 } }
