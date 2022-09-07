@@ -14,9 +14,7 @@ Created resources include:
 
 > If you would like to deploy the VM-Series MIG into existing VPC networks, please see [`examples/autoscale_existing_vpcs`](../autoscale_existing_vpcs).
 
-<p align="center">
-    <img src="images/diagram.png" width="1000">
-</p>
+![image](https://user-images.githubusercontent.com/2110772/188896518-1fe5abd2-1887-4c2f-bc63-95c6a03bbb4e.png)
 
 ## Requirements
 
