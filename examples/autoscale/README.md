@@ -34,7 +34,10 @@ Created resources include:
 
 1. Access a machine with Terraform installed (versions `>= 0.15.3` & `< 2.0`) or click **Open in Google Cloud Shell**.
 
-![image](https://user-images.githubusercontent.com/2110772/188896668-23fc9260-642a-4b7f-b64f-8e0b783b598a.png)
+<p align="center" width="100%">
+  <a href="https://ssh.cloud.google.com/cloudshell/editor"><img width="350" src="https://user-images.githubusercontent.com/2110772/188896668-23fc9260-642a-4b7f-b64f-8e0b783b598a.png"> 
+  </a>
+</p>
 
 2. Enable the required APIs, clone the Github repository, and change directories to the example build.
 
