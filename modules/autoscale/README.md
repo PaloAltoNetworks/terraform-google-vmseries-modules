@@ -41,7 +41,7 @@ No modules.
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | Deployment Name that matches what is specified in Panorama GCP Plugin | `string` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | n/a | `string` | `"pd-ssd"` | no |
 | <a name="input_image"></a> [image](#input\_image) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-912"` | no |
-| <a name="input_machine_type"></a> [machine\_type](#input\_machine\_type) | n/a | `string` | n/a | yes |
+| <a name="input_machine_type"></a> [machine\_type](#input\_machine\_type) | GCP instance type to use. | `string` | `"n1-standard-4"` | no |
 | <a name="input_max_replicas_per_zone"></a> [max\_replicas\_per\_zone](#input\_max\_replicas\_per\_zone) | Maximum number of VM-series instances per *each* of the zones | `number` | `1` | no |
 | <a name="input_metadata"></a> [metadata](#input\_metadata) | Metadata for VM-Series firewall.  Commented examples below show two examples: 1. partial bootstrap to Panorama 2. Full configuration bootstrap from Google storage bucket. | `map(string)` | `{}` | no |
 | <a name="input_min_cpu_platform"></a> [min\_cpu\_platform](#input\_min\_cpu\_platform) | n/a | `string` | `"Intel Broadwell"` | no |

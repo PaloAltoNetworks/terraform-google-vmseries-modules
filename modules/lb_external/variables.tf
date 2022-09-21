@@ -1,4 +1,3 @@
-
 variable "project" {
   description = "The project to deploy to. If unset the default provider project is used."
   type        = string
@@ -20,7 +19,7 @@ variable "rules" {
   description = <<-EOF
   Map of objects, the keys are names of the external forwarding rules, each of the objects has the following attributes:
 
-  - `port_ranges`: (Required) The port your service is listening on. Can be a number (80) or a range (8080-8089, or even 1-65535).
+  - `port_range`: (Required) The port your service is listening on. Can be a number (80) or a range (8080-8089, or even 1-65535).
   - `ip_address`: (Optional) A public IP address on which to listen, must be in the same region as the LB and must be IPv4. If empty, automatically generates a new non-ephemeral IP on a PREMIUM tier.
   - `ip_protocol`: (Optional) The IP protocol for the frontend forwarding rule: TCP, UDP, ESP, ICMP, or L3_DEFAULT. Default is TCP.
   - `all_ports`: (Optional) Allows all ports to be forwarded to the Backend Service
