@@ -32,7 +32,7 @@ resource "google_compute_address" "private" {
 
   name         = try(each.value.private_ip_name, "${var.name}-${each.key}-private")
   address_type = "INTERNAL"
-  address      = try(each.value.private_address, null)
+  address      = try(each.value.private_ip, null)
   subnetwork   = each.value.subnetwork
   region       = data.google_compute_subnetwork.this[each.key].region
 }
