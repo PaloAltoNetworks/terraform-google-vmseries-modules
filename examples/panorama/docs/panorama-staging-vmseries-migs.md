@@ -1,4 +1,4 @@
-# Panroama Staging for VM-Series MIGs
+# Panorama Staging for VM-Series MIGs
 
 ## Overview
 
