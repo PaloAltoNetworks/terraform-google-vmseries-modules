@@ -6,6 +6,10 @@ resource "google_compute_health_check" "this" {
   tcp_health_check {
     port = var.health_check_port
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_region_backend_service" "this" {
