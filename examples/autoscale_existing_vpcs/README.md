@@ -68,9 +68,9 @@ existing_untrust_subnet_name = "my-untrust-subnet"
 existing_trust_subnet_name   = "my-trust-subnet"
 ```
 
-5.  (Optional)  If you would like to deploy zone-based MIGs instead of regional MIGs, make the following changes in [`main.tf`](main.tf).
+5.  (Optional)  If you would like to deploy zonal MIGs instead of regional MIGs, make the following changes in [`main.tf`](main.tf).
     1.  Within `module "autoscale"`, add the `zones` parameter and set `use_regional_mig=false`.
-    2.  Within `module "intlb"`, configure backends parameter to use each output for `zonal_instance_group_id`. 
+    2.  Within `module "intlb"`, configure backends parameter to use each output for `zonal_instance_group_ids`. 
 
 <pre>
 module "autoscale" {
@@ -97,8 +97,8 @@ module "intlb" {
   all_ports         = true
   health_check_port = 80
   backends = {
-    <b>backend1 = module.autoscale.zone_instance_group_id["zone1"]
-    backend2 = module.autoscale.zone_instance_group_id["zone2"]</b>
+    <b>backend1 = module.autoscale.zonal_instance_group_ids["zone1"]
+    backend2 = module.autoscale.zonal_instance_group_ids["zone2"]</b>
   }
   allow_global_access = true
 }

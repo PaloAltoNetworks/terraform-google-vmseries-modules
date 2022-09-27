@@ -1,29 +1,8 @@
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# Create Pub/Sub for Panorama Plugin & create instance template
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
-resource "google_pubsub_topic" "main" {
-  count = var.create_pubsub_topic ? 1 : 0
-  name  = "${var.name}-mig-topic"
-}
-
-resource "google_pubsub_subscription" "main" {
-  count = var.create_pubsub_topic ? 1 : 0
-  name  = "${var.name}-mig-subscription"
-  topic = google_pubsub_topic.main[0].id
-}
-
-resource "google_pubsub_subscription_iam_member" "main" {
-  count        = var.create_pubsub_topic ? 1 : 0
-  subscription = google_pubsub_subscription.main[0].id
-  role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
-}
-
 data "google_compute_default_service_account" "main" {}
 
+# Instance template
 resource "google_compute_instance_template" "main" {
-  name_prefix      = "${var.name}-template"
+  name_prefix      = var.name
   machine_type     = var.machine_type
   min_cpu_platform = var.min_cpu_platform
   can_ip_forward   = true
@@ -60,14 +39,11 @@ resource "google_compute_instance_template" "main" {
   }
 }
 
-
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# Zone-based managed instance group creation 
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
+# Zonal managed instance group and autoscaler
 resource "google_compute_instance_group_manager" "zonal" {
-  for_each           = var.use_regional_mig ? {} : var.zones
-  name               = "${var.name}-mig-${each.value}"
+  for_each = var.use_regional_mig ? {} : var.zones
+
+  name               = "${var.name}-${each.value}"
   target_pools       = var.target_pool_self_links
   base_instance_name = var.name
   zone               = each.value
@@ -100,9 +76,10 @@ resource "google_compute_instance_group_manager" "zonal" {
 
 resource "google_compute_autoscaler" "zonal" {
   for_each = var.use_regional_mig ? {} : var.zones
-  name     = "${var.name}-autoscaler-${each.value}"
-  target   = try(google_compute_instance_group_manager.zonal[each.key].id, "")
-  zone     = each.value
+
+  name   = "${var.name}-autoscaler-${each.value}"
+  target = try(google_compute_instance_group_manager.zonal[each.key].id, "")
+  zone   = each.value
 
   autoscaling_policy {
     min_replicas    = var.min_vmseries_replicas
@@ -127,17 +104,17 @@ resource "google_compute_autoscaler" "zonal" {
   }
 }
 
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# Regional managed instance group creation
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
+# Regional managed instance group and autoscaler
 data "google_compute_zones" "main" {
+  count = var.use_regional_mig ? 1 : 0
+
   region = var.region
 }
 
 resource "google_compute_region_instance_group_manager" "regional" {
-  count              = var.use_regional_mig ? 1 : 0
-  name               = "${var.name}-mig"
+  count = var.use_regional_mig ? 1 : 0
+
+  name               = var.name
   target_pools       = var.target_pool_self_links
   base_instance_name = var.name
   region             = var.region
@@ -148,7 +125,7 @@ resource "google_compute_region_instance_group_manager" "regional" {
 
   update_policy {
     type            = var.update_policy_type
-    max_surge_fixed = length(data.google_compute_zones.main)
+    max_surge_fixed = length(data.google_compute_zones.main[0])
     minimal_action  = "REPLACE"
   }
 
@@ -162,8 +139,9 @@ resource "google_compute_region_instance_group_manager" "regional" {
 }
 
 resource "google_compute_region_autoscaler" "regional" {
-  count  = var.use_regional_mig ? 1 : 0
-  name   = "${var.name}-autoscaler"
+  count = var.use_regional_mig ? 1 : 0
+
+  name   = var.name
   target = google_compute_region_instance_group_manager.regional[0].id
   region = var.region
 
@@ -188,4 +166,23 @@ resource "google_compute_region_autoscaler" "regional" {
       }
     }
   }
+}
+
+# Pub/Sub for Panorama Plugin
+resource "google_pubsub_topic" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+  name  = "${var.name}-mig"
+}
+
+resource "google_pubsub_subscription" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+  name  = "${var.name}-mig"
+  topic = google_pubsub_topic.main[0].id
+}
+
+resource "google_pubsub_subscription_iam_member" "main" {
+  count        = var.create_pubsub_topic ? 1 : 0
+  subscription = google_pubsub_subscription.main[0].id
+  role         = "roles/pubsub.subscriber"
+  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
 }

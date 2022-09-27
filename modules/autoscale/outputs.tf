@@ -1,10 +1,10 @@
-output "zone_instance_group_id" {
-  description = "The resource ID of the zone-based VM-Series managed instance group.  This output should only be used when `use_regional_mig` is set to `false`."
+output "zonal_instance_group_ids" {
+  description = "The resource IDs of the zonal VM-Series managed instance groups. This output should only be used when `use_regional_mig` is set to `false`."
   value       = var.use_regional_mig ? null : { for k, v in google_compute_instance_group_manager.zonal : k => v.instance_group }
 }
 
 output "regional_instance_group_id" {
-  description = "The resource ID of the regional VM-Series managed instance group.  This output should only be used when `use_regional_mig` is set to `true`."
+  description = "The resource ID of the regional VM-Series managed instance group. This output should only be used when `use_regional_mig` is set to `true`."
   value       = var.use_regional_mig ? google_compute_region_instance_group_manager.regional[0].instance_group : null
 }
 
