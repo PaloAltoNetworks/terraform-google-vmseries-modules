@@ -32,11 +32,11 @@ We are maintaining a [public roadmap](https://github.com/orgs/PaloAltoNetworks/p
 ## Versioning
 
 These modules follow the principles of [Semantic Versioning](http://semver.org/). You can find each new release,
-along with the changelog, on the GitHub [Releases](../../releases) page.
+along with the changelog, on the GitHub [Releases](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/releases) page.
 
 ## Getting Help
 
-[Open an issue](../../issues) on Github.
+[Open an issue](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/issues) on Github.
 
 ## Contributing
 

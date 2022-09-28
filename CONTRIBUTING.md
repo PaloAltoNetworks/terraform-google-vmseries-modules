@@ -16,9 +16,9 @@ Contributions are welcome across the entire project:
 
 ### New Contributors
 
-1. Search the [issues](https://github.com/PaloAltoNetworks/terraform-ibm-vmseries-modules.git/issues) to see if there is an existing issue. If not, open an issue (note the issue ID).
+1. Search the [issues](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules.git/issues) to see if there is an existing issue. If not, please open one.
 
-1. Fork the repository to your personal namespace (only need to do this once).
+1. Fork the repository to your personal namespace (only needed to do this once).
 
 1. Clone the repo from your personal namespace.
 
