@@ -3,6 +3,12 @@ data "google_client_config" "this" {}
 resource "google_compute_health_check" "this" {
   name = "${var.name}-${data.google_client_config.this.region}-check-tcp${var.health_check_port}"
 
+  timeout_sec      = var.timeout_sec
+  check_interval_sec  = var.check_interval_sec
+  healthy_threshold   = var.healthy_threshold
+  unhealthy_threshold = var.unhealthy_threshold
+
+
   tcp_health_check {
     port = var.health_check_port
   }
@@ -13,11 +19,12 @@ resource "google_compute_health_check" "this" {
 }
 
 resource "google_compute_region_backend_service" "this" {
+  provider = google-beta
+
   name             = var.name
   health_checks    = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
   network          = var.network
   session_affinity = var.session_affinity
-  timeout_sec      = var.timeout_sec
 
   dynamic "backend" {
     for_each = var.backends
@@ -43,6 +50,12 @@ resource "google_compute_region_backend_service" "this" {
       drop_traffic_if_unhealthy            = var.drop_traffic_if_unhealthy
       failover_ratio                       = var.failover_ratio
     }
+  }
+
+  connection_tracking_policy {
+    tracking_mode                                = var.connection_tracking_mode
+    connection_persistence_on_unhealthy_backends = var.connection_persistence_on_unhealthy_backends
+    idle_timeout_sec                             = var.connection_idle_timeout_sec
   }
 }
 
