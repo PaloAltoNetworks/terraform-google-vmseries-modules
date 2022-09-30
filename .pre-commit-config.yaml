@@ -4,21 +4,24 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
-        args: ['--args=--lockfile=false']
+        args: [
+          --args=--lockfile=false,
+          --args=--sort=false,
+        ]
       - id: terraform_tflint
         args: [
-            # --args=--module, # TODO enable it after ensuring `terraform init`
-            # --args=--only=terraform_comment_syntax,
-            --args=--only=terraform_deprecated_interpolation,
-            --args=--only=terraform_deprecated_index,
-            # --args=--only=terraform_documented_variables,
-            --args=--only=terraform_module_pinned_source,
-            --args=--only=terraform_naming_convention,
-            # --args=--only=terraform_required_providers,
-            # --args=--only=terraform_required_version,
-            # --args=--only=terraform_unused_declarations,
-            --args=--only=terraform_workspace_remote,
-          ]
+          # --args=--module, # TODO enable it after ensuring `terraform init`
+          # --args=--only=terraform_comment_syntax,
+          --args=--only=terraform_deprecated_interpolation,
+          --args=--only=terraform_deprecated_index,
+          # --args=--only=terraform_documented_variables,
+          --args=--only=terraform_module_pinned_source,
+          --args=--only=terraform_naming_convention,
+          # --args=--only=terraform_required_providers,
+          # --args=--only=terraform_required_version,
+          # --args=--only=terraform_unused_declarations,
+          --args=--only=terraform_workspace_remote,
+        ]
   - repo: https://github.com/bridgecrewio/checkov.git
     rev: '2.0.1175'
     hooks:

@@ -67,26 +67,26 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_ip_version"></a> [ip\_version](#input\_ip\_version) | IP version for the Global address (IPv4 or v6) - Empty defaults to IPV4 | `string` | `""` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name for the forwarding rule and prefix for supporting resources | `string` | n/a | yes |
 | <a name="input_backend_groups"></a> [backend\_groups](#input\_backend\_groups) | The map containing the names of instance groups (IGs) or network endpoint groups (NEGs) to serve. The IGs can be managed or unmanaged or a mix of both. All IGs must handle named port `backend_port_name`. The NEGs just handle unnamed port. | `map(string)` | `{}` | no |
 | <a name="input_backend_port_name"></a> [backend\_port\_name](#input\_backend\_port\_name) | The port\_name of the backend groups that this load balancer will serve (default is 'http') | `string` | `"http"` | no |
 | <a name="input_backend_protocol"></a> [backend\_protocol](#input\_backend\_protocol) | The protocol used to talk to the backend service | `string` | `"HTTP"` | no |
+| <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | Timeout to consider a connection dead, in seconds (default 30) | `number` | `null` | no |
 | <a name="input_balancing_mode"></a> [balancing\_mode](#input\_balancing\_mode) | n/a | `string` | `"RATE"` | no |
 | <a name="input_capacity_scaler"></a> [capacity\_scaler](#input\_capacity\_scaler) | n/a | `number` | `null` | no |
-| <a name="input_cdn"></a> [cdn](#input\_cdn) | Set to `true` to enable cdn on backend. | `bool` | `false` | no |
-| <a name="input_certificate"></a> [certificate](#input\_certificate) | Content of the SSL certificate. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
-| <a name="input_http_forward"></a> [http\_forward](#input\_http\_forward) | Set to `false` to disable HTTP port 80 forward | `bool` | `true` | no |
-| <a name="input_ip_version"></a> [ip\_version](#input\_ip\_version) | IP version for the Global address (IPv4 or v6) - Empty defaults to IPV4 | `string` | `""` | no |
 | <a name="input_max_connections_per_instance"></a> [max\_connections\_per\_instance](#input\_max\_connections\_per\_instance) | n/a | `number` | `null` | no |
 | <a name="input_max_rate_per_instance"></a> [max\_rate\_per\_instance](#input\_max\_rate\_per\_instance) | n/a | `number` | `null` | no |
 | <a name="input_max_utilization"></a> [max\_utilization](#input\_max\_utilization) | n/a | `number` | `null` | no |
-| <a name="input_name"></a> [name](#input\_name) | Name for the forwarding rule and prefix for supporting resources | `string` | n/a | yes |
-| <a name="input_private_key"></a> [private\_key](#input\_private\_key) | Content of the private SSL key. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
-| <a name="input_security_policy"></a> [security\_policy](#input\_security\_policy) | The resource URL for the security policy to associate with the backend service | `string` | `""` | no |
-| <a name="input_ssl"></a> [ssl](#input\_ssl) | Set to `true` to enable SSL support, requires variable `ssl_certificates` - a list of self\_link certs | `bool` | `false` | no |
-| <a name="input_ssl_certificates"></a> [ssl\_certificates](#input\_ssl\_certificates) | SSL cert self\_link list. Required if `ssl` is `true` and no `private_key` and `certificate` is provided. | `list(string)` | `[]` | no |
-| <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | Timeout to consider a connection dead, in seconds (default 30) | `number` | `null` | no |
 | <a name="input_url_map"></a> [url\_map](#input\_url\_map) | The url\_map resource to use. Default is to send all traffic to first backend. | `string` | `null` | no |
+| <a name="input_http_forward"></a> [http\_forward](#input\_http\_forward) | Set to `false` to disable HTTP port 80 forward | `bool` | `true` | no |
+| <a name="input_ssl"></a> [ssl](#input\_ssl) | Set to `true` to enable SSL support, requires variable `ssl_certificates` - a list of self\_link certs | `bool` | `false` | no |
+| <a name="input_private_key"></a> [private\_key](#input\_private\_key) | Content of the private SSL key. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
+| <a name="input_certificate"></a> [certificate](#input\_certificate) | Content of the SSL certificate. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
 | <a name="input_use_ssl_certificates"></a> [use\_ssl\_certificates](#input\_use\_ssl\_certificates) | If true, use the certificates provided by `ssl_certificates`, otherwise, create cert from `private_key` and `certificate` | `bool` | `false` | no |
+| <a name="input_ssl_certificates"></a> [ssl\_certificates](#input\_ssl\_certificates) | SSL cert self\_link list. Required if `ssl` is `true` and no `private_key` and `certificate` is provided. | `list(string)` | `[]` | no |
+| <a name="input_security_policy"></a> [security\_policy](#input\_security\_policy) | The resource URL for the security policy to associate with the backend service | `string` | `""` | no |
+| <a name="input_cdn"></a> [cdn](#input\_cdn) | Set to `true` to enable cdn on backend. | `bool` | `false` | no |
 
 ## Outputs
 

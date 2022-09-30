@@ -28,8 +28,8 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_panorama"></a> [panorama](#module\_panorama) | ../../modules/panorama | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
+| <a name="module_panorama"></a> [panorama](#module\_panorama) | ../../modules/panorama | n/a |
 
 ## Resources
 
@@ -41,19 +41,19 @@ No requirements.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | n/a | `any` | n/a | yes |
-| <a name="input_attach_public_ip"></a> [attach\_public\_ip](#input\_attach\_public\_ip) | n/a | `any` | n/a | yes |
-| <a name="input_cidr"></a> [cidr](#input\_cidr) | n/a | `any` | n/a | yes |
-| <a name="input_log_disks"></a> [log\_disks](#input\_log\_disks) | n/a | `any` | n/a | yes |
-| <a name="input_panorama_name"></a> [panorama\_name](#input\_panorama\_name) | Panorama | `any` | n/a | yes |
-| <a name="input_panorama_version"></a> [panorama\_version](#input\_panorama\_version) | n/a | `any` | n/a | yes |
-| <a name="input_private_static_ip"></a> [private\_static\_ip](#input\_private\_static\_ip) | n/a | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | General | `any` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | n/a | `any` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | n/a | `any` | n/a | yes |
-| <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | n/a | `any` | n/a | yes |
-| <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | n/a | `any` | n/a | yes |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | VPC | `any` | n/a | yes |
+| <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | n/a | `any` | n/a | yes |
+| <a name="input_cidr"></a> [cidr](#input\_cidr) | n/a | `any` | n/a | yes |
+| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | n/a | `any` | n/a | yes |
+| <a name="input_panorama_name"></a> [panorama\_name](#input\_panorama\_name) | Panorama | `any` | n/a | yes |
+| <a name="input_panorama_version"></a> [panorama\_version](#input\_panorama\_version) | n/a | `any` | n/a | yes |
+| <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | n/a | `any` | n/a | yes |
+| <a name="input_attach_public_ip"></a> [attach\_public\_ip](#input\_attach\_public\_ip) | n/a | `any` | n/a | yes |
+| <a name="input_private_static_ip"></a> [private\_static\_ip](#input\_private\_static\_ip) | n/a | `any` | n/a | yes |
+| <a name="input_log_disks"></a> [log\_disks](#input\_log\_disks) | n/a | `any` | n/a | yes |
 
 ## Outputs
 

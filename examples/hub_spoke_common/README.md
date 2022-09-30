@@ -309,17 +309,17 @@ rm ~/.ssh/gcp-demo
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
-| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
-| <a name="module_lb_external"></a> [lb\_external](#module\_lb\_external) | ../../modules/lb_external/ | n/a |
-| <a name="module_lb_internal"></a> [lb\_internal](#module\_lb\_internal) | ../../modules/lb_internal/ | n/a |
-| <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_internal/ | n/a |
-| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
 | <a name="module_vpc_mgmt"></a> [vpc\_mgmt](#module\_vpc\_mgmt) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
+| <a name="module_bootstrap"></a> [bootstrap](#module\_bootstrap) | ../../modules/bootstrap/ | n/a |
+| <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
+| <a name="module_lb_internal"></a> [lb\_internal](#module\_lb\_internal) | ../../modules/lb_internal/ | n/a |
+| <a name="module_lb_external"></a> [lb\_external](#module\_lb\_external) | ../../modules/lb_external/ | n/a |
 | <a name="module_vpc_spoke1"></a> [vpc\_spoke1](#module\_vpc\_spoke1) | terraform-google-modules/network/google | ~> 4.0 |
 | <a name="module_vpc_spoke2"></a> [vpc\_spoke2](#module\_vpc\_spoke2) | terraform-google-modules/network/google | ~> 4.0 |
-| <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
-| <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
+| <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_internal/ | n/a |
 
 ## Resources
 
@@ -340,22 +340,22 @@ rm ~/.ssh/gcp-demo
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP project ID | `any` | `null` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Arbitrary string used to prefix resource names. | `string` | `null` | no |
+| <a name="input_region"></a> [region](#input\_region) | Google Cloud region for the created resources. | `string` | `null` | no |
+| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | The Google Cloud machine type for the VM-Series NGFW. | `string` | `"n1-standard-4"` | no |
+| <a name="input_fw_image_name"></a> [fw\_image\_name](#input\_fw\_image\_name) | The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913. | `string` | `"vmseries-flex-byol-1014"` | no |
 | <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface. | `list(string)` | `null` | no |
 | <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | The CIDR range of the management subnetwork. | `string` | `null` | no |
+| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `null` | no |
+| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `null` | no |
 | <a name="input_cidr_spoke1"></a> [cidr\_spoke1](#input\_cidr\_spoke1) | The CIDR range of the management subnetwork. | `string` | `null` | no |
 | <a name="input_cidr_spoke2"></a> [cidr\_spoke2](#input\_cidr\_spoke2) | The CIDR range of the spoke1 subnetwork. | `string` | `null` | no |
-| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `null` | no |
-| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `null` | no |
-| <a name="input_fw_image_name"></a> [fw\_image\_name](#input\_fw\_image\_name) | The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913. | `string` | `"vmseries-flex-byol-1014"` | no |
-| <a name="input_fw_machine_type"></a> [fw\_machine\_type](#input\_fw\_machine\_type) | The Google Cloud machine type for the VM-Series NGFW. | `string` | `"n1-standard-4"` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Arbitrary string used to prefix resource names. | `string` | `null` | no |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP project ID | `any` | `null` | no |
-| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key.  If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `string` | `null` | no |
-| <a name="input_region"></a> [region](#input\_region) | Google Cloud region for the created resources. | `string` | `null` | no |
-| <a name="input_spoke_vm_image"></a> [spoke\_vm\_image](#input\_spoke\_vm\_image) | The image path for the compute instances deployed in the spoke networks. | `string` | `"ubuntu-os-cloud/ubuntu-2004-lts"` | no |
-| <a name="input_spoke_vm_scopes"></a> [spoke\_vm\_scopes](#input\_spoke\_vm\_scopes) | A list of service scopes. Both OAuth2 URLs and gcloud short names are supported. To allow full access to all Cloud APIs, use the cloud-platform | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
 | <a name="input_spoke_vm_type"></a> [spoke\_vm\_type](#input\_spoke\_vm\_type) | The GCP machine type for the compute instances in the spoke networks. | `string` | `"f1-micro"` | no |
+| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key.  If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin | `string` | `null` | no |
+| <a name="input_spoke_vm_image"></a> [spoke\_vm\_image](#input\_spoke\_vm\_image) | The image path for the compute instances deployed in the spoke networks. | `string` | `"ubuntu-os-cloud/ubuntu-2004-lts"` | no |
 | <a name="input_spoke_vm_user"></a> [spoke\_vm\_user](#input\_spoke\_vm\_user) | The username for the compute instance in the spoke networks. | `string` | `null` | no |
+| <a name="input_spoke_vm_scopes"></a> [spoke\_vm\_scopes](#input\_spoke\_vm\_scopes) | A list of service scopes. Both OAuth2 URLs and gcloud short names are supported. To allow full access to all Cloud APIs, use the cloud-platform | `list(string)` | <pre>[<br>  "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>  "https://www.googleapis.com/auth/devstorage.read_only",<br>  "https://www.googleapis.com/auth/logging.write",<br>  "https://www.googleapis.com/auth/monitoring.write"<br>]</pre> | no |
 
 ## Outputs
 
