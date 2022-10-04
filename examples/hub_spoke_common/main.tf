@@ -166,6 +166,8 @@ module "vmseries" {
     serial-port-enable                   = true
   }
 
+  service_account = module.iam_service_account.email
+
   network_interfaces = [
     {
       subnetwork       = module.vpc_untrust.subnets_self_links[0]
