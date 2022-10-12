@@ -53,7 +53,7 @@ resource "google_compute_forwarding_rule" "rule" {
   #   If false set value to the value of `port_range`. If `port_range` isn't specified, then set the value to `null`.
   port_range = lookup(each.value, "ip_protocol", "TCP") == "L3_DEFAULT" ? null : lookup(each.value, "port_range", null)
 
-  ip_address  = lookup(each.value, "ip_address", google_compute_address.this[each.key].address)
+  ip_address  = try(lookup(each.value, "ip_address", google_compute_address.this[each.key].address), lookup(each.value, "ip_address", null))
   ip_protocol = lookup(each.value, "ip_protocol", "TCP")
 }
 
