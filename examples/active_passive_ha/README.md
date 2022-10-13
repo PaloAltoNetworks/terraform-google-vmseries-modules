@@ -7,13 +7,13 @@
 First you will need to clone the Github repository locally, to do this run the following command:
 
 ```shell
-git clone https://github.com/terraform-google-vmseries-modules
+git clone https://github.com/paloaltonetworks/terraform-google-vmseries-modules
 ```
 
 Now goto this example folder by running the following command:
 
 ```shell
-cd examples/active_passive_ha
+cd terraform-google-vmseries-modules/examples/active_passive_ha
 ```
 
 First we will need to set some variables for the deployment, make a copy of the provided example by running this command:
@@ -30,7 +30,6 @@ nano terraform.tfvars
 Example 
 ```
 region          = "europe-west2"
-project_id      = "gcp-project-id-here"
 prefix          = "example-ha"
 allowed_sources = ["0.0.0.0/0"]
 cidr_mgmt       = "192.168.0.0/24"
@@ -52,38 +51,65 @@ First we will create the `google_computer_address` resource called `external_nat
 terraform apply -target google_compute_address.external_nat_ip
 ```
 
-```shell
+If prompted select "Authorize":
+
+![images/img.png](images/img.png)
+
+When prompted review the plan and enter `yes` to proceed.
+
+```
+Changes to Outputs:
+  + external_nat_ip = (known after apply)
+╷
+│ Warning: Resource targeting is in effect
+│ 
+│ You are creating a plan with the -target option, which means that the result of this plan may not represent all of the changes requested by the current configuration.
+│ 
+│ The -target option is not for routine use, and is provided only for exceptional situations such as recovering from errors or mistakes, or when Terraform specifically suggests to use it as part
+│ of an error message.
+╵
+
 Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 
-  Enter a value:
+  Enter a value: 
 ```
-When prompted review the plan and enter `yes` to proceed.
+
+You should see output like this to confirm 1 resource has been added, and you will see the output of the public IP that was created:
 
 ```shell
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
+Outputs:
+
+external_nat_ip = "x.x.x.x"
 ```
 
-Now you are ready 
+Now you are ready to deploy the rest of the infrastructure:
 
 ```shell
 terraform apply
 ```
 
-```shell
+```
+Plan: 68 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + vmseries01_access = (known after apply)
+  + vmseries02_access = (known after apply)
+
 Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 
-  Enter a value:
+  Enter a value: 
 ```
 
 When prompted review the plan and enter `yes` to proceed.
 
-
-```shell
-Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+```
+Apply complete! Resources: 68 added, 0 changed, 0 destroyed.
 
 Outputs:
 
@@ -92,33 +118,26 @@ vmseries01_access = "https://y.y.y.y"
 vmseries02_access = "https://z.z.z.z"
 ```
 
+All the infrastructure should now be deployed and will be booting up and configuring itself. To confirm when everything is ready you can open a web browser and visit the `external_nat_ip` by using `http://x.x.x.x` after a few mins you will see the apache default webpage from the `workload-vm`.
 
+## Test the deployment
 
-## Test
+Next we will test the deployment to ensure everything is working correctly.
 
+First lets look from the `workload-vm` to make sure its getting the correct IP and has internet connectvity throught the firewall.
+
+To connect to the `workload-vm` run the following command:
 ```shell
 gcloud compute ssh workload-vm
 ```
 
-Check External IP
-```shell
-echo $(curl https://api.ipify.org -s)
-```
+Next lets run some tests while we perform a failover, a script has been provided to help with this. Just run this command:
 
 ```shell
-while :
-do
-  timeout -k 2 2 ping -c 1  8.8.8.8 >> /dev/null
-  if [ $? -eq 0 ]; then
-    echo "$(date) -- Online -- Source IP = $(curl https://checkip.amazonaws.com -s --connect-timeout 1)"
-  else
-    echo "$(date) -- Offline"
-  fi
-  sleep 1
-done
+/network-check.sh
 ```
 
-
+You will see output like this where `x.x.x.x` is the IP address is `external_nap_ip` address.
 ```
 Wed Oct 12 16:40:18 UTC 2022 -- Online -- Source IP = x.x.x.x
 Wed Oct 12 16:40:19 UTC 2022 -- Online -- Source IP = x.x.x.x
@@ -126,7 +145,30 @@ Wed Oct 12 16:40:20 UTC 2022 -- Online -- Source IP = x.x.x.x
 Wed Oct 12 16:40:21 UTC 2022 -- Online -- Source IP = x.x.x.x
 ```
 
-Perform Failover
+Now login to the VM-Series using the URLs provided at the end of the terraform deployment.
+
+Open a browser and visit the two Management interfaces of the firewalls in different windows.
+
+To login to the firewalls use the following details:
+
+Username: `admin`
+Password: `Pal0Alt0@123`
+
+When you login you will notice the HA Status in the bottom right hand corner:
+
+![img.png](images/img_0.png)
+
+![img_1.png](images/img_1.png)
+
+On the `Active` firewall goto the `Device` tab, and selexct `High Availabilty` from the left menu and the `Operational Commands` tab in the main window:
+
+![img_2.png](images/img_2.png)
+
+Select `Suspend local device for high availability` and when prompted ensure you're monitoring the output on the console of the `workload-vm` and select `OK`:
+
+![img_3.png](images/img_3.png)
+
+You may see `Offline` being registered for a couple of seconds or maybe the output will pause for a few seconds and continue. You will notice after the failover the Source IP is maintained, and if you were running a stateful session like SSH you would also notice that this session was maintained.
 
 ```
 Wed Oct 12 16:47:18 UTC 2022 -- Online -- Source IP = x.x.x.x
@@ -136,13 +178,4 @@ Wed Oct 12 16:47:22 UTC 2022 -- Offline
 Wed Oct 12 16:47:23 UTC 2022 -- Online -- Source IP = x.x.x.x
 Wed Oct 12 16:47:24 UTC 2022 -- Online -- Source IP = x.x.x.x
 ```
-
-
-To Do!
-- Need to change NAT Policy to LB IP - Circular Reference
-- Need to change Loopback IP to LB IP - Circular Reference
-
-
-Username: `admin`
-Password: `Pal0Alt0@123`
 
