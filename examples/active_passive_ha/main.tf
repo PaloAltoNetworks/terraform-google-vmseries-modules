@@ -13,32 +13,55 @@ locals {
   vmseries_vms = {
     vmseries01 = {
       zone                      = data.google_compute_zones.main.names[0]
-      management_private_ip     = "192.168.0.2"
-      managementpeer_private_ip = "192.168.0.3"
-      untrust_private_ip        = "192.168.1.2"
-      untrust_gateway_ip        = "192.168.1.1"
-      trust_private_ip          = "192.168.2.2"
-      trust_gateway_ip          = "192.168.2.1"
-      ha2_private_ip            = "192.168.3.2"
-      ha2_subnet_mask           = "255.255.255.0"
-      ha2_gateway_ip            = "192.168.3.1"
+      management_private_ip     = cidrhost(var.cidr_mgmt, 2)
+      managementpeer_private_ip = cidrhost(var.cidr_mgmt, 3)
+      untrust_private_ip        = cidrhost(var.cidr_untrust, 2)
+      untrust_gateway_ip        = data.google_compute_subnetwork.untrust.gateway_address
+      trust_private_ip          = cidrhost(var.cidr_trust, 2)
+      trust_gateway_ip          = data.google_compute_subnetwork.trust.gateway_address
+      ha2_private_ip            = cidrhost(var.cidr_ha2, 2)
+      ha2_subnet_mask           = cidrnetmask(var.cidr_ha2)
+      ha2_gateway_ip            = data.google_compute_subnetwork.ha2.gateway_address
       external_lb_ip            = google_compute_address.external_nat_ip.address
+      workload_vm               = cidrhost(var.cidr_workload, 10)
     }
+
     vmseries02 = {
       zone                      = data.google_compute_zones.main.names[1]
-      management_private_ip     = "192.168.0.3"
-      managementpeer_private_ip = "192.168.0.2"
-      untrust_private_ip        = "192.168.1.3"
-      untrust_gateway_ip        = "192.168.1.1"
-      trust_private_ip          = "192.168.2.3"
-      trust_gateway_ip          = "192.168.2.1"
-      ha2_private_ip            = "192.168.3.3"
-      ha2_subnet_mask           = "255.255.255.0"
-      ha2_gateway_ip            = "192.168.3.1"
+      management_private_ip     = cidrhost(var.cidr_mgmt, 3)
+      managementpeer_private_ip = cidrhost(var.cidr_mgmt, 2)
+      untrust_private_ip        = cidrhost(var.cidr_untrust, 3)
+      untrust_gateway_ip        = data.google_compute_subnetwork.untrust.gateway_address
+      trust_private_ip          = cidrhost(var.cidr_trust, 3)
+      trust_gateway_ip          = data.google_compute_subnetwork.trust.gateway_address
+      ha2_private_ip            = cidrhost(var.cidr_ha2, 3)
+      ha2_subnet_mask           = cidrnetmask(var.cidr_ha2)
+      ha2_gateway_ip            = data.google_compute_subnetwork.ha2.gateway_address
       external_lb_ip            = google_compute_address.external_nat_ip.address
+      workload_vm               = cidrhost(var.cidr_workload, 10)
     }
   }
 }
+
+
+# Retrieve the untrust subnet ID to use default gateway in bootstrap.xml
+data "google_compute_subnetwork" "untrust" {
+  self_link = module.vpc_trust.subnets_self_links[0]
+  region    = var.region
+}
+
+# Retrieve the trust subnet ID to use default gateway in bootstrap.xml
+data "google_compute_subnetwork" "trust" {
+  self_link = module.vpc_trust.subnets_self_links[0]
+  region    = var.region
+}
+
+# Retrieve the HA2 subnet ID to use default gateway in bootstrap.xml
+data "google_compute_subnetwork" "ha2" {
+  self_link = module.vpc_ha2.subnets_self_links[0]
+  region    = var.region
+}
+
 
 data "template_file" "bootstrap_xml" {
   for_each = local.vmseries_vms
@@ -55,6 +78,7 @@ data "template_file" "bootstrap_xml" {
     ha2_private_ip            = each.value.ha2_private_ip
     ha2_subnet_mask           = each.value.ha2_subnet_mask
     ha2_gateway_ip            = each.value.ha2_gateway_ip
+    workload_vm               = each.value.workload_vm
   }
 }
 
@@ -312,9 +336,10 @@ module "lb_internal" {
 
 # NAT IP for Outbound Services
 resource "google_compute_address" "external_nat_ip" {
-  name   = "${local.prefix}fw-ext-lb"
+  name         = "${local.prefix}fw-ext-lb"
   address_type = "EXTERNAL"
 }
+
 
 module "lb_external" {
   source = "../../modules/lb_external/"
@@ -437,6 +462,7 @@ resource "google_compute_instance" "workload_vm" {
 
   network_interface {
     subnetwork = module.vpc_workload.subnets_ids[0]
+    network_ip = cidrhost(var.cidr_workload, 10)
   }
 
   # Apply the firewall rule to allow external IPs to ping this instance

@@ -18,16 +18,6 @@ locals {
   target_pool_needed    = contains([for k, v in var.rules : contains(local.target_pool_protocols, lookup(v, "ip_protocol", "TCP"))], true)
 }
 
-# Create external IP addresses if non-specified
-resource "google_compute_address" "this" {
-  for_each = { for k, v in var.rules : k => v if !can(v.ip_address) }
-
-  name         = each.key
-  address_type = "EXTERNAL"
-  region       = var.region
-  project      = var.project
-}
-
 # Create forwarding rule for each specified rule
 resource "google_compute_forwarding_rule" "rule" {
   for_each = var.rules
@@ -53,7 +43,9 @@ resource "google_compute_forwarding_rule" "rule" {
   #   If false set value to the value of `port_range`. If `port_range` isn't specified, then set the value to `null`.
   port_range = lookup(each.value, "ip_protocol", "TCP") == "L3_DEFAULT" ? null : lookup(each.value, "port_range", null)
 
-  ip_address  = try(lookup(each.value, "ip_address", google_compute_address.this[each.key].address), lookup(each.value, "ip_address", null))
+
+  ip_address = lookup(each.value, "ip_address", null) # != null ?  : lookup(each.value, "port_range", null)
+  #ip_address  = try(lookup(each.value, "ip_address", google_compute_address.this[each.key].address), lookup(each.value, "ip_address", null))
   ip_protocol = lookup(each.value, "ip_protocol", "TCP")
 }
 

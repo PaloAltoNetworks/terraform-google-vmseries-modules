@@ -40,50 +40,11 @@ cidr_workload   = "192.168.4.0/24"
 public_key_path = "~/.ssh/gcp-demo.pub"
 ```
 
+
 Now we're ready to start the deployment. First we need to initialize Terraform.
 
 ```shell
 terraform init
-```
-
-First we will create the `google_computer_address` resource called `external_nat_ip`. To do this we will target Terraform to only apply that 1 resource from the plan.
-```shell
-terraform apply -target google_compute_address.external_nat_ip
-```
-
-If prompted select "Authorize":
-
-![images/img.png](images/img.png)
-
-When prompted review the plan and enter `yes` to proceed.
-
-```
-Changes to Outputs:
-  + external_nat_ip = (known after apply)
-╷
-│ Warning: Resource targeting is in effect
-│ 
-│ You are creating a plan with the -target option, which means that the result of this plan may not represent all of the changes requested by the current configuration.
-│ 
-│ The -target option is not for routine use, and is provided only for exceptional situations such as recovering from errors or mistakes, or when Terraform specifically suggests to use it as part
-│ of an error message.
-╵
-
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: 
-```
-
-You should see output like this to confirm 1 resource has been added, and you will see the output of the public IP that was created:
-
-```shell
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-external_nat_ip = "x.x.x.x"
 ```
 
 Now you are ready to deploy the rest of the infrastructure:
@@ -91,6 +52,9 @@ Now you are ready to deploy the rest of the infrastructure:
 ```shell
 terraform apply
 ```
+
+
+When prompted review the plan and enter `yes` to proceed.
 
 ```
 Plan: 68 to add, 0 to change, 0 to destroy.
@@ -106,7 +70,7 @@ Do you want to perform these actions?
   Enter a value: 
 ```
 
-When prompted review the plan and enter `yes` to proceed.
+When the build completes the following output will be generated.
 
 ```
 Apply complete! Resources: 68 added, 0 changed, 0 destroyed.

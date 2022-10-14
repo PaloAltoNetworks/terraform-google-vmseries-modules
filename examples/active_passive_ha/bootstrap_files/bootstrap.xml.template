@@ -749,7 +749,7 @@
                 </entry>
                 <entry name="DNAT - Loopback.1 to Workload VM" uuid="4fb6211e-4dea-4551-9cca-610a683ff33a">
                   <destination-translation>
-                    <translated-address>192.168.4.2</translated-address>
+                    <translated-address>${workload_vm}</translated-address>
                   </destination-translation>
                   <to>
                     <member>public</member>
