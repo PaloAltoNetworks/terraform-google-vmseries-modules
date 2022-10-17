@@ -1,10 +1,25 @@
 # Active/Passive High-Availability Deployment
 
-## Example Overview
+## Overview
+
+This deployment provides a traditional Active/Passive High Availability pair of VM-Series firewalls hosted in Google Cloud, and provides thew following benefits:
+* Palo Alto Networks Configuration Sync
+* State Synchronization between instances to maintain state on fail-over.
+* Controlled High-Availability fail-over in approx. 3 seconds
+
+This deployment model provides solutions for the following key use-cases:
+
+* IPSec termination of site to site VPNs.
+* Legacy applications that need visibility of the original source client IP (No SNAT solution) for inbound traffic flows.
+* Requirements for session fail-over on failure of VM-Series.
+
+Generally we would recommend a scale-out architecture, review [this link](https://cloud.google.com/architecture/partners/palo-alto-networks-ngfw) for guidance on which architecture is best for you.
+
+## Diagram of Deployment
 
 ![Overview Diagram](images/diagram.png)
 
-## Deploying the Example Deployment
+## Deploying the example Deployment
 
 First you will need to clone the Github repository locally, to do this run the following command:
 
