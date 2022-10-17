@@ -2,6 +2,8 @@
 
 ## Example Overview
 
+![Overview Diagram](images/diagram.png)
+
 ## Deploying the Example Deployment
 
 First you will need to clone the Github repository locally, to do this run the following command:

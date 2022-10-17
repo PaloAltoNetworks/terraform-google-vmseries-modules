@@ -425,7 +425,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="public-gcp-load-balancer-health-check-range-1">
+                  <entry name="external-gcp-load-balancer-health-check-range-1">
                     <nexthop>
                       <ip-address>${untrust_gateway_ip}</ip-address>
                     </nexthop>
@@ -444,7 +444,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="public-gcp-load-balancer-health-check-range-2">
+                  <entry name="external-gcp-load-balancer-health-check-range-2">
                     <nexthop>
                       <ip-address>${untrust_gateway_ip}</ip-address>
                     </nexthop>
@@ -463,7 +463,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="public-gcp-load-balancer-health-check-range-3">
+                  <entry name="external-gcp-load-balancer-health-check-range-3">
                     <nexthop>
                       <ip-address>${untrust_gateway_ip}</ip-address>
                     </nexthop>
@@ -482,7 +482,7 @@
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="public-gcp-load-balancer-health-check-range-4">
+                  <entry name="external-gcp-load-balancer-health-check-range-4">
                     <nexthop>
                       <ip-address>${untrust_gateway_ip}</ip-address>
                     </nexthop>
@@ -646,14 +646,14 @@
           <application/>
           <application-group/>
           <zone>
-            <entry name="private">
+            <entry name="trust">
               <network>
                 <layer3>
                   <member>ethernet1/2</member>
                 </layer3>
               </network>
             </entry>
-            <entry name="public">
+            <entry name="untrust">
               <network>
                 <layer3>
                   <member>ethernet1/1</member>
@@ -689,12 +689,12 @@
             </default-security-rules>
             <nat>
               <rules>
-                <entry name="gcp-load-balancer-health-check-public" uuid="2fca6dab-020f-4638-a611-3aaa234f8a5f">
+                <entry name="gcp-load-balancer-health-check-untrust" uuid="2fca6dab-020f-4638-a611-3aaa234f8a5f">
                   <to>
-                    <member>public</member>
+                    <member>untrust</member>
                   </to>
                   <from>
-                    <member>public</member>
+                    <member>untrust</member>
                   </from>
                   <source>
                     <member>gcp-load-balancer-health-check-range</member>
@@ -707,12 +707,12 @@
                     <translated-address>192.168.254.1/32</translated-address>
                   </dynamic-destination-translation>
                 </entry>
-                <entry name="gcp-load-balancer-health-check-private" uuid="7a44c635-556d-45ac-92e6-2c0f606ff2bb">
+                <entry name="gcp-load-balancer-health-check-trust" uuid="7a44c635-556d-45ac-92e6-2c0f606ff2bb">
                   <to>
-                    <member>private</member>
+                    <member>trust</member>
                   </to>
                   <from>
-                    <member>private</member>
+                    <member>trust</member>
                   </from>
                   <source>
                     <member>gcp-load-balancer-health-check-range</member>
@@ -725,7 +725,7 @@
                     <translated-address>192.168.254.1/32</translated-address>
                   </dynamic-destination-translation>
                 </entry>
-                <entry name="private-to-public-loopback-ip" uuid="4f8fe023-8c44-455e-aa7f-feeded6735ca">
+                <entry name="trust-to-untrust-loopback-ip" uuid="4f8fe023-8c44-455e-aa7f-feeded6735ca">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -734,10 +734,10 @@
                     </dynamic-ip-and-port>
                   </source-translation>
                   <to>
-                    <member>public</member>
+                    <member>untrust</member>
                   </to>
                   <from>
-                    <member>private</member>
+                    <member>trust</member>
                   </from>
                   <source>
                     <member>any</member>
@@ -752,10 +752,10 @@
                     <translated-address>${workload_vm}</translated-address>
                   </destination-translation>
                   <to>
-                    <member>public</member>
+                    <member>untrust</member>
                   </to>
                   <from>
-                    <member>public</member>
+                    <member>untrust</member>
                   </from>
                   <source>
                     <member>any</member>
