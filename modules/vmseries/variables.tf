@@ -40,7 +40,7 @@ variable "bootstrap_options" {
       panorama-server = 1.2.3.4
     }
 
-  A list of available parameters: type, ip-address, default-gateway, netmask, ipv6-address, ipv6-default-gateway, hostname, panorama-server, panorama-server-2, tplname, dgname, dns-primary, dns-secondary, vm-auth-key, op-command-modes, op-cmd-dpdk-pkt-io, plugin-op-commands, dhcp-send-hostname, dhcp-send-client-id, dhcp-accept-server-hostname, dhcp-accept-server-domain, vm-series-auto-registration-pin-id, vm-series-auto-registration-pin-value, auth-key, vmseries-bootstrap-gce-storagebucket.
+  A list of available parameters: type, ip-address, default-gateway, netmask, ipv6-address, ipv6-default-gateway, hostname, panorama-server, panorama-server-2, tplname, dgname, dns-primary, dns-secondary, vm-auth-key, op-command-modes, op-cmd-dpdk-pkt-io, plugin-op-commands, dhcp-send-hostname, dhcp-send-client-id, dhcp-accept-server-hostname, dhcp-accept-server-domain, vm-series-auto-registration-pin-id, vm-series-auto-registration-pin-value, auth-key, vmseries-bootstrap-gce-storagebucket, mgmt-interface-swap.
 
   For more details on the options please refer to [VM-Series documentation](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/create-the-init-cfgtxt-file/init-cfgtxt-file-components).
   EOF
@@ -50,7 +50,7 @@ variable "bootstrap_options" {
     condition = alltrue([
       for v in keys(var.bootstrap_options) :
       contains(
-        ["type", "ip-address", "default-gateway", "netmask", "ipv6-address", "ipv6-default-gateway", "hostname", "panorama-server", "panorama-server-2", "tplname", "dgname", "dns-primary", "dns-secondary", "vm-auth-key", "op-command-modes", "op-cmd-dpdk-pkt-io", "plugin-op-commands", "dhcp-send-hostname", "dhcp-send-client-id", "dhcp-accept-server-hostname", "dhcp-accept-server-domain", "vm-series-auto-registration-pin-id", "vm-series-auto-registration-pin-value", "auth-key", "vmseries-bootstrap-gce-storagebucket"],
+        ["type", "ip-address", "default-gateway", "netmask", "ipv6-address", "ipv6-default-gateway", "hostname", "panorama-server", "panorama-server-2", "tplname", "dgname", "dns-primary", "dns-secondary", "vm-auth-key", "op-command-modes", "op-cmd-dpdk-pkt-io", "plugin-op-commands", "dhcp-send-hostname", "dhcp-send-client-id", "dhcp-accept-server-hostname", "dhcp-accept-server-domain", "vm-series-auto-registration-pin-id", "vm-series-auto-registration-pin-value", "auth-key", "vmseries-bootstrap-gce-storagebucket", "mgmt-interface-swap"],
         v
       )
     ])
