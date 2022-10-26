@@ -15,7 +15,7 @@ data "google_compute_image" "vmseries" {
   count = var.custom_image == null ? 1 : 0
 
   name    = var.vmseries_image
-  project = var.project
+  project = "paloaltonetworksgcp-public"
 }
 
 data "google_compute_subnetwork" "this" {
