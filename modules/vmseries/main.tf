@@ -15,12 +15,12 @@ data "google_compute_image" "vmseries" {
   count = var.custom_image == null ? 1 : 0
 
   name    = var.vmseries_image
-  project = "paloaltonetworksgcp-public"
+  project = var.project
 }
 
 data "google_compute_subnetwork" "this" {
-  for_each = { for k, v in var.network_interfaces : k => v }
-
+  for_each  = { for k, v in var.network_interfaces : k => v }
+  project   = var.project
   self_link = each.value.subnetwork
 }
 
@@ -36,6 +36,7 @@ resource "google_compute_address" "private" {
   name         = try(each.value.private_ip_name, "${var.name}-${each.key}-private")
   address_type = "INTERNAL"
   address      = try(each.value.private_ip, null)
+  project      = var.project
   subnetwork   = each.value.subnetwork
   region       = data.google_compute_subnetwork.this[each.key].region
 }
@@ -45,6 +46,7 @@ resource "google_compute_address" "public" {
 
   name         = try(each.value.public_ip_name, "${var.name}-${each.key}-public")
   address_type = "EXTERNAL"
+  project      = var.project
   region       = data.google_compute_subnetwork.this[each.key].region
 }
 
