@@ -1,0 +1,9 @@
+region          = ""
+prefix          = ""
+allowed_sources = [""]
+cidr_mgmt       = ""
+cidr_untrust    = ""
+cidr_trust      = ""
+cidr_ha2        = ""
+cidr_workload   = ""
+public_key_path = ""
