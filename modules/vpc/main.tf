@@ -36,12 +36,14 @@ locals {
 
 data "google_compute_network" "this" {
   for_each = local.networks_existing
-  name     = each.value.name
-  project  = try(each.value.host_project_id, each.value.project, var.project_id, null)
+
+  name    = each.value.name
+  project = try(each.value.host_project_id, each.value.project, var.project_id, null)
 }
 
 resource "google_compute_network" "this" {
-  for_each                        = local.networks_to_create
+  for_each = local.networks_to_create
+
   name                            = each.value.name
   project                         = try(each.value.host_project_id, each.value.project, var.project_id, null)
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
@@ -50,13 +52,15 @@ resource "google_compute_network" "this" {
 
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
-  name     = each.value.subnetwork_name
-  project  = try(each.value.host_project_id, each.value.project, var.project_id, null)
-  region   = try(each.value.region, var.region, null)
+
+  name    = each.value.subnetwork_name
+  project = try(each.value.host_project_id, each.value.project, var.project_id, null)
+  region  = try(each.value.region, var.region, null)
 }
 
 resource "google_compute_subnetwork" "this" {
-  for_each      = local.subnetworks_to_create
+  for_each = local.subnetworks_to_create
+
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
@@ -65,7 +69,8 @@ resource "google_compute_subnetwork" "this" {
 }
 
 resource "google_compute_firewall" "this" {
-  for_each      = { for k, v in local.networks : k => v if can(v.allowed_sources) }
+  for_each = { for k, v in local.networks : k => v if can(v.allowed_sources) }
+
   name          = "${each.value.name}-ingress"
   network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
   direction     = "INGRESS"

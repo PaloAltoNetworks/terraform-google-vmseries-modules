@@ -1,10 +1,13 @@
 locals {
+  create_public_ip = {
+    for k, v in var.network_interfaces : k => try(v.create_public_ip, false)
+  }
   access_configs = {
     for k, v in var.network_interfaces : k => {
       nat_ip                 = try(v.public_ip, google_compute_address.public[k].address, null)
       public_ptr_domain_name = try(v.public_ptr_domain_name, google_compute_address.public[k].public_ptr_domain_name, null)
     }
-    if can(v.public_ip) || can(v.create_public_ip)
+    if can(v.public_ip) || local.create_public_ip[k]
   }
 }
 
@@ -32,13 +35,13 @@ resource "google_compute_address" "private" {
 
   name         = try(each.value.private_ip_name, "${var.name}-${each.key}-private")
   address_type = "INTERNAL"
-  address      = try(each.value.private_address, null)
+  address      = try(each.value.private_ip, null)
   subnetwork   = each.value.subnetwork
   region       = data.google_compute_subnetwork.this[each.key].region
 }
 
 resource "google_compute_address" "public" {
-  for_each = { for k, v in var.network_interfaces : k => v if try(v.create_public_ip, false) && try(v.public_ip, null) == null }
+  for_each = { for k, v in var.network_interfaces : k => v if local.create_public_ip[k] && try(v.public_ip, null) == null }
 
   name         = try(each.value.public_ip_name, "${var.name}-${each.key}-public")
   address_type = "EXTERNAL"

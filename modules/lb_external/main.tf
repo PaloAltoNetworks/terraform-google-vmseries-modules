@@ -10,7 +10,7 @@ locals {
   # If we were told an exact region, use it, otherwise fall back to a client-default region
   region = coalesce(var.region, data.google_client_config.this.region)
 
-  # Check for `L3_DEFAULT` as this requires a `google_compute_region_backend_service` resource and `google_compute_region_health_check` health check
+  # Check for `L3_DEFAULT` as this requires `google_compute_region_backend_service` and `google_compute_region_health_check` resources.
   backend_service_needed = contains([for k, v in var.rules : lookup(v, "ip_protocol", null)], "L3_DEFAULT")
 
   # Check for protocols that require a `google_compute_target_pool` backend and `google_compute_http_health_check` health check
@@ -53,7 +53,7 @@ resource "google_compute_forwarding_rule" "rule" {
   #   If false set value to the value of `port_range`. If `port_range` isn't specified, then set the value to `null`.
   port_range = lookup(each.value, "ip_protocol", "TCP") == "L3_DEFAULT" ? null : lookup(each.value, "port_range", null)
 
-  ip_address  = lookup(each.value, "ip_address", google_compute_address.this[each.key].address)
+  ip_address  = try(each.value.ip_address, google_compute_address.this[each.key].address)
   ip_protocol = lookup(each.value, "ip_protocol", "TCP")
 }
 

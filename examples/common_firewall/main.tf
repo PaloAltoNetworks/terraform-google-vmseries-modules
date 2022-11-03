@@ -109,17 +109,17 @@ module "vmseries" {
 
   network_interfaces = [
     {
-      subnetwork      = module.vpc.subnetworks["${var.name_prefix}fw-untrust"].self_link
-      private_address = each.value.private_ips["untrust"]
+      subnetwork = module.vpc.subnetworks["${var.name_prefix}fw-untrust"].self_link
+      private_ip = each.value.private_ips["untrust"]
     },
     {
       subnetwork       = module.vpc.subnetworks["${var.name_prefix}fw-mgmt"].self_link
-      private_address  = each.value.private_ips["mgmt"]
+      private_ip       = each.value.private_ips["mgmt"]
       create_public_ip = true
     },
     {
-      subnetwork      = module.vpc.subnetworks["${var.name_prefix}fw-trust"].self_link
-      private_address = each.value.private_ips["trust"]
+      subnetwork = module.vpc.subnetworks["${var.name_prefix}fw-trust"].self_link
+      private_ip = each.value.private_ips["trust"]
     },
   ]
 }
@@ -151,7 +151,7 @@ module "lb_external" {
 
 # -----------------------------------------------------------------------------------------------
 # Cloud Nat for the management interfaces.
-# Needed to reach bootstrap bucket or to log to Cortex DataLake.
+# Needed to reach   bucket or to log to Cortex DataLake.
 module "mgmt_cloud_nat" {
   source  = "terraform-google-modules/cloud-nat/google"
   version = "=1.2"

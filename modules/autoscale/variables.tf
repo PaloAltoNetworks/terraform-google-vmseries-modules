@@ -10,7 +10,9 @@ variable "region" {
 }
 
 variable "machine_type" {
-  type = string
+  description = "GCP instance type to use."
+  default     = "n1-standard-4"
+  type        = string
 }
 
 variable "zones" {
