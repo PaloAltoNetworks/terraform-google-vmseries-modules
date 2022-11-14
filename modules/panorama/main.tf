@@ -32,13 +32,6 @@ resource "google_compute_disk" "this" {
   size = each.value.size
 }
 
-resource "google_compute_attached_disk" "default" {
-  for_each = { for k, v in var.log_disks : k => v }
-
-  disk     = google_compute_disk.this[each.key].id
-  instance = google_compute_instance.this.id
-}
-
 resource "google_compute_instance" "this" {
   name                      = var.name
   zone                      = var.zone
@@ -73,6 +66,13 @@ resource "google_compute_instance" "this" {
       image = coalesce(var.custom_image, try(data.google_compute_image.this[0].id, null))
       size  = var.disk_size
       type  = var.disk_type
+    }
+  }
+
+  dynamic "attached_disk" {
+    for_each = google_compute_disk.this
+    content {
+      source = google_compute_disk.this[attached_disk.key].id
     }
   }
 }
