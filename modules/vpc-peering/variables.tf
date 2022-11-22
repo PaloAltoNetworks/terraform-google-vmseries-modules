@@ -40,7 +40,7 @@ variable "local_import_custom_routes" {
 
 variable "local_export_subnet_routes_with_public_ip" {
   description = "Export subnet routes with public IP setting for 'local->peer' direction."
-  default     = true
+  default     = false
   type        = bool
 }
 
@@ -64,7 +64,7 @@ variable "peer_import_custom_routes" {
 
 variable "peer_export_subnet_routes_with_public_ip" {
   description = "Export subnet routes with public IP setting for 'peer->local' direction."
-  default     = true
+  default     = false
   type        = bool
 }
 
