@@ -9,9 +9,7 @@
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+No providers.
 
 ## Modules
 
@@ -22,17 +20,14 @@
 | <a name="module_lb_external"></a> [lb\_external](#module\_lb\_external) | ../../modules/lb_external/ | n/a |
 | <a name="module_lb_internal"></a> [lb\_internal](#module\_lb\_internal) | ../../modules/lb_internal | n/a |
 | <a name="module_mgmt_cloud_nat"></a> [mgmt\_cloud\_nat](#module\_mgmt\_cloud\_nat) | terraform-google-modules/cloud-nat/google | =1.2 |
+| <a name="module_peering_trust_common_vdi"></a> [peering\_trust\_common\_vdi](#module\_peering\_trust\_common\_vdi) | ../../modules/vpc-peering | n/a |
+| <a name="module_peering_trust_vdi"></a> [peering\_trust\_vdi](#module\_peering\_trust\_vdi) | ../../modules/vpc-peering | n/a |
 | <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [google_compute_network_peering.from_common_vdi_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.from_trust_to_common_vdi](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.from_trust_to_vdi](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.from_vdi_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
+No resources.
 
 ## Inputs
 

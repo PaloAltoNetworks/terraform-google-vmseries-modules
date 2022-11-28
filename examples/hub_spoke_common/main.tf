@@ -303,34 +303,37 @@ module "vpc_spoke2" {
 }
 
 
-# # --------------------------------------------------------------------------------------------------------------------------
-# # Create VPC peering connections between spoke networks and the trust network
+# --------------------------------------------------------------------------------------------------------------------------
+# Create VPC peering connections between trust network and the spoke networks
+module "peering_trust_spoke1" {
+  source = "../../modules/vpc-peering"
 
-resource "google_compute_network_peering" "spoke1_to_trust" {
-  name         = "${local.prefix}spoke1-to-trust"
-  network      = module.vpc_spoke1.network_id
-  peer_network = module.vpc_trust.network_id
+  local_network      = module.vpc_trust.network_id
+  local_peering_name = "${local.prefix}trust-to-spoke1"
+  peer_network       = module.vpc_spoke1.network_id
+  peer_peering_name  = "${local.prefix}spoke1-to-trust"
+
+  local_export_custom_routes                = true
+  local_export_subnet_routes_with_public_ip = true
+
+  peer_import_custom_routes                = true
+  peer_export_subnet_routes_with_public_ip = true
 }
 
-resource "google_compute_network_peering" "trust_to_spoke1" {
-  name         = "${local.prefix}trust-to-spoke1"
-  network      = module.vpc_trust.network_id
-  peer_network = module.vpc_spoke1.network_id
+module "peering_trust_spoke2" {
+  source = "../../modules/vpc-peering"
+
+  local_network      = module.vpc_trust.network_id
+  local_peering_name = "${local.prefix}trust-to-spoke2"
+  peer_network       = module.vpc_spoke2.network_id
+  peer_peering_name  = "${local.prefix}spoke2-to-trust"
+
+  local_export_custom_routes                = true
+  local_export_subnet_routes_with_public_ip = true
+
+  peer_import_custom_routes                = true
+  peer_export_subnet_routes_with_public_ip = true
 }
-
-
-resource "google_compute_network_peering" "spoke2_to_trust" {
-  name         = "${local.prefix}spoke2-to-trust"
-  network      = module.vpc_spoke2.network_id
-  peer_network = module.vpc_trust.network_id
-}
-
-resource "google_compute_network_peering" "trust_to_spoke2" {
-  name         = "${local.prefix}trust-to-spoke2"
-  network      = module.vpc_trust.network_id
-  peer_network = module.vpc_spoke2.network_id
-}
-
 
 # --------------------------------------------------------------------------------------------------------------------------
 # Create spoke1 compute instances with internal load balancer
