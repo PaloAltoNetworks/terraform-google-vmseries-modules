@@ -56,36 +56,30 @@ module "vpc" {
   ]
 }
 
-resource "google_compute_network_peering" "from_trust_to_common_vdi" {
-  name                 = "${var.name_prefix}trust-to-common-vdi"
-  network              = module.vpc.networks["${var.name_prefix}fw-trust"].id
-  peer_network         = module.vpc.networks["${var.name_prefix}common-vdi"].id
-  export_custom_routes = true
-  import_custom_routes = false
+module "peering_trust_common_vdi" {
+  source = "../../modules/vpc-peering"
+
+  local_network = module.vpc.networks["${var.name_prefix}fw-trust"].id
+  peer_network  = module.vpc.networks["${var.name_prefix}common-vdi"].id
+
+  local_export_custom_routes                = true
+  local_export_subnet_routes_with_public_ip = true
+
+  peer_import_custom_routes                = true
+  peer_export_subnet_routes_with_public_ip = true
 }
 
-resource "google_compute_network_peering" "from_common_vdi_to_trust" {
-  name                 = "${var.name_prefix}common-vdi-to-trust"
-  network              = module.vpc.networks["${var.name_prefix}common-vdi"].id
-  peer_network         = module.vpc.networks["${var.name_prefix}fw-trust"].id
-  export_custom_routes = false
-  import_custom_routes = true
-}
+module "peering_trust_vdi" {
+  source = "../../modules/vpc-peering"
 
-resource "google_compute_network_peering" "from_trust_to_vdi" {
-  name                 = "${var.name_prefix}inside-to-vdi"
-  network              = module.vpc.networks["${var.name_prefix}fw-trust"].id
-  peer_network         = module.vpc.networks["${var.name_prefix}vdi"].id
-  export_custom_routes = true
-  import_custom_routes = false
-}
+  local_network = module.vpc.networks["${var.name_prefix}fw-trust"].id
+  peer_network  = module.vpc.networks["${var.name_prefix}vdi"].id
 
-resource "google_compute_network_peering" "from_vdi_to_trust" {
-  name                 = "${var.name_prefix}vdi-to-inside"
-  network              = module.vpc.networks["${var.name_prefix}vdi"].id
-  peer_network         = module.vpc.networks["${var.name_prefix}fw-trust"].id
-  export_custom_routes = false
-  import_custom_routes = true
+  local_export_custom_routes                = true
+  local_export_subnet_routes_with_public_ip = true
+
+  peer_import_custom_routes                = true
+  peer_export_subnet_routes_with_public_ip = true
 }
 
 # Spawn the VM-series firewall as a Google Cloud Engine Instance.

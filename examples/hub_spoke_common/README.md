@@ -313,6 +313,8 @@ rm ~/.ssh/gcp-demo
 | <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
 | <a name="module_lb_external"></a> [lb\_external](#module\_lb\_external) | ../../modules/lb_external/ | n/a |
 | <a name="module_lb_internal"></a> [lb\_internal](#module\_lb\_internal) | ../../modules/lb_internal/ | n/a |
+| <a name="module_peering_trust_spoke1"></a> [peering\_trust\_spoke1](#module\_peering\_trust\_spoke1) | ../../modules/vpc-peering | n/a |
+| <a name="module_peering_trust_spoke2"></a> [peering\_trust\_spoke2](#module\_peering\_trust\_spoke2) | ../../modules/vpc-peering | n/a |
 | <a name="module_spoke1_ilb"></a> [spoke1\_ilb](#module\_spoke1\_ilb) | ../../modules/lb_internal/ | n/a |
 | <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
 | <a name="module_vpc_mgmt"></a> [vpc\_mgmt](#module\_vpc\_mgmt) | terraform-google-modules/network/google | ~> 4.0 |
@@ -328,10 +330,6 @@ rm ~/.ssh/gcp-demo
 | [google_compute_instance.spoke1_vm](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | resource |
 | [google_compute_instance.spoke2_vm1](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance) | resource |
 | [google_compute_instance_group.spoke1_ig](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group) | resource |
-| [google_compute_network_peering.spoke1_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.spoke2_to_trust](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.trust_to_spoke1](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
-| [google_compute_network_peering.trust_to_spoke2](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_peering) | resource |
 | [random_string.main](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [google_client_config.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 | [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
