@@ -8,6 +8,7 @@ resource "google_storage_bucket" "this" {
   name                        = join("", [var.name_prefix, random_string.randomstring.result])
   force_destroy               = true
   uniform_bucket_level_access = true
+  location                    = var.location
 }
 
 resource "google_storage_bucket_object" "file" {
