@@ -149,3 +149,14 @@ variable "metadata" {
   type        = map(string)
   default     = {}
 }
+
+variable "service_account" {
+  description = "IAM Service Account for running Panorama instance (just the email)"
+  default     = null
+  type        = string
+}
+
+variable "scopes" {
+  default = []
+  type    = list(string)
+}
