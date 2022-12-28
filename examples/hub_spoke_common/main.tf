@@ -341,6 +341,9 @@ module "peering_trust_spoke2" {
 # Create spoke1 compute instances with internal load balancer
 
 resource "google_compute_instance" "spoke1_vm" {
+  #checkov:skip=CKV_GCP_38:Examples - skip check - https://docs.bridgecrew.io/docs/encrypt-boot-disks-for-instances-with-cseks
+  #checkov:skip=CKV_GCP_30:Examples - skip check - https://docs.bridgecrew.io/docs/bc_gcp_iam_1
+  #checkov:skip=CKV_GCP_39:Examples - skip check - https://docs.bridgecrew.io/docs/bc_gcp_general_y
   count                     = 2
   name                      = "${local.prefix}spoke1-vm${count.index + 1}"
   machine_type              = var.spoke_vm_type
@@ -399,6 +402,9 @@ module "spoke1_ilb" {
 # Create spoke2 compute instances. 
 
 resource "google_compute_instance" "spoke2_vm1" {
+  #checkov:skip=CKV_GCP_38:Examples - skip check - https://docs.bridgecrew.io/docs/encrypt-boot-disks-for-instances-with-cseks
+  #checkov:skip=CKV_GCP_30:Examples - skip check - https://docs.bridgecrew.io/docs/bc_gcp_iam_1
+  #checkov:skip=CKV_GCP_39:Examples - skip check - https://docs.bridgecrew.io/docs/bc_gcp_general_y
   name                      = "${local.prefix}spoke2-vm1"
   machine_type              = var.spoke_vm_type
   zone                      = data.google_compute_zones.main.names[0]

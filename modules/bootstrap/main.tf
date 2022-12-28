@@ -9,6 +9,10 @@ resource "google_storage_bucket" "this" {
   force_destroy               = true
   uniform_bucket_level_access = true
   location                    = var.location
+
+  versioning {
+    enabled = true
+  }
 }
 
 resource "google_storage_bucket_object" "file" {
