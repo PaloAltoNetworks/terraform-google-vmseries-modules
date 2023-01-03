@@ -14,6 +14,7 @@ module "bootstrap" {
   source = "../../modules/bootstrap/"
 
   service_account = module.iam_service_account.email
+  location        = "us"
   files = {
     "bootstrap_files/init-cfg.txt" = "config/init-cfg.txt"
     "bootstrap_files/authcodes"    = "license/authcodes"

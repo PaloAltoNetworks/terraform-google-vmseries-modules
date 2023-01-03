@@ -143,6 +143,8 @@ module "bootstrap" {
   source = "../../modules/bootstrap/"
 
   service_account = module.iam_service_account.email
+  location        = "us"
+
   files = {
     "bootstrap_files/init-cfg.txt.sample"  = "config/init-cfg.txt"
     "bootstrap_files/bootstrap.xml.sample" = "config/bootstrap.xml"
