@@ -51,9 +51,7 @@ variable "networks" {
     }
   }
   ```
-
-  Terraform 0.12.x and 0.13.x limitation: the existing networks/subnetworks names should be static strings and not come from other `resource` objects.
-  It is allowed from Terraform 0.14 onwards.
+  
   EOF
 }
 
@@ -79,7 +77,7 @@ variable "allowed_ports" {
 }
 
 variable "project_id" {
-  description = "Project in which to create or look for VPCs and subnets"
+  description = "Default project in which to create or look for VPCs and subnets."
   default     = null
   type        = string
 }
