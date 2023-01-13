@@ -37,7 +37,7 @@ resource "google_compute_target_https_proxy" "default" {
   count            = var.ssl ? 1 : 0
   name             = "${var.name}-https-proxy"
   url_map          = (var.url_map != null ? var.url_map : google_compute_url_map.default.self_link)
-  ssl_certificates = compact(concat(var.ssl_certificates, google_compute_ssl_certificate.default.*.self_link, ), )
+  ssl_certificates = compact(concat(var.ssl_certificates, google_compute_ssl_certificate.default[*].self_link, ), )
 }
 
 resource "google_compute_ssl_certificate" "default" {
