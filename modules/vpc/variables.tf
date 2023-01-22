@@ -22,6 +22,7 @@ variable "networks" {
       ip_cidr_range   = "192.168.1.0/24"
       allowed_sources = ["209.85.152.0/22"]
       log_metadata    = "INCLUDE_ALL_METADATA"
+      mtu             = 1500
     }
   }
   ```
