@@ -47,6 +47,7 @@ resource "google_compute_network" "this" {
   name                            = each.value.name
   project                         = try(each.value.host_project_id, each.value.project, var.project_id, null)
   delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
+  mtu                             = try(each.value.mtu, null)
   auto_create_subnetworks         = false
 }
 
