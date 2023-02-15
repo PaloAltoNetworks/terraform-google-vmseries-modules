@@ -149,3 +149,15 @@ variable "metadata" {
   type        = map(string)
   default     = {}
 }
+
+variable "service_account" {
+  description = "IAM Service Account for running Panorama instance (just the email)"
+  type        = string
+  default     = null
+}
+
+variable "scopes" {
+  description = "Access scopes for the compute instance - both OAuth2 URLs and gcloud short names are supported"
+  type        = list(string)
+  default     = []
+}

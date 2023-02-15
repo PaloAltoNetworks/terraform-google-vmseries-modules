@@ -25,6 +25,7 @@ locals {
 
 #  Google's own health checkers use a set of known address ranges
 resource "google_compute_firewall" "builtin_healthchecks" {
+  #checkov:skip=CKV2_GCP_12:Examples - skip check
   name          = "${var.name_prefix}vpc-builtin-healthchecks"
   network       = local.vpc
   direction     = "INGRESS"
@@ -39,6 +40,7 @@ resource "google_compute_firewall" "builtin_healthchecks" {
 
 # Connect from outside to extlb.
 resource "google_compute_firewall" "extlb" {
+  #checkov:skip=CKV_GCP_106:Examples - skip check - https://docs.bridgecrew.io/docs/ensure-gcp-google-compute-firewall-ingress-does-not-allow-unrestricted-http-port-80-access
   name          = "${var.name_prefix}vpc-extlb"
   network       = local.vpc
   direction     = "INGRESS"
@@ -52,6 +54,7 @@ resource "google_compute_firewall" "extlb" {
 
 # We need ssh to run our own verification code.
 resource "google_compute_firewall" "ssh" {
+  #checkov:skip=CKV_GCP_2:Examples - skip check - https://docs.bridgecrew.io/docs/bc_gcp_networking_1
   name          = "${var.name_prefix}vpc-ssh"
   network       = local.vpc
   direction     = "INGRESS"
