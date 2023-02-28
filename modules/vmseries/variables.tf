@@ -145,8 +145,9 @@ variable "machine_type" {
 }
 
 variable "min_cpu_platform" {
-  default = "Intel Cascade Lake"
-  type    = string
+  description = "Minimum CPU platform for the compute instance. Up to date version can be found [here](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform)."
+  default     = "Intel Cascade Lake"
+  type        = string
 }
 
 variable "disk_type" {
