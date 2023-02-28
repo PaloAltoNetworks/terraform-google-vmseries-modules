@@ -140,12 +140,12 @@ variable "custom_image" {
 
 variable "machine_type" {
   description = "Firewall instance machine type, which depends on the license used. See the [Terraform manual](https://www.terraform.io/docs/providers/google/r/compute_instance.html)"
-  default     = "n1-standard-4"
+  default     = "n2-standard-4"
   type        = string
 }
 
 variable "min_cpu_platform" {
-  default = "Intel Broadwell"
+  default = "Intel Cascade Lake"
   type    = string
 }
 
