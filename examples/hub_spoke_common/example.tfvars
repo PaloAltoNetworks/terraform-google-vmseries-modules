@@ -2,7 +2,7 @@ project_id      = null
 public_key_path = "~/.ssh/gcp-demo.pub"
 region          = "us-east1"
 fw_image_name   = "vmseries-flex-bundle2-1010"
-fw_machine_type = "n1-standard-4"
+fw_machine_type = "n2-standard-4"
 allowed_sources = ["0.0.0.0/0"]
 
 cidr_mgmt      = "192.168.0.0/28"
