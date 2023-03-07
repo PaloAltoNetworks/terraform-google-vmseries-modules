@@ -13,6 +13,8 @@ module "iam_service_account" {
 module "bootstrap" {
   source = "../../modules/bootstrap/"
 
+  location = var.region0
+
   service_account = module.iam_service_account.email
   files = {
     "bootstrap_files/init-cfg.txt" = "config/init-cfg.txt"
