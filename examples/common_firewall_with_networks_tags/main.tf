@@ -44,6 +44,7 @@ module "vpc_region0" {
       name                            = "${var.name_prefix}fw-trust"
       subnetwork_name                 = "${var.name_prefix}fw-trust-${var.region0}"
       ip_cidr_range                   = "10.236.64.32/28"
+      allowed_sources                 = var.allowed_sources
       region                          = var.region0
       delete_default_routes_on_create = true
     },
@@ -58,7 +59,6 @@ module "vpc_region1" {
       name            = "${var.name_prefix}fw-untrust"
       subnetwork_name = "${var.name_prefix}fw-untrust-${var.region1}"
       ip_cidr_range   = "10.236.65.16/28"
-      allowed_sources = var.allowed_sources
       create_network  = false
       region          = var.region1
     },
@@ -66,7 +66,6 @@ module "vpc_region1" {
       name            = "${var.name_prefix}fw-mgmt"
       subnetwork_name = "${var.name_prefix}fw-mgmt-${var.region1}"
       ip_cidr_range   = "10.236.65.0/28"
-      allowed_sources = var.allowed_sources
       create_network  = false
       region          = var.region1
     },
