@@ -7,29 +7,32 @@ data "google_compute_image" "this" {
 
 # Permanent private address, not ephemeral, because the managed firewalls keep it saved.
 resource "google_compute_address" "private" {
-  address_type = "INTERNAL"
-  region       = var.region
   name         = "${var.name}-private"
+  project      = var.project
+  region       = var.region
   subnetwork   = var.subnet
   address      = try(var.private_static_ip, null)
+  address_type = "INTERNAL"
 }
 
 # Permanent public address, not ephemeral.
 resource "google_compute_address" "public" {
   count = var.attach_public_ip ? 1 : 0
 
-  region  = var.region
   name    = "${var.name}-public"
+  project = var.project
+  region  = var.region
   address = try(var.public_static_ip, null)
 }
 
 resource "google_compute_disk" "this" {
   for_each = { for k, v in var.log_disks : k => v }
 
-  name = each.value.name
-  zone = var.zone
-  type = each.value.type
-  size = each.value.size
+  name    = each.value.name
+  project = var.project
+  zone    = var.zone
+  type    = each.value.type
+  size    = each.value.size
 }
 
 resource "google_compute_instance" "this" {
