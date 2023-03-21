@@ -37,7 +37,7 @@ resource "null_resource" "verify_with_curl" {
   }
 
   triggers = {
-    run_me_every_time = "${timestamp()}"
+    run_me_every_time = timestamp()
   }
 
   depends_on = [null_resource.delay_actual_use]

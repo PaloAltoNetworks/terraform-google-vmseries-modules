@@ -48,6 +48,11 @@ resource "google_compute_instance" "this" {
     ssh-keys           = var.ssh_keys
   }, var.metadata)
 
+  service_account {
+    email  = var.service_account
+    scopes = var.scopes
+  }
+
   network_interface {
 
     dynamic "access_config" {

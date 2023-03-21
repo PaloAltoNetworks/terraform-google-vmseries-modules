@@ -15,3 +15,8 @@ variable "service_account" {
   default     = null
   type        = string
 }
+
+variable "location" {
+  description = "Location in which the GCS Bucket will be deployed. Available locations can be found under https://cloud.google.com/storage/docs/locations."
+  type        = string
+}

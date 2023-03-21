@@ -6,13 +6,21 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0, < 2.0 |
+<<<<<<< HEAD
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.46 |
+=======
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
+>>>>>>> tmp
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+<<<<<<< HEAD
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.46 |
+=======
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
+>>>>>>> tmp
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
@@ -38,6 +46,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_files"></a> [files](#input\_files) | Map of all files to copy to bucket. The keys are local paths, the values are remote paths. For example `{"dir/my.txt" = "config/init-cfg.txt"}` | `map(string)` | `{}` | no |
+| <a name="input_location"></a> [location](#input\_location) | Location in which the GCS Bucket will be deployed. Available locations can be found under https://cloud.google.com/storage/docs/locations. | `string` | n/a | yes |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix of the name of Google Cloud Storage bucket, followed by 10 random characters | `string` | `"paloaltonetworks-firewall-bootstrap-"` | no |
 | <a name="input_service_account"></a> [service\_account](#input\_service\_account) | Optional IAM Service Account (just an email) that will be granted read-only access to this bucket | `string` | `null` | no |
 
