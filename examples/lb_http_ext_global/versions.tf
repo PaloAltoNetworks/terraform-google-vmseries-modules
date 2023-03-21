@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 0.15.3, < 2.0"
+  required_version = ">= 1.0.0, < 2.0"
 
   required_providers {
     null   = { version = "~> 3.1" }
     random = { version = "~> 3.1" }
-    google = { version = "~> 3.48" }
+    google = { version = "~> 4.54" }
   }
 }
 
