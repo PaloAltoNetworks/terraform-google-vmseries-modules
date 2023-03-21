@@ -7,7 +7,7 @@ module "iam_service_account" {
   source = "../../modules/iam_service_account/"
 
   service_account_id = var.service_account
-  project_id = var.project_id
+  project_id         = var.project_id
 }
 
 # Create bucket for bootstrapping the fresh firewall VM.

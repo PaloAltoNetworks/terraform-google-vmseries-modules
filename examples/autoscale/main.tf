@@ -121,7 +121,7 @@ module "iam_service_account" {
   source = "../../modules/iam_service_account/"
 
   service_account_id = "${local.prefix}vmseries-mig-sa"
-  project_id = var.project_id
+  project_id         = var.project_id
 }
 
 # Create VM-Series managed instance group for autoscaling
