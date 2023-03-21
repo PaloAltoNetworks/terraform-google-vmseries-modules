@@ -13,11 +13,7 @@ The account produced by this module is intended to have minimal required permiss
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0, < 2.0 |
-<<<<<<< HEAD
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.46 |
-=======
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
->>>>>>> tmp
 
 ## Providers
 
@@ -27,7 +23,6 @@ The account produced by this module is intended to have minimal required permiss
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.46 |
 =======
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
->>>>>>> tmp
 
 ## Modules
 
