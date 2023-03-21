@@ -10,13 +10,13 @@ By default, no routes are exported/imported for each direction, every option has
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0, < 2.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.46 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 4.46 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
 
 ## Modules
 

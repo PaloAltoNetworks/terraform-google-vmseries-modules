@@ -3,6 +3,10 @@ variable "service_account_id" {
   type    = string
 }
 
+variable "project_id" {
+  type = string
+}
+
 variable "display_name" {
   default = "Palo Alto Networks Firewall Service Account"
 }

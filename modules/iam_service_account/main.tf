@@ -7,4 +7,5 @@ resource "google_project_iam_member" "this" {
   for_each = var.roles
   role     = each.value
   member   = "serviceAccount:${google_service_account.this.email}"
+  project  = var.project_id
 }
