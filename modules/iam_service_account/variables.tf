@@ -21,3 +21,7 @@ variable "roles" {
   ]
   type = set(string)
 }
+
+variable "project_id" {
+  type = string
+}
