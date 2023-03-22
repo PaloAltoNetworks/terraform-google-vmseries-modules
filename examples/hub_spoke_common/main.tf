@@ -377,7 +377,7 @@ resource "google_compute_instance_group" "spoke1_ig" {
   name = "${local.prefix}spoke1-ig"
   zone = data.google_compute_zones.main.names[0]
 
-  instances = [google_compute_instance.spoke1_vm.*.id]
+  instances = google_compute_instance.spoke1_vm[*].id
 }
 
 module "spoke1_ilb" {
