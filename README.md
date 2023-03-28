@@ -22,7 +22,7 @@ This repository has the following directory structure:
 ## Compatibility
 
 The compatibility with Terraform is defined individually per each module. In general, expect the earliest compatible
-Terraform version to be 0.15.3 across most of the modules.
+Terraform version to be 1.0.0 across most of the modules.
 <!-- [FUTURE] If you need to stay on Terraform 0.15.3 and need to use these modules, the recommended last compatible release is 1.2.3. -->
 
 ## Roadmap
