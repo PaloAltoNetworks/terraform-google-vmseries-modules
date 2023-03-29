@@ -45,6 +45,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name of the load balancer (that is, both the forwarding rule and the backend service) | `string` | n/a | yes |
 | <a name="input_network"></a> [network](#input\_network) | n/a | `any` | `null` | no |
 | <a name="input_ports"></a> [ports](#input\_ports) | Which port numbers are forwarded to the backends (up to 5 ports). Conflicts with all\_ports. | `list(number)` | `[]` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region to create ILB in. | `string` | `null` | no |
 | <a name="input_session_affinity"></a> [session\_affinity](#input\_session\_affinity) | (Optional, TCP only) Try to direct sessions to the same backend, can be: CLIENT\_IP, CLIENT\_IP\_PORT\_PROTO, CLIENT\_IP\_PROTO, NONE (default is NONE). | `string` | `null` | no |
 | <a name="input_subnetwork"></a> [subnetwork](#input\_subnetwork) | n/a | `string` | n/a | yes |
 | <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | (Optional) How many seconds to wait for the backend before dropping the connection. Default is 30 seconds. Valid range is [1, 86400]. | `number` | `null` | no |

@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "region" {
+  description = "Region to create ILB in."
+  type        = string
+  default     = null
+}
+
 variable "health_check_port" {
   description = "(Optional) Port number for TCP healthchecking, default 22. This setting is ignored when `health_check` is provided."
   default     = 22
