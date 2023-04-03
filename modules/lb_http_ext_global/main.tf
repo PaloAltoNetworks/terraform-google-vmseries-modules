@@ -78,10 +78,8 @@ resource "google_compute_backend_service" "default" {
 }
 
 resource "google_compute_health_check" "default" {
-  name = "${var.name}-check-0"
+  name = coalesce(var.health_check_name, "${var.name}-healthcheck")
   tcp_health_check {
-    port = "22"
+    port = var.health_check_port
   }
-  # request_path = split(",", var.backend_params[0])[0]
-  # port         = split(",", var.backend_params[0])[2]
 }

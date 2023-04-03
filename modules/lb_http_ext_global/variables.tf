@@ -27,6 +27,18 @@ variable "backend_protocol" {
   type        = string
 }
 
+variable "health_check_name" {
+  description = "Name for the health check. If not provided, defaults to `<var.name>-healthcheck`."
+  default     = null
+  type        = string
+}
+
+variable "health_check_port" {
+  description = "TCP port to use for health check."
+  default     = 80
+  type        = number
+}
+
 variable "timeout_sec" {
   description = "Timeout to consider a connection dead, in seconds (default 30)"
   default     = null

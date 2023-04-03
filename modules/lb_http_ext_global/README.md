@@ -74,6 +74,8 @@ No modules.
 | <a name="input_capacity_scaler"></a> [capacity\_scaler](#input\_capacity\_scaler) | n/a | `number` | `null` | no |
 | <a name="input_cdn"></a> [cdn](#input\_cdn) | Set to `true` to enable cdn on backend. | `bool` | `false` | no |
 | <a name="input_certificate"></a> [certificate](#input\_certificate) | Content of the SSL certificate. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
+| <a name="input_health_check_name"></a> [health\_check\_name](#input\_health\_check\_name) | Name for the health check. If not provided, defaults to `<var.name>-healthcheck`. | `string` | `null` | no |
+| <a name="input_health_check_port"></a> [health\_check\_port](#input\_health\_check\_port) | TCP port to use for health check. | `number` | `80` | no |
 | <a name="input_http_forward"></a> [http\_forward](#input\_http\_forward) | Set to `false` to disable HTTP port 80 forward | `bool` | `true` | no |
 | <a name="input_ip_version"></a> [ip\_version](#input\_ip\_version) | IP version for the Global address (IPv4 or v6) - Empty defaults to IPV4 | `string` | `""` | no |
 | <a name="input_max_connections_per_instance"></a> [max\_connections\_per\_instance](#input\_max\_connections\_per\_instance) | n/a | `number` | `null` | no |
