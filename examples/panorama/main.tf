@@ -1,7 +1,3 @@
-data "google_compute_zones" "this" {
-  region = var.region
-}
-
 module "vpc" {
   source = "../../modules/vpc"
 
@@ -20,7 +16,7 @@ module "panorama" {
   name              = "${var.name_prefix}${each.value.panorama_name}"
   project           = var.project
   region            = var.region
-  zone              = data.google_compute_zones.this.names[0]
+  zone              = each.value.zone
   panorama_version  = each.value.panorama_version
   ssh_keys          = each.value.ssh_keys
   subnet            = module.vpc.subnetworks["${var.name_prefix}${each.value.panorama_subnet}"].self_link

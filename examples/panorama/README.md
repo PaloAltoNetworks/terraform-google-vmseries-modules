@@ -89,9 +89,7 @@ Use a web browser to access https://x.x.x.x and login with admin and your previo
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+No providers.
 
 ## Modules
 
@@ -102,9 +100,7 @@ Use a web browser to access https://x.x.x.x and login with admin and your previo
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [google_compute_zones.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
+No resources.
 
 ## Inputs
 

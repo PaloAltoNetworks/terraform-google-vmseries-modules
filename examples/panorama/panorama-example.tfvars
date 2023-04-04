@@ -20,6 +20,7 @@ networks = {
 
 panoramas = {
   "panorama-01" = {
+    zone              = "us-central1-a"
     panorama_name     = "panorama-01"
     panorama_vpc      = "panorama-vpc"
     panorama_subnet   = "panorama-subnet"
