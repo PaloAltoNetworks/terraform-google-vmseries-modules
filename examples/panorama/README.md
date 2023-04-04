@@ -18,7 +18,7 @@ The topology for this build as it is pre-completed in the tfvars file is fairly 
  - Firewall rules that allow access to the panorama management interface
 
 <p align="center">
-    <img src="images/panorama-topology.png" width="2000">
+    <img src="images/panorama-topology.png">
 </p>
 
 ## Build
