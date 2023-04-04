@@ -2,7 +2,7 @@
 
 ## Overview
 
-The scope of this code is to successfuly deploy one or more panorama instances in a single project and region in Google Cloud.
+The scope of this code is to deploy one or more Panorama instances in a single project and region in Google Cloud.
 
 Important information :
 
