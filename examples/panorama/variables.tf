@@ -14,14 +14,14 @@ variable "region" {
 variable "vpcs" {
   description = <<-EOF
     A map containing each network setting:
-    Available options :
-    - 'vpc_name'          - (Required|string) VPC name to create or read from
-    - 'subnet_name'       - (Required|string) Subnet name to create or read from
-    - 'cidr'              - (Required|string) CIDR to create or read from
-    - 'allowed_sources'   - (Optional|list) A list of allowed subnets/hosts for which ingress firewall rules will be created with "Allow" statement and "all" ports for that specific VPC
-    - 'create_network'    - (Required|boolean) A flag that indicates if whether to create the VPC or read from an existing one
-    - 'create_subnetwork' - (Required|boolean) A flag that indicates if whether to create the subnetwork or read from and existing one
 
+    Available options :
+    - `vpc_name`          - (Required|string) VPC name to create or read from
+    - `subnet_name`       - (Required|string) Subnet name to create or read from
+    - `cidr`              - (Required|string) CIDR to create or read from
+    - `allowed_sources`   - (Optional|list) A list of allowed subnets/hosts for which ingress firewall rules will be created with "Allow" statement and "all" ports for that specific VPC
+    - `create_network`    - (Required|boolean) A flag that indicates if whether to create the VPC or read from an existing one
+    - `create_subnetwork` - (Required|boolean) A flag that indicates if whether to create the subnetwork or read from and existing one
     Example of variable deployment :
 
     ```
@@ -45,15 +45,16 @@ variable "vpcs" {
 variable "panoramas" {
   description = <<-EOF
     A map containing each panorama setting:
+
     Available options :
-    - 'panorama_name'          - (Required|string) Name of the panorama instance
-    - 'panorama_vpc'           - (Required|string) VPC name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable
-    - 'panorama_subnet'        - (Required|string) Subnet name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable
-    - 'panorama_version'       - (Required|string) Panorama version available in "paloaltonetworksgcp-public" project
-    - 'ssh_keys'               - (Required|string) SSH keys that will be used for SSH connectivity
-    - 'attach_public_ip'       - (Required|boolean) Flag to to indicate whether to create a public IP address for the management interface or not
-    - 'private_static_ip'      - (Required|string) Static IP address pointed here will be created. It must be a parte of VPC and Subnet cread/imported via "vpcs" variable
-    - 'log_disks'              - (Required,list) A list of additional disks to add to the panorama for logging purposes.
+    - `panorama_name`          - (Required|string) Name of the panorama instance
+    - `panorama_vpc`           - (Required|string) VPC name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable
+    - `panorama_subnet`        - (Required|string) Subnet name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable
+    - `panorama_version`       - (Required|string) Panorama version available in "paloaltonetworksgcp-public" project
+    - `ssh_keys`               - (Required|string) SSH keys that will be used for SSH connectivity
+    - `attach_public_ip`       - (Required|boolean) Flag to to indicate whether to create a public IP address for the management interface or not
+    - `private_static_ip`      - (Required|string) Static IP address pointed here will be created. It must be a parte of VPC and Subnet cread/imported via "vpcs" variable
+    - `log_disks`              - (Required,list) A list of additional disks to add to the panorama for logging purposes.
       - Example of logging disk :
       ```
         log_disks = [
