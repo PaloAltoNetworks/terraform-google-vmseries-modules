@@ -37,4 +37,5 @@ module "panorama" {
   private_static_ip = each.value.private_static_ip
   attach_public_ip  = each.value.attach_public_ip
   log_disks         = each.value.log_disks
+  depends_on        = [module.vpc]
 }
