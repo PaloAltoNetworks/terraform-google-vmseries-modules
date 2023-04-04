@@ -9,9 +9,14 @@ variable "region" {
   type        = string
   default     = "us-central1"
 }
+variable "name_prefix" {
+  description = "A string to prefix resource namings"
+  type        = string
+  default     = "example-"
+}
 
 # VPC
-variable "vpcs" {
+variable "networks" {
   description = <<-EOF
     A map containing each network setting:
 

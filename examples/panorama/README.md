@@ -2,18 +2,18 @@
 
 ## Overview
 
-The scope of this code is to deploy one or more Panorama instances in a single project and region in Google Cloud.
+The scope of this code is to deploy one or more panorama instances in a single project and region in Google Cloud.
 
 Important information :
 
- - The code builds a single region topology for Panorama
- - VPCs and Subnetworks can be created or read from existing infrastructure
+ - The code builds a single region topology for panorama
+ - VPCs and subnetwork(s) can be created or read from existing infrastructure
  - Variable construction is documented below
 
 ## Topology
 
 The topology for this build as it is pre-completed in the tfvars file is fairly basic consisting of :
- - A VPC and a Subnetwork
+ - A VPC and a subnetwork
  - A panorama instance with a Public IP address attached to the created subnetwork
  - Firewall rules that allow access to the panorama management interface
 
@@ -97,8 +97,8 @@ Use a web browser to access https://x.x.x.x and login with admin and your previo
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_panorama"></a> [panorama](#module\_panorama) | PaloAltoNetworks/vmseries-modules/google//modules/panorama | 0.5.1 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | PaloAltoNetworks/vmseries-modules/google//modules/vpc | 0.5.1 |
+| <a name="module_panorama"></a> [panorama](#module\_panorama) | ../../modules/panorama | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 
@@ -110,10 +110,11 @@ Use a web browser to access https://x.x.x.x and login with admin and your previo
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | A string to prefix resource namings | `string` | `"example-"` | no |
+| <a name="input_networks"></a> [networks](#input\_networks) | A map containing each network setting:<br><br>Available options :<br>- `vpc_name`          - (Required\|string) VPC name to create or read from<br>- `subnet_name`       - (Required\|string) Subnet name to create or read from<br>- `cidr`              - (Required\|string) CIDR to create or read from<br>- `allowed_sources`   - (Optional\|list) A list of allowed subnets/hosts for which ingress firewall rules will be created with "Allow" statement and "all" ports for that specific VPC<br>- `create_network`    - (Required\|boolean) A flag that indicates if whether to create the VPC or read from an existing one<br>- `create_subnetwork` - (Required\|boolean) A flag that indicates if whether to create the subnetwork or read from and existing one<br>Example of variable deployment :<pre>vpcs = {<br>  "panorama-vpc" = {<br>    vpc_name          = "panorama-vpc"<br>    subnet_name       = "example-panorama-subnet"<br>    cidr              = "172.21.21.0/24"<br>    allowed_sources   = ["1.1.1.1/32" , "2.2.2.2/32"]<br>    create_network    = true<br>    create_subnetwork = true<br>  }<br>}</pre>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
 | <a name="input_panoramas"></a> [panoramas](#input\_panoramas) | A map containing each panorama setting:<br><br>Available options :<br>- `panorama_name`          - (Required\|string) Name of the panorama instance<br>- `panorama_vpc`           - (Required\|string) VPC name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable<br>- `panorama_subnet`        - (Required\|string) Subnet name of the instance where panorama will be deployed. Must be created/imported via "vpcs" variable<br>- `panorama_version`       - (Required\|string) Panorama version available in "paloaltonetworksgcp-public" project<br>- `ssh_keys`               - (Required\|string) SSH keys that will be used for SSH connectivity<br>- `attach_public_ip`       - (Required\|boolean) Flag to to indicate whether to create a public IP address for the management interface or not<br>- `private_static_ip`      - (Required\|string) Static IP address pointed here will be created. It must be a parte of VPC and Subnet cread/imported via "vpcs" variable<br>- `log_disks`              - (Required,list) A list of additional disks to add to the panorama for logging purposes.<br>  - Example of logging disk :<pre>log_disks = [<br>      {<br>        name = "example-panorama-disk-1"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>      {<br>        name = "example-panorama-disk-2"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>    ]</pre>Example of variable deployment :<pre>panoramas = {<br>  "panorama-01" = {<br>    panorama_name     = "panorama-01"<br>    panorama_vpc      = "panorama-vpc"<br>    panorama_subnet   = "example-panorama-subnet"<br>    panorama_version  = "panorama-byol-1000"<br>    ssh_keys          = "admin:<PUBLIC-KEY>"<br>    attach_public_ip  = true<br>    private_static_ip = "172.21.21.2"<br><br>    log_disks = [<br>      {<br>        name = "example-panorama-disk-1"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>      {<br>        name = "example-panorama-disk-2"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>    ]<br>  }<br>}</pre>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | The project name to deploy the infrastructure in to. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region into which to deploy the infrastructure in to | `string` | `"us-central1"` | no |
-| <a name="input_vpcs"></a> [vpcs](#input\_vpcs) | A map containing each network setting:<br><br>Available options :<br>- `vpc_name`          - (Required\|string) VPC name to create or read from<br>- `subnet_name`       - (Required\|string) Subnet name to create or read from<br>- `cidr`              - (Required\|string) CIDR to create or read from<br>- `allowed_sources`   - (Optional\|list) A list of allowed subnets/hosts for which ingress firewall rules will be created with "Allow" statement and "all" ports for that specific VPC<br>- `create_network`    - (Required\|boolean) A flag that indicates if whether to create the VPC or read from an existing one<br>- `create_subnetwork` - (Required\|boolean) A flag that indicates if whether to create the subnetwork or read from and existing one<br>Example of variable deployment :<pre>vpcs = {<br>  "panorama-vpc" = {<br>    vpc_name          = "panorama-vpc"<br>    subnet_name       = "example-panorama-subnet"<br>    cidr              = "172.21.21.0/24"<br>    allowed_sources   = ["1.1.1.1/32" , "2.2.2.2/32"]<br>    create_network    = true<br>    create_subnetwork = true<br>  }<br>}</pre>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
 
 ## Outputs
 
