@@ -29,7 +29,7 @@ panoramas = {
 
     log_disks = [
       {
-        name = "example-panorama-disk-1"
+        name = "panorama01-logdisk-1"
         type = "pd-ssd"
         size = "2000"
       },
