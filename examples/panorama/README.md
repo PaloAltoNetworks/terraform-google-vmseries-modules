@@ -17,9 +17,7 @@ The topology for this build as it is pre-completed in the tfvars file is fairly 
  - A panorama instance with a Public IP address attached to the created subnetwork
  - Firewall rules that allow access to the panorama management interface
 
-<p align="center">
-    <img src="images/panorama-topology.png">
-</p>
+![panorama-topology](https://user-images.githubusercontent.com/43091730/230029801-3acea62e-aa3d-46f3-b638-6b09bf5ef35e.png)
 
 ## Build
 
