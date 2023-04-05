@@ -1,5 +1,5 @@
 # General
-project     = "gcp-gcs-pso"
+project     = "<PROJECT_ID>"
 region      = "us-central1"
 name_prefix = "example-"
 
@@ -28,18 +28,5 @@ panoramas = {
     ssh_keys          = "admin:<ssh-rsa AAAA...>"
     attach_public_ip  = true
     private_static_ip = "172.21.21.2"
-
-    log_disks = [
-      {
-        name = "panorama01-logdisk-1"
-        type = "pd-ssd"
-        size = "2000"
-      },
-      {
-        name = "panorama01-logdisk-2"
-        type = "pd-ssd"
-        size = "2000"
-      },
-    ]
   }
 }

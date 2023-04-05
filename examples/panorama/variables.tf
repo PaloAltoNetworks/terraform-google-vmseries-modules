@@ -58,19 +58,6 @@ variable "panoramas" {
         ssh_keys          = "admin:<PUBLIC-KEY>"
         attach_public_ip  = true
         private_static_ip = "172.21.21.2"
-
-        log_disks = [
-          {
-            name = "example-panorama-disk-1"
-            type = "pd-ssd"
-            size = "2000"
-          },
-          {
-            name = "example-panorama-disk-2"
-            type = "pd-ssd"
-            size = "2000"
-          },
-        ]
       }
     }
     ```

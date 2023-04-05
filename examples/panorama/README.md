@@ -1,22 +1,22 @@
 # Palo Alto Panorama deployment example
 
-## Overview
+The scope of this code is to deploy one or more vpc networks and subnetworks along with one or more panorama instances in a single project and region in Google Cloud. The example deploys panorama to be used in management only mode (without additional logging disks). For option on how to add additional logging disks - please refer to panorama [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/panorama#inputs)
 
-The scope of this code is to deploy one or more vpc networks and subnetworks along with one or more panorama instances in a single project and region in Google Cloud.
-
-Important information :
-
- - VPCs and subnetwork(s) can be created or read from existing infrastructure
- - Variable construction is documented below
 
 ## Topology
 
-The topology for this build as it is pre-completed in the tfvars file is fairly basic consisting of :
+The topology consists of :
  - A VPC network and a subnetwork
  - A panorama instance with a Public IP address attached to the created vpc network and subnetwork
  - Firewall rules that allow access to the panorama management interface
 
 ![panorama-topology](https://user-images.githubusercontent.com/43091730/230029801-3acea62e-aa3d-46f3-b638-6b09bf5ef35e.png)
+
+## Prerequisites
+
+1. Prepare [panorama license](https://support.paloaltonetworks.com/)
+
+2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/getting_started#configuring-the-provider)
 
 ## Build
 
@@ -33,7 +33,7 @@ cd terraform-google-vmseries-modules/examples/panorama
 
 ```
 terraform init
-terraform apply -var-file=panorama-example.tfvars
+terraform apply -var-file=example.tfvars
 ```
 
 4. Check the output plan and confirm the apply
@@ -105,7 +105,7 @@ No resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | A string to prefix resource namings | `string` | `"example-"` | no |
 | <a name="input_networks"></a> [networks](#input\_networks) | A map containing each network setting.<br><br>Example of variable deployment :<pre>vpcs = {<br>  "panorama-vpc" = {<br>    vpc_name          = "panorama-vpc"<br>    subnet_name       = "example-panorama-subnet"<br>    cidr              = "172.21.21.0/24"<br>    allowed_sources   = ["1.1.1.1/32" , "2.2.2.2/32"]<br>    create_network    = true<br>    create_subnetwork = true<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)<br><br>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
-| <a name="input_panoramas"></a> [panoramas](#input\_panoramas) | A map containing each panorama setting.<br><br>Example of variable deployment :<pre>panoramas = {<br>  "panorama-01" = {<br>    panorama_name     = "panorama-01"<br>    panorama_vpc      = "panorama-vpc"<br>    panorama_subnet   = "example-panorama-subnet"<br>    panorama_version  = "panorama-byol-1000"<br>    ssh_keys          = "admin:<PUBLIC-KEY>"<br>    attach_public_ip  = true<br>    private_static_ip = "172.21.21.2"<br><br>    log_disks = [<br>      {<br>        name = "example-panorama-disk-1"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>      {<br>        name = "example-panorama-disk-2"<br>        type = "pd-ssd"<br>        size = "2000"<br>      },<br>    ]<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/panorama#inputs)<br><br>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
+| <a name="input_panoramas"></a> [panoramas](#input\_panoramas) | A map containing each panorama setting.<br><br>Example of variable deployment :<pre>panoramas = {<br>  "panorama-01" = {<br>    panorama_name     = "panorama-01"<br>    panorama_vpc      = "panorama-vpc"<br>    panorama_subnet   = "example-panorama-subnet"<br>    panorama_version  = "panorama-byol-1000"<br>    ssh_keys          = "admin:<PUBLIC-KEY>"<br>    attach_public_ip  = true<br>    private_static_ip = "172.21.21.2"<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/panorama#inputs)<br><br>Multiple keys can be added and will be deployed by the code | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | The project name to deploy the infrastructure in to. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region into which to deploy the infrastructure in to | `string` | `"us-central1"` | no |
 
