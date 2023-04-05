@@ -2,19 +2,18 @@
 
 ## Overview
 
-The scope of this code is to deploy one or more panorama instances in a single project and region in Google Cloud.
+The scope of this code is to deploy one or more vpc networks and subnetworks along with one or more panorama instances in a single project and region in Google Cloud.
 
 Important information :
 
- - The code builds a single region topology for panorama
  - VPCs and subnetwork(s) can be created or read from existing infrastructure
  - Variable construction is documented below
 
 ## Topology
 
 The topology for this build as it is pre-completed in the tfvars file is fairly basic consisting of :
- - A VPC and a subnetwork
- - A panorama instance with a Public IP address attached to the created subnetwork
+ - A VPC network and a subnetwork
+ - A panorama instance with a Public IP address attached to the created vpc network and subnetwork
  - Firewall rules that allow access to the panorama management interface
 
 ![panorama-topology](https://user-images.githubusercontent.com/43091730/230029801-3acea62e-aa3d-46f3-b638-6b09bf5ef35e.png)
@@ -42,7 +41,7 @@ terraform apply -var-file=panorama-example.tfvars
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 8 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
 
 Outputs:
 
@@ -57,7 +56,7 @@ panorama_public_ip = {
 
 ## Post build
 
-Connect to the panorama instance via SSH using your associated private key and set a password :
+Connect to the panorama instance(s) via SSH using your associated private key and set a password :
 
 ```
 ssh admin@x.x.x.x -i /PATH/TO/YOUR/KEY/id_rsa
