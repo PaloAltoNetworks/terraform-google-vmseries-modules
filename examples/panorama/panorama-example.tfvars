@@ -1,5 +1,5 @@
 # General
-project     = "<PROJECT_ID>"
+project     = "gcp-gcs-pso"
 region      = "us-central1"
 name_prefix = "example-"
 
