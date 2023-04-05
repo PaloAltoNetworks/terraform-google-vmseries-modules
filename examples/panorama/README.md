@@ -22,7 +22,7 @@ The topology consists of :
 
 1. Access Google Cloud Shell or any other environment which has access to your GCP project
 
-2. Clone the repository and fill out any modifications to tfvars file (`panorama-example.tfvars` - at least `project`, `ssh_keys` and `allowed_sources` should be filled in for successful deployment and access to the instanceafter deployment)
+2. Clone the repository and fill out any modifications to tfvars file (`example.tfvars` - at least `project`, `ssh_keys` and `allowed_sources` should be filled in for successful deployment and access to the instance after deployment)
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
