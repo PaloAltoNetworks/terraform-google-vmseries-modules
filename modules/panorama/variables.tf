@@ -85,6 +85,12 @@ variable "min_cpu_platform" {
   default     = "Intel Broadwell"
 }
 
+variable "deletion_protection" {
+  description = "Enable deletion protection on the instance."
+  default     = false
+  type        = bool
+}
+
 variable "labels" {
   description = "See the [Terraform manual](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance)"
   type        = map(any)

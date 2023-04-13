@@ -40,6 +40,7 @@ resource "google_compute_instance" "this" {
   zone                      = var.zone
   machine_type              = var.machine_type
   min_cpu_platform          = var.min_cpu_platform
+  deletion_protection       = var.deletion_protection
   labels                    = var.labels
   tags                      = var.tags
   project                   = var.project
