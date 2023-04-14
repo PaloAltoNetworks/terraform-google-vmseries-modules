@@ -20,3 +20,9 @@ variable "location" {
   description = "Location in which the GCS Bucket will be deployed. Available locations can be found under https://cloud.google.com/storage/docs/locations."
   type        = string
 }
+
+variable "bootstrap_files" {
+  description = "Location to the bootstrap file structure"
+  type = string
+  default = "./bootstrap_files"
+}

@@ -1,3 +1,7 @@
+locals {
+  bootstrap_filenames = { for f in fileset(var.bootstrap_files, "**") : "${var.bootstrap_files}/${f}" => f }
+  filenames = merge(local.bootstrap_filenames, var.files)
+}
 resource "random_string" "randomstring" {
   length    = 10
   min_lower = 10
@@ -15,8 +19,12 @@ resource "google_storage_bucket" "this" {
   }
 }
 
+output "bootstrap_bucket_files" {
+  value = local.bootstrap_filenames
+}
+
 resource "google_storage_bucket_object" "file" {
-  for_each = var.files
+  for_each = local.filenames
 
   name   = each.value
   source = each.key
