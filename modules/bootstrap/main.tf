@@ -1,6 +1,6 @@
 locals {
   bootstrap_filenames = { for f in fileset(var.bootstrap_files, "**") : "${var.bootstrap_files}/${f}" => f }
-  filenames = merge(local.bootstrap_filenames, var.files)
+  filenames           = merge(local.bootstrap_filenames, var.files)
 }
 resource "random_string" "randomstring" {
   length    = 10

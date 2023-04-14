@@ -37,6 +37,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_bootstrap_files"></a> [bootstrap\_files](#input\_bootstrap\_files) | Location to the bootstrap file structure. More infor can be found under https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-package | `string` | `"./bootstrap_files"` | no |
 | <a name="input_files"></a> [files](#input\_files) | Map of all files to copy to bucket. The keys are local paths, the values are remote paths. For example `{"dir/my.txt" = "config/init-cfg.txt"}` | `map(string)` | `{}` | no |
 | <a name="input_location"></a> [location](#input\_location) | Location in which the GCS Bucket will be deployed. Available locations can be found under https://cloud.google.com/storage/docs/locations. | `string` | n/a | yes |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix of the name of Google Cloud Storage bucket, followed by 10 random characters | `string` | `"paloaltonetworks-firewall-bootstrap-"` | no |
@@ -46,6 +47,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_bootstrap_bucket_files"></a> [bootstrap\_bucket\_files](#output\_bootstrap\_bucket\_files) | n/a |
 | <a name="output_bucket"></a> [bucket](#output\_bucket) | n/a |
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
