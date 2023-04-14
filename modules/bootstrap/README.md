@@ -47,7 +47,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_bootstrap_bucket_files"></a> [bootstrap\_bucket\_files](#output\_bootstrap\_bucket\_files) | n/a |
 | <a name="output_bucket"></a> [bucket](#output\_bucket) | n/a |
 | <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

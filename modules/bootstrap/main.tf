@@ -19,10 +19,6 @@ resource "google_storage_bucket" "this" {
   }
 }
 
-output "bootstrap_bucket_files" {
-  value = local.bootstrap_filenames
-}
-
 resource "google_storage_bucket_object" "file" {
   for_each = local.filenames
 
