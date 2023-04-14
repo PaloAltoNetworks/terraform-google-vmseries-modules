@@ -24,8 +24,9 @@ variable "location" {
 
 variable "folders" {
   description = <<-EOF
-  A list of folder paths that will impact where the bootstrap package(s) folders will be created in.
-  A default value (empty list) will cause the bootstrap package folders to be created in the bucket root directory.
+  List of folder paths that will be used to create dedicated boostrap package folder sets per firewall or firewall group (for example to distinguish configuration per region, per inbound/obew role, etc) within the created storage bucket.
+
+  A default value (empty list) will result in the creation of a single bootstrap package folder set in the bucket top-level directory.
   EOF
   default     = []
   type        = list(any)
