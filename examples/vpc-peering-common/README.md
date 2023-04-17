@@ -1,12 +1,89 @@
-# NGFW module
+# Palo Alto Networks VM-Series Common Firewall Option
 
-## Purpose
+The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
 
-Terraform module used to deploy Next Generation Firewalls and related resources.
+## Topology
 
-## Usage
+With default variable values the topology consists of :
+ - 5 VPC networks :
+   - Management VPC
+   - Untrust (outside) VPC
+   - Trust (inside/security) VPC
+   - Spoke-1 VPC
+   - Spoke-2 VPC
+ - 2 VM-Series firewalls
+ - 2 Linux Ubuntu VMs (inside Spoke VPCs - for testing purposes)
+ - one internal network loadbalancer (for outbound/east-west traffic)
+ - one external regional network loadbalancer (for inbound traffic)
 
-Add steps on how to deploy this module.
+![panorama-topology](https://user-images.githubusercontent.com/43091730/230029801-3acea62e-aa3d-46f3-b638-6b09bf5ef35e.png)
+
+## Prerequisites
+
+1. Prepare [Panorama license](https://support.paloaltonetworks.com/)
+
+2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration)
+
+## Build
+
+1. Access Google Cloud Shell or any other environment which has access to your GCP project
+
+2. Clone the repository:
+
+```
+git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
+cd terraform-google-vmseries-modules/examples/panorama
+```
+
+3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance.
+
+4. Apply the terraform code:
+
+```
+terraform init
+terraform apply -var-file=example.tfvars
+```
+
+4. Check the output plan and confirm the apply.
+
+5. Check the successful application and outputs of the resulting infrastructure:
+
+```
+Apply complete! Resources: 8 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+
+Outputs:
+
+panorama_private_ip = {
+  "panorama-01" = "172.21.21.2"
+}
+panorama_public_ip = {
+  "panorama-01" = "x.x.x.x"
+}
+```
+
+
+## Post build
+
+Connect to the panorama instance(s) via SSH using your associated private key and set a password:
+
+```
+ssh admin@x.x.x.x -i /PATH/TO/YOUR/KEY/id_rsa
+Welcome admin.
+admin@Panorama> configure
+Entering configuration mode
+[edit]                                                                                                                                                                                  
+admin@Panorama# set mgt-config users admin password
+Enter password   : 
+Confirm password : 
+
+[edit]                                                                                                                                                                                  
+admin@Panorama# commit
+Configuration committed successfully
+```
+
+## Check access via web UI
+
+Use a web browser to access `https://x.x.x.x` and login with admin and your previously configured password.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
