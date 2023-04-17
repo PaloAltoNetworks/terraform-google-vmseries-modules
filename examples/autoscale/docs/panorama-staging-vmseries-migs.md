@@ -396,7 +396,7 @@ module "autoscale" {
 
   name                  = "vmseries"
   region                = "us-central1"
-  use_regional_mig      = true
+  regional_mig      = true
   min_vmseries_replicas = 2
   max_vmseries_replicas = 5
   image                 = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle2-1014"

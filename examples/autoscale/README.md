@@ -24,7 +24,7 @@ Created resources include:
 
 
 > For information on staging Panorama for VM-Series MIGs, see:
-> * [Panorama Staging for VM-Series MIGs](../panorama/docs/panorama-staging-vmseries-migs.md)
+> * [Panorama Staging for VM-Series MIGs](docs/panorama-staging-vmseries-migs.md)
 > * [Autoscaling Components for Google Cloud](https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/autoscaling-on-google-cloud-platform/autoscaling-components-for-gcp#id17COG5060BX)
 
 ## Deploy
