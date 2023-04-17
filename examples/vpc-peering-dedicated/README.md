@@ -1,12 +1,148 @@
-# NGFW module
+# Palo Alto Networks VM-Series Dedicated Inbound Firewall Option
 
-## Purpose
+The scope of this code is to deploy an example of the [VM-Series Dedicated Inbound Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
 
-Terraform module used to deploy Next Generation Firewalls and related resources.
+The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrise the initial Day 0 configuration.
 
-## Usage
+## Topology
 
-Add steps on how to deploy this module.
+With default variable values the topology consists of :
+ - 5 VPC networks :
+   - Management VPC
+   - Untrust (outside) VPC
+   - Trust (inside/security) VPC
+   - Spoke-1 VPC
+   - Spoke-2 VPC
+ - 4 VM-Series firewalls
+ - 2 Linux Ubuntu VMs (inside Spoke VPCs - for testing purposes)
+ - one internal network loadbalancer (for outbound/east-west traffic)
+ - one Global HTTP loadbalancer (for inbound traffic)
+
+![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
+
+## Prerequisites
+
+1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
+
+2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration)
+
+## Build
+
+1. Access Google Cloud Shell or any other environment which has access to your GCP project
+
+2. Clone the repository:
+
+```
+git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
+cd terraform-google-vmseries-modules/examples/vpc-peering-common
+```
+
+3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance.
+
+4. Apply the terraform code:
+
+```
+terraform init
+terraform apply -var-file=example.tfvars
+```
+
+4. Check the output plan and confirm the apply.
+
+5. Check the successful application and outputs of the resulting infrastructure:
+
+```
+Apply complete! Resources: 96 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+
+Outputs:
+
+lbs_internal_ips = {
+  "external-lb" = "<EXTERNAL_LB_PUBLIC_IP>"
+}
+lbs_internal_ips = {
+  "internal-lb" = "10.10.12.5"
+}
+linux_vm_ips = {
+  "spoke1-vm" = "192.168.1.2"
+  "spoke2-vm" = "192.168.2.2"
+}
+vmseries_private_ips = {
+  "fw-vmseries-01" = {
+    "0" = "10.10.11.2"
+    "1" = "10.10.10.2"
+    "2" = "10.10.12.2"
+  }
+  "fw-vmseries-02" = {
+    "0" = "10.10.11.3"
+    "1" = "10.10.10.3"
+    "2" = "10.10.12.3"
+  }
+}
+vmseries_public_ips = {
+  "fw-vmseries-01" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
+  "fw-vmseries-02" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
+}
+```
+
+
+## Post build
+
+Connect to the VM-Series instance(s) via SSH using your associated private key and check if the bootstrap process if finished successfuly and then set a password :
+  - Please allow for up to 10-15 minutes for the bootstrap process to finish
+  - The key output you should check for is "Auto-commit Successful"
+
+```
+ssh admin@x.x.x.x -i /PATH/TO/YOUR/KEY/id_rsa
+Welcome admin.
+admin@PA-VM> show system bootstrap status
+
+Bootstrap Phase               Status         Details
+===============               ======         =======
+Media Detection               Success        Media detected successfully
+Media Sanity Check            Success        Media sanity check successful
+Parsing of Initial Config     Successful     
+Auto-commit                   Successful
+
+admin@PA-VM> configure
+Entering configuration mode
+[edit]                                                                                                                                                                                  
+admin@PA-VM# set mgt-config users admin password
+Enter password   : 
+Confirm password : 
+
+[edit]                                                                                                                                                                                  
+admin@PA-VM# commit
+Configuration committed successfully
+```
+
+## Check access via web UI
+
+Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and your previously configured password.
+
+## Check traffic from spoke VMs
+
+The firewalls are bootstrapped with a generic `allow any` policy just for demo purposes along with an outboud SNAT policy to allow Inernet access from spoke VMs.
+
+SSH to one of the spoke VMs using GCP IAP and gcloud command and test connectivity :
+
+
+```
+gcloud compute ssh spoke1-vm
+No zone specified. Using zone [us-east1-b] for instance: [spoke1-vm].
+External IP address was not found; defaulting to using IAP tunneling.
+WARNING: 
+
+To increase the performance of the tunnel, consider installing NumPy. For instructions,
+please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the_tcp_upload_bandwidth
+
+<USERNAME>@spoke1-vm:~$ping 8.8.8.8
+<USERNAME>@spoke1-vm:~$ping 192.168.2.2
+```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

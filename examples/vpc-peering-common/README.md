@@ -2,6 +2,8 @@
 
 The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
 
+The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrise the initial Day 0 configuration.
+
 ## Topology
 
 With default variable values the topology consists of :
@@ -16,11 +18,11 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one external regional network loadbalancer (for inbound traffic)
 
-![VM-Series-Common-Firewall-Option]([https://user-images.githubusercontent.com/43091730/232486393-885116db-4025-475d-9c5d-95f945fdc249.png](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
+![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
 
 ## Prerequisites
 
-1. Prepare [Panorama license](https://support.paloaltonetworks.com/)
+1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
 
 2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration)
 
@@ -32,7 +34,7 @@ With default variable values the topology consists of :
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/panorama
+cd terraform-google-vmseries-modules/examples/vpc-peering-common
 ```
 
 3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance.
@@ -49,41 +51,98 @@ terraform apply -var-file=example.tfvars
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 8 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+Apply complete! Resources: 96 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
 
 Outputs:
 
-panorama_private_ip = {
-  "panorama-01" = "172.21.21.2"
+lbs_internal_ips = {
+  "external-lb" = "<EXTERNAL_LB_PUBLIC_IP>"
 }
-panorama_public_ip = {
-  "panorama-01" = "x.x.x.x"
+lbs_internal_ips = {
+  "internal-lb" = "10.10.12.5"
+}
+linux_vm_ips = {
+  "spoke1-vm" = "192.168.1.2"
+  "spoke2-vm" = "192.168.2.2"
+}
+vmseries_private_ips = {
+  "fw-vmseries-01" = {
+    "0" = "10.10.11.2"
+    "1" = "10.10.10.2"
+    "2" = "10.10.12.2"
+  }
+  "fw-vmseries-02" = {
+    "0" = "10.10.11.3"
+    "1" = "10.10.10.3"
+    "2" = "10.10.12.3"
+  }
+}
+vmseries_public_ips = {
+  "fw-vmseries-01" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
+  "fw-vmseries-02" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
 }
 ```
 
 
 ## Post build
 
-Connect to the panorama instance(s) via SSH using your associated private key and set a password:
+Connect to the VM-Series instance(s) via SSH using your associated private key and check if the bootstrap process if finished successfuly and then set a password :
+  - Please allow for up to 10-15 minutes for the bootstrap process to finish
+  - The key output you should check for is "Auto-commit Successful"
 
 ```
 ssh admin@x.x.x.x -i /PATH/TO/YOUR/KEY/id_rsa
 Welcome admin.
-admin@Panorama> configure
+admin@PA-VM> show system bootstrap status
+
+Bootstrap Phase               Status         Details
+===============               ======         =======
+Media Detection               Success        Media detected successfully
+Media Sanity Check            Success        Media sanity check successful
+Parsing of Initial Config     Successful     
+Auto-commit                   Successful
+
+admin@PA-VM> configure
 Entering configuration mode
 [edit]                                                                                                                                                                                  
-admin@Panorama# set mgt-config users admin password
+admin@PA-VM# set mgt-config users admin password
 Enter password   : 
 Confirm password : 
 
 [edit]                                                                                                                                                                                  
-admin@Panorama# commit
+admin@PA-VM# commit
 Configuration committed successfully
 ```
 
 ## Check access via web UI
 
-Use a web browser to access `https://x.x.x.x` and login with admin and your previously configured password.
+Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and your previously configured password.
+
+## Check traffic from spoke VMs
+
+The firewalls are bootstrapped with a generic `allow any` policy just for demo purposes along with an outboud SNAT policy to allow Inernet access from spoke VMs.
+
+SSH to one of the spoke VMs using GCP IAP and gcloud command and test connectivity :
+
+
+```
+gcloud compute ssh spoke1-vm
+No zone specified. Using zone [us-east1-b] for instance: [spoke1-vm].
+External IP address was not found; defaulting to using IAP tunneling.
+WARNING: 
+
+To increase the performance of the tunnel, consider installing NumPy. For instructions,
+please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the_tcp_upload_bandwidth
+
+<USERNAME>@spoke1-vm:~$ping 8.8.8.8
+<USERNAME>@spoke1-vm:~$ping 192.168.2.2
+```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
