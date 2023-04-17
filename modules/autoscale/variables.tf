@@ -3,34 +3,36 @@ variable "name" {
   type        = string
 }
 
-variable "use_regional_mig" {
+variable "region" {
+  description = "The Google Cloud region for the resources. If null, provider region will be used."
+  type        = string
+  default     = null
+}
+
+variable "regional_mig" {
   description = <<-EOF
-  Sets the managed instance group type to either a zonal or a regional instance group.
-  If value is set to `true`, a regional instance group will be created. If `false`, a zonal instance group will be created.
+  Sets the managed instance group type to either a regional (if `true`) or a zonal (if `false`).
   For more information please see [About regional MIGs](https://cloud.google.com/compute/docs/instance-groups/regional-migs#why_choose_regional_managed_instance_groups).
   EOF
   type        = bool
 }
 
-variable "region" {
-  description = "The Google Cloud region for the resources. If null is provided, provider region will be used."
-  type        = string
-  default     = null
-}
-
 variable "zones" {
-  description = "Required if `use_regional_mig` is set to `false`. A map of the zone names for zonal managed instance groups. A managed instance group will be created for every zone entered."
+  description = <<-EOF
+  A map of the zone names for zonal managed instance groups. A managed instance group will be created for every zone entered.
+  Required if `regional_mig` is set to `false`.
+  EOF
   type        = map(string)
   default     = {}
 }
 
-variable "create_pubsub_topic" {
-  description = "Set to `true` to create a Pub/Sub topic and subscription. The Panorama Google Cloud Plugin can use this Pub/Sub to trigger actions when the VM-Series Instance Group descales.  Actions include, removal of VM-Series from Panorama and automatic delicensing (if VM-Series BYOL licensing is used).  For more information, please see [Autoscaling the VM-Series on GCP](https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/autoscaling-on-google-cloud-platform)."
-  type        = bool
-  default     = true
+# Instance template settings
+variable "image" {
+  description = "Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
+  type        = string
+  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-1014"
 }
 
-# Instance template settings
 variable "network_interfaces" {
   description = <<-EOF
   List of the network interface specifications.
@@ -60,6 +62,12 @@ variable "disk_type" {
   default     = "pd-ssd"
 }
 
+variable "service_account_email" {
+  description = "IAM Service Account applied to the VM-Series instances."
+  type        = string
+  default     = null
+}
+
 variable "scopes" {
   description = "A list of service scopes. Both OAuth2 URLs and gcloud short names are supported. See a complete list of scopes [here](https://cloud.google.com/sdk/gcloud/reference/alpha/compute/instances/set-scopes#--scopes)."
   type        = list(string)
@@ -72,12 +80,6 @@ variable "scopes" {
   ]
 }
 
-variable "image" {
-  description = "Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
-  type        = string
-  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-byol-1014"
-}
-
 variable "tags" {
   description = "Tags to attach to the instance"
   type        = list(string)
@@ -86,7 +88,7 @@ variable "tags" {
 
 variable "metadata" {
   description = <<-EOF
-  Metadata for VM-Series firewall.  The metadata is used to perform mgmt-interface-swap and for bootstrapping the VM-Series.
+  Metadata for VM-Series firewall. The metadata is used to perform mgmt-interface-swap and for bootstrapping the VM-Series.
   
   Ex 1: Partial bootstrap to Panorama 
   ```
@@ -117,23 +119,11 @@ variable "metadata" {
   default     = {}
 }
 
-variable "service_account_email" {
-  description = "IAM Service Account applied to the VM-Series instances."
-  type        = string
-  default     = null
-}
-
 # Instance group settings
-variable "target_pool_self_links" {
+variable "target_pools" {
   description = "A list of target pool URLs to which the instance groups are added. Updating the target pools attribute does not affect existing VM-Series instances."
   type        = list(string)
   default     = null
-}
-
-variable "update_policy_type" {
-  description = "What to do when the underlying template changes (e.g. PAN-OS upgrade). OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed."
-  type        = string
-  default     = "OPPORTUNISTIC"
 }
 
 variable "named_ports" {
@@ -157,19 +147,25 @@ variable "named_ports" {
   default     = []
 }
 
+variable "update_policy_type" {
+  description = "What to do when the underlying template changes (e.g. PAN-OS upgrade). OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed."
+  type        = string
+  default     = "OPPORTUNISTIC"
+}
+
 # Autoscaler settings
-variable "max_vmseries_replicas" {
-  description = "The maximum number of VM-Series that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of VM-Series should not be lower than minimal number of VM-Series."
+variable "min_vmseries_replicas" {
+  description = "The minimum number of VM-Series per region/zone that the autoscaler can scale down to. This cannot be less than 0."
   type        = number
 }
 
-variable "min_vmseries_replicas" {
-  description = "The minimum number of VM-Series that the autoscaler can scale down to. This cannot be less than 0."
+variable "max_vmseries_replicas" {
+  description = "The maximum number of VM-Series per region/zone that the autoscaler can scale up to. The maximum number of VM-Series should not be lower than `min_vmseries_replicas`."
   type        = number
 }
 
 variable "autoscaler_metrics" {
-  description = "A map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).  Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.  Each zonal group grows until it satisfies all the targets.  Additional optional attribute `type` defines the metric as either `GAUGE`, `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.  For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler)."
+  description = "A map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization). Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in. Each zonal group grows until it satisfies all the targets. Additional optional attribute `type` defines the metric as either `GAUGE`, `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`. For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler)."
   default = {
     "custom.googleapis.com/VMSeries/panSessionUtilization" = {
       target = 70
@@ -196,4 +192,10 @@ variable "scale_in_control_replicas_fixed" {
   description = "Fixed number of VM-Series instances that can be killed within the scale-in time window. See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler)."
   type        = number
   default     = 1
+}
+
+variable "create_pubsub_topic" {
+  description = "Set to `true` to create a Pub/Sub topic and subscription. The Panorama Google Cloud Plugin can use this Pub/Sub to trigger actions when the VM-Series Instance Group descales. Actions include, removal of VM-Series from Panorama and automatic delicensing (if VM-Series BYOL licensing is used). For more information, please see [Autoscaling the VM-Series on GCP](https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/autoscaling-on-google-cloud-platform)."
+  type        = bool
+  default     = true
 }
