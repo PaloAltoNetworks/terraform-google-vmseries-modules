@@ -20,5 +20,5 @@ output "lbs_global_http" {
 
 output "linux_vm_ips" {
   description = "Private IP addresses of Linux VMs."
-  value       = { for k, v in resource.google_compute_instance.linux-vm : k => v.network_interface[0].network_ip }
+  value       = { for k, v in resource.google_compute_instance.linux_vm : k => v.network_interface[0].network_ip }
 }
