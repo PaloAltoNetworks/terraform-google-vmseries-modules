@@ -1,5 +1,5 @@
 module "iam_service_account" {
-  source  = "../../modules/iam_service_account"
+  source = "../../modules/iam_service_account"
 
   for_each = var.service_accounts
 
@@ -26,7 +26,7 @@ resource "local_file" "bootstrap_xml" {
   )
 }
 
-resource "local_file" "init-cfg" {
+resource "local_file" "init_cfg" {
 
   for_each = { for k, v in var.vmseries : k => v
     if can(v.bootstrap_template_map)
@@ -59,7 +59,7 @@ module "bootstrap" {
 }
 
 module "vpc" {
-  source  = "../../modules/vpc"
+  source = "../../modules/vpc"
 
   networks = { for k, v in var.networks : k => merge(v, {
     name            = "${var.name_prefix}${v.name}"
@@ -81,7 +81,7 @@ resource "google_compute_route" "this" {
 }
 
 module "vpc_peering" {
-  source  = "../../modules/vpc-peering"
+  source = "../../modules/vpc-peering"
 
   for_each = var.vpc_peerings
 
@@ -100,7 +100,7 @@ module "vpc_peering" {
 }
 
 module "vmseries" {
-  source  = "../../modules/vmseries"
+  source = "../../modules/vmseries"
 
   for_each = var.vmseries
 
@@ -139,7 +139,7 @@ data "google_compute_image" "my_image" {
   project = "ubuntu-os-pro-cloud"
 }
 
-resource "google_compute_instance" "linux-vm" {
+resource "google_compute_instance" "linux_vm" {
   for_each = var.linux_vms
 
   name         = "${var.name_prefix}${each.key}"
@@ -171,7 +171,7 @@ resource "google_compute_instance" "linux-vm" {
 }
 
 module "lb_internal" {
-  source  = "../../modules/lb_internal"
+  source = "../../modules/lb_internal"
 
   for_each = var.lbs_internal
 
@@ -185,7 +185,7 @@ module "lb_internal" {
 }
 
 module "lb_external" {
-  source  = "../../modules/lb_external"
+  source = "../../modules/lb_external"
 
   project = var.project
 
