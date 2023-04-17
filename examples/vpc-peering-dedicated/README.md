@@ -18,7 +18,7 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one Global HTTP loadbalancer (for inbound traffic)
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232493285-372de660-6c10-4957-ae3a-183e891af815.png)
+![VM-Series-Dedicated-Inbound-Firewall-Option](https://user-images.githubusercontent.com/43091730/232493285-372de660-6c10-4957-ae3a-183e891af815.png)
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ With default variable values the topology consists of :
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/vpc-peering-common
+cd terraform-google-vmseries-modules/examples/vpc-peering-dedicated
 ```
 
 3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance.
@@ -51,12 +51,12 @@ terraform apply -var-file=example.tfvars
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 96 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+Apply complete! Resources: 104 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
 
 Outputs:
 
-lbs_internal_ips = {
-  "external-lb" = "<EXTERNAL_LB_PUBLIC_IP>"
+lbs_global_http = {
+  "global-http" = "<GLOBAL_HTTP_LB_PUBLIC_IP>"
 }
 lbs_internal_ips = {
   "internal-lb" = "10.10.12.5"
@@ -76,6 +76,16 @@ vmseries_private_ips = {
     "1" = "10.10.10.3"
     "2" = "10.10.12.3"
   }
+  "fw-vmseries-03" = {
+    "0" = "10.10.11.6"
+    "1" = "10.10.10.6"
+    "2" = "10.10.12.6"
+  }
+  "fw-vmseries-04" = {
+    "0" = "10.10.11.7"
+    "1" = "10.10.10.7"
+    "2" = "10.10.12.7"
+  }
 }
 vmseries_public_ips = {
   "fw-vmseries-01" = {
@@ -83,6 +93,14 @@ vmseries_public_ips = {
     "1" = "<MGMT_PUBLIC_IP>"
   }
   "fw-vmseries-02" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
+  "fw-vmseries-03" = {
+    "0" = "<UNTRUST_PUBLIC_IP>"
+    "1" = "<MGMT_PUBLIC_IP>"
+  }
+  "fw-vmseries-04" = {
     "0" = "<UNTRUST_PUBLIC_IP>"
     "1" = "<MGMT_PUBLIC_IP>"
   }
@@ -143,6 +161,10 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 <USERNAME>@spoke1-vm:~$ping 8.8.8.8
 <USERNAME>@spoke1-vm:~$ping 192.168.2.2
 ```
+
+## Global HTTP Loadbalancer
+
+The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untrust` interfaces. In order to properly route traffic - configure a DNAT + SNAT Policy on the dedicated inbound firewall pair to send traffic towards a VM inside your network (SNAT is also required to properly route return traffic back to the proper firewall).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
