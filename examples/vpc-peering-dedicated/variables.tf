@@ -5,12 +5,12 @@ variable "project" {
   default     = null
 }
 variable "region" {
-  description = "The region into which to deploy the infrastructure in to"
+  description = "The region into which to deploy the infrastructure in to."
   type        = string
   default     = "us-central1"
 }
 variable "name_prefix" {
-  description = "A string to prefix resource namings"
+  description = "A string to prefix resource namings."
   type        = string
   default     = "example-"
 }
@@ -44,7 +44,7 @@ variable "service_accounts" {
   ```
   For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/iam_service_account#Inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  Multiple keys can be added and will be deployed by the code.
 
   EOF
   type        = map(any)
@@ -64,17 +64,13 @@ variable "bootstrap_buckets" {
     "vmseries-bootstrap-bucket-01" = {
       bucket_name_prefix = "bucket-01-"
       service_account    = "sa-vmseries-01"
-      files = {
-        "bootstrap_files/init-cfg.txt" = "config/init-cfg.txt"
-        "bootstrap_files/authcodes"    = "license/authcodes"
-      }
     }
   }
   ```
 
   For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/bootstrap#Inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  Multiple keys can be added and will be deployed by the code.
 
   EOF
   type        = map(any)
@@ -85,27 +81,30 @@ variable "bootstrap_buckets" {
 
 variable "networks" {
   description = <<-EOF
-    A map containing each network setting.
+  A map containing each network setting.
 
-    Example of variable deployment :
+  Example of variable deployment :
 
-    ```
-    vpcs = {
-      "panorama-vpc" = {
-        vpc_name          = "panorama-vpc"
-        subnet_name       = "example-panorama-subnet"
-        cidr              = "172.21.21.0/24"
-        allowed_sources   = ["1.1.1.1/32" , "2.2.2.2/32"]
-        create_network    = true
-        create_subnetwork = true
-      }
+  ```
+  networks = {
+    "mgmt-network" = {
+      create_network                  = true
+      create_subnetwork               = true
+      name                            = "fw-mgmt-vpc"
+      subnetwork_name                 = "fw-mgmt-sub"
+      ip_cidr_range                   = "10.10.10.0/28"
+      allowed_sources                 = ["1.1.1.1/32"]
+      delete_default_routes_on_create = false
+      allowed_protocol                = "all"
+      allowed_ports                   = []
     }
-    ```
+  }
+  ```
 
-    For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)
+  For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)
 
-    Multiple keys can be added and will be deployed by the code
-    EOF
+  Multiple keys can be added and will be deployed by the code.
+  EOF
 }
 
 variable "vpc_peerings" {
@@ -134,7 +133,30 @@ variable "vpc_peerings" {
   ```
   For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc-peering#inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  Multiple keys can be added and will be deployed by the code.
+  EOF
+  type        = map(any)
+  default     = {}
+}
+
+variable "routes" {
+  description = <<-EOF
+  A map containing each route setting. Note that you can only add routes using a next-hop type of internal load-balance rule.
+
+  Example of variable deployment :
+
+  ```
+  routes = {
+    "default-route-trust" = {
+      name = "fw-default-trust"
+      destination_range = "0.0.0.0/0"
+      network = "fw-trust-vpc"
+      lb_internal_name = "internal-lb"
+    }
+  }
+  ```
+
+  Multiple keys can be added and will be deployed by the code.
   EOF
   type        = map(any)
   default     = {}
@@ -142,6 +164,26 @@ variable "vpc_peerings" {
 
 #vmseries
 
+variable "vmseries_common" {
+  description = <<-EOF
+  A map containing common vmseries setting.
+
+  Example of variable deployment :
+
+  ```
+  vmseries_common = {
+    ssh_keys       = "admin:ssh-rsa AAAAB3..."
+    vmseries_image = "vmseries-flex-byol-1022h2"
+    bootstrap_options = {
+      type                = "dhcp-client"
+      mgmt-interface-swap = "enable"
+    }
+  }
+  ``` 
+
+  Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`).
+  EOF
+}
 variable "vmseries" {
   description = <<-EOF
   A map containing each individual vmseries setting.
@@ -167,6 +209,15 @@ variable "vmseries" {
       bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
       bootstrap_options = {
         panorama-server = "1.1.1.1"
+        dns-primary     = "8.8.8.8"
+        dns-secondary   = "8.8.4.4"
+      }
+      bootstrap_template_map = {
+        trust_gcp_router_ip   = "10.10.12.1"
+        untrust_gcp_router_ip = "10.10.11.1"
+        private_network_cidr  = "192.168.0.0/16"
+        untrust_loopback_ip   = "1.1.1.1/32" #This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
+        trust_loopback_ip     = "10.10.12.5/32"
       }
       named_ports = [
         {
@@ -199,30 +250,9 @@ variable "vmseries" {
   ```
   For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vmseries#inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  The bootstrap_template_map contains variables that will be applied to the bootstrap template. Each firewall Day 0 bootstrap will be parametrised based on these inputs.
+  Multiple keys can be added and will be deployed by the code.
 
-  EOF
-}
-variable "vmseries_common" {
-  description = <<-EOF
-  A map containing common vmseries setting.
-
-  Example of variable deployment :
-
-  ```
-  vmseries_common = {
-    ssh_keys       = "admin:mykey123"
-    vmseries_image = "vmseries-flex-byol-1022h2"
-    bootstrap_options = {
-      type                = "dhcp-client"
-      dns-primary         = "8.8.8.8"
-      dns-secondary       = "8.8.4.4"
-      mgmt-interface-swap = "enable"
-    }
-  }
-  ``` 
-
-  Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`)
   EOF
 }
 
@@ -236,9 +266,9 @@ variable "lbs_internal" {
 
   ```
   lbs_internal = {
-    "trust-lb" = {
-      name              = "trust-lb"
-      health_check_port = "22"
+    "internal-lb" = {
+      name              = "internal-lb"
+      health_check_port = "80"
       backends          = ["fw-vmseries-01", "fw-vmseries-02"]
       ip_address        = "10.10.12.5"
       subnetwork        = "fw-trust-sub"
@@ -248,78 +278,32 @@ variable "lbs_internal" {
   ```
   For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_internal#inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  Multiple keys can be added and will be deployed by the code.
   EOF
   type        = map(any)
   default     = {}
 }
-variable "lbs_external" {
-  description = <<-EOF
-  A map containing each external loadbalancer setting.
-
-  Example of variable deployment :
-
-  ```
-lbs_external = {
-  "external-lb" = {
-    name      = "external-lb"
-    instances = ["fw-vmseries-01", "fw-vmseries-02"]
-    rules = {
-      "http" = {
-        port_range  = "80"
-        ip_protocol = "TCP"
-        ip_address  = ""
-      },
-      "https" = {
-        port_range  = "443"
-        ip_protocol = "TCP"
-        ip_address  = ""
-      },
-      "icmp" = {
-        port_range  = null
-        ip_protocol = "ICMP" 
-        ip_address  = ""
-      }
-    }
-    http_health_check_port         = "80"
-    http_health_check_request_path = "/"
-  }
-}
-  ```
-  For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_external#inputs)
-
-  Multiple keys can be added and will be deployed by the code
-  EOF
-  type        = map(any)
-  default     = {}
-}
-
 variable "lbs_global_http" {
   description = <<-EOF
-    A map containing each Global HTTP setting
-  EOF
-  type        = map(any)
-  default     = {}
-}
+  A map containing each Global HTTP loadbalancer setting.
 
-variable "routes" {
-  description = <<-EOF
-  A map containing each route setting. Note that you can only add routes using a next-hop type of internal load-balance rule.
-
-  Example of variable deployment :
+  Example of variable deployment:
 
   ```
-routes = {
-  "default-route-trust" = {
-    name = "fw-default-trust"
-    destination_range = "0.0.0.0/0"
-    network = "fw-trust-vpc"
-    lb_internal_name = "internal-lb"
+  lbs_global_http = {
+    "global-http" = {
+      name                  = "global-http"
+      backends              = ["fw-vmseries-01", "fw-vmseries-02"]
+      max_rate_per_instance = 5000
+      backend_port_name     = "http"
+      backend_protocol      = "HTTP"
+      health_check_port     = 80
+    }
   }
-}
   ```
+  For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_http_ext_global#inputs)
 
-  Multiple keys can be added and will be deployed by the code
+  Multiple keys can be added and will be deployed by the code.
   EOF
   type        = map(any)
   default     = {}
@@ -330,6 +314,29 @@ routes = {
 variable "linux_vms" {
   description = <<-EOF
   A map containing each Linux VM configuration that will be placed in SPOKE VPCs for testing purposes.
+
+  Example of variable deployment:
+
+  ```
+  linux_vms = {
+    "spoke1-vm" = {
+      linux_machine_type = "n2-standard-4"
+      zone               = "us-east1-b"
+      linux_disk_size    = "50"
+      subnetwork         = "spoke1-sub"
+      private_ip         = "192.168.1.2"
+      scopes = [
+        "https://www.googleapis.com/auth/compute.readonly",
+        "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+      ]
+      service_account = "sa-vmseries-01"
+      ssh_keys_linux  = "admin:ssh-rsa AAAAB3..."
+    }
+  }
+  ```
   EOF
   type        = map(any)
   default     = {}
