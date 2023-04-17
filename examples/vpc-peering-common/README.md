@@ -16,7 +16,7 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one external regional network loadbalancer (for inbound traffic)
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486393-885116db-4025-475d-9c5d-95f945fdc249.png)
+![VM-Series-Common-Firewall-Option]([https://user-images.githubusercontent.com/43091730/232486393-885116db-4025-475d-9c5d-95f945fdc249.png](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
 
 ## Prerequisites
 
