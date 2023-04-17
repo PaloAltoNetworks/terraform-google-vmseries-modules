@@ -18,7 +18,7 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one Global HTTP loadbalancer (for inbound traffic)
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
+![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232493285-372de660-6c10-4957-ae3a-183e891af815.png)
 
 ## Prerequisites
 
