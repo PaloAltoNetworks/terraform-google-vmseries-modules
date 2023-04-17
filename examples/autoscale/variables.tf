@@ -3,16 +3,16 @@ variable "project_id" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Prefix to prepend the resource names (i.e. panw, or your initials).  This is useful for identifing the created resources."
+variable "name_prefix" {
+  description = "Prefix to prepend the resource names. This is useful for identifing the created resources."
   type        = string
+  default     = ""
 }
 
 variable "region" {
   description = "GCP region"
   type        = string
 }
-
 
 variable "allowed_sources" {
   description = "A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface."
