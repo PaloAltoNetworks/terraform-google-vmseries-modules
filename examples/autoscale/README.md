@@ -1,7 +1,7 @@
 # Autoscale VM-Series Firewalls with MIGs
 
 ## Overview
-This example deploys VM-Series firewalls through a Managed Instance Group (MIG). The MIg enables the VM-Series to horizontally scale (ie. autoscaling) based on custom PAN-OS metrics delivered to Google Cloud Monitoring.
+This example deploys VM-Series firewalls through a Managed Instance Group (MIG). The MIG enables the VM-Series to horizontally scale (ie. autoscaling) based on custom PAN-OS metrics delivered to Google Cloud Monitoring.
 
 Created resources include:
 * 3 x VPC Networks (`mgmt`, `untrust/public`, and `trust/hub` VPC networks).
@@ -32,7 +32,7 @@ Created resources include:
 1. Access a machine with Terraform installed or click **Open in Google Cloud Shell**.
 
 <p align="center" width="100%">
-  <a href="https://ssh.cloud.google.com/cloudshell/editor"><img width="350" src="https://user-images.githubusercontent.com/2110772/188896668-23fc9260-642a-4b7f-b64f-8e0b783b598a.png"> 
+  <a href="https://ssh.cloud.google.com/cloudshell/editor"><img width="350" src="https://user-images.githubusercontent.com/2110772/188896668-23fc9260-642a-4b7f-b64f-8e0b783b598a.png">
   </a>
 </p>
 
@@ -46,10 +46,10 @@ cd terraform-google-vmseries-modules/examples/autoscale
 
 3. Create a file named `terraform.tfvars` in a text editor of your choice (i.e. Cloud Shell Editor, `vim`, or `nano`) or copy an existing sample `example.tfvars` file.
 
-4. Paste the variables below into your `terraform.tfvars`. Modify the values to match your environment. A description of each variable can be found in [variables.tf](variables.tf).
+4. If created from scratch, paste the variables below into your `terraform.tfvars`. Modify the values to match your environment. A description of each variable can be found in [variables.tf](variables.tf).
 ```
 project_id = "my-project-id"
-prefix     = "panw"
+prefix     = "example-"
 region     = "us-central1"
 
 allowed_sources = ["0.0.0.0/0"]
@@ -58,8 +58,8 @@ cidr_untrust    = "10.0.1.0/28"
 cidr_trust      = "10.0.2.0/28"
 
 vmseries_image_name    = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle2-1014"
-vmseries_instances_min = 2
-vmseries_instances_max = 5
+vmseries_instances_min = 1
+vmseries_instances_max = 2
 
 panorama_address        = "1.1.1.1"
 panorama_device_group   = "my-panorama-device-group"
@@ -68,8 +68,8 @@ panorama_vm_auth_key    = "01234567890123456789"
 ```
 
 5. (Optional) If you would like to deploy zonal MIGs instead of regional MIGs, make the following changes in [`main.tf`](main.tf).
-    1.  Within `module "autoscale"`, add the `zones` parameter and set `regional_mig=false`.
-    2.  Within `module "intlb"`, configure backends parameter to use each output for `zonal_instance_group_ids`. 
+    * Within `module "autoscale"`, add the `zones` parameter and set `regional_mig=false`.
+    * Within `module "intlb"`, configure backends parameter to use each output for `zonal_instance_group_ids`.
 
 <pre>
 module "autoscale" {
@@ -109,7 +109,7 @@ module "intlb" {
 terraform init
 terraform apply
 ```
-> **Note:** The health probes on the external load balancer be down. This is because a service must be configured behind the firewall to respond to the load balancer's health probes. 
+> **Note:** The health probes on the external load balancer be down. This is because a service must be configured behind the firewall to respond to the load balancer's health probes.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
