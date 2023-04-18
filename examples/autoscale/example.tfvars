@@ -1,5 +1,5 @@
-project_id  = "gcp-gcs-pso"
-name_prefix = "mbi-"
+project_id  = "my-project-id"
+name_prefix = "example-"
 region      = "us-central1"
 
 cidr_mgmt       = "10.0.0.0/28"
