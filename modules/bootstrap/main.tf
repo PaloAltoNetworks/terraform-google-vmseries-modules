@@ -1,5 +1,5 @@
 locals {
-  bootstrap_filenames = { for f in fileset(var.bootstrap_files, "**") : f => "${var.bootstrap_files}/${f}" }
+  bootstrap_filenames = { for f in fileset(var.bootstrap_files_dir, "**") : f => "${var.bootstrap_files_dir}/${f}" }
   # invert var.files map 
   inverted_files     = { for k, v in var.files : v => k }
   inverted_filenames = merge(local.bootstrap_filenames, local.inverted_files)
