@@ -1,6 +1,10 @@
 locals {
-  bootstrap_filenames = { for f in fileset(var.bootstrap_files, "**") : "${var.bootstrap_files}/${f}" => f }
-  filenames           = merge(local.bootstrap_filenames, var.files)
+  bootstrap_filenames = { for f in fileset(var.bootstrap_files, "**") : f => "${var.bootstrap_files}/${f}" }
+  # invert var.files map 
+  inverted_files     = { for k, v in var.files : v => k }
+  inverted_filenames = merge(local.bootstrap_filenames, local.inverted_files)
+  # invert local.filenames map
+  filenames = { for k, v in local.inverted_filenames : v => k }
 }
 resource "random_string" "randomstring" {
   length    = 10
