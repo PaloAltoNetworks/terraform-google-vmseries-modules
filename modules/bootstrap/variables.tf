@@ -24,5 +24,5 @@ variable "location" {
 variable "bootstrap_files_dir" {
   description = "Bootstrap file directory. More information can be found at https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-package"
   type        = string
-  optional    = true
+  default     = ""
 }
