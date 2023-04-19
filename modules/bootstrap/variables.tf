@@ -22,7 +22,7 @@ variable "location" {
 }
 
 variable "bootstrap_files" {
-  description = "Location to the bootstrap file structure. More infor can be found under https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-package"
+  description = "Bootstrap file directory. More information can be found at https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-package"
   type        = string
   default     = "./bootstrap_files"
 }
