@@ -117,11 +117,11 @@ module "vmseries" {
 
   bootstrap_options = try(
     merge(
-    { vmseries-bootstrap-gce-storagebucket = "${module.bootstrap[each.value.bootstrap-bucket-key].bucket_name}/${each.key}/" },
+      { vmseries-bootstrap-gce-storagebucket = "${module.bootstrap[each.value.bootstrap-bucket-key].bucket_name}/${each.key}/" },
     var.vmseries_common.bootstrap_options),
     merge(
-     try(each.value.bootstrap_options, {}),
-     try(var.vmseries_common.bootstrap_options, {})
+      try(each.value.bootstrap_options, {}),
+      try(var.vmseries_common.bootstrap_options, {})
   ))
 
   named_ports = try([for v in each.value.named_ports :
