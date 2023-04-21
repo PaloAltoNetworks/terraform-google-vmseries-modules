@@ -7,7 +7,7 @@ location    = "us"
 # Service accounts
 
 service_accounts = {
-  "sa-vmseries-01" = {
+  sa-vmseries-01 = {
     service_account_id = "sa-vmseries-01"
     display_name       = "VM-Series SA"
     roles = [
@@ -18,7 +18,7 @@ service_accounts = {
       "roles/viewer"
     ]
   },
-  "sa-linux-01" = {
+  sa-linux-01 = {
     service_account_id = "sa-linux-01"
     display_name       = "Linux VMs SA"
     roles = [
@@ -32,7 +32,7 @@ service_accounts = {
 }
 
 bootstrap_buckets = {
-  "vmseries-bootstrap-bucket-01" = {
+  vmseries-bootstrap-bucket-01 = {
     bucket_name_prefix = "bucket-01-"
     service_account    = "sa-vmseries-01"
   }
@@ -41,7 +41,7 @@ bootstrap_buckets = {
 # VPC
 
 networks = {
-  "mgmt" = {
+  mgmt = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-mgmt-vpc"
@@ -52,7 +52,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "untrust" = {
+  untrust = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-untrust-vpc"
@@ -63,7 +63,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "trust" = {
+  trust = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-trust-vpc"
@@ -74,7 +74,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "spoke1" = {
+  spoke1 = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "spoke1-vpc"
@@ -85,7 +85,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "spoke2" = {
+  spoke2 = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "spoke2-vpc"
@@ -101,7 +101,7 @@ networks = {
 # VPC Peerings
 
 vpc_peerings = {
-  "trust-to-spoke1" = {
+  trust-to-spoke1 = {
     local_network = "fw-trust-vpc"
     peer_network  = "spoke1-vpc"
 
@@ -115,7 +115,7 @@ vpc_peerings = {
     peer_export_subnet_routes_with_public_ip = true
     peer_import_subnet_routes_with_public_ip = true
   },
-  "trust-to-spoke2" = {
+  trust-to-spoke2 = {
     local_network = "fw-trust-vpc"
     peer_network  = "spoke2-vpc"
 
@@ -134,7 +134,7 @@ vpc_peerings = {
 # Static routes
 
 routes = {
-  "fw-default-trust" = {
+  fw-default-trust = {
     name              = "fw-default-trust"
     destination_range = "0.0.0.0/0"
     network           = "fw-trust-vpc"
@@ -156,7 +156,7 @@ vmseries_common = {
 }
 
 vmseries = {
-  "fw-vmseries-01" = {
+  fw-vmseries-01 = {
     name = "fw-vmseries-01"
     zone = "us-east1-b"
     tags = ["vmseries"]
@@ -205,7 +205,7 @@ vmseries = {
       }
     ]
   },
-  "fw-vmseries-02" = {
+  fw-vmseries-02 = {
     name = "fw-vmseries-02"
     zone = "us-east1-c"
     tags = ["vmseries"]
@@ -254,7 +254,7 @@ vmseries = {
       }
     ]
   },
-  "fw-vmseries-03" = {
+  fw-vmseries-03 = {
     name = "fw-vmseries-03"
     zone = "us-east1-b"
     tags = ["vmseries"]
@@ -304,7 +304,7 @@ vmseries = {
       }
     ]
   },
-  "fw-vmseries-04" = {
+  fw-vmseries-04 = {
     name = "fw-vmseries-04"
     zone = "us-east1-c"
     tags = ["vmseries"]
@@ -359,7 +359,7 @@ vmseries = {
 # Spoke Linux VMs
 
 linux_vms = {
-  "spoke1-vm" = {
+  spoke1-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
     linux_disk_size    = "50"
@@ -375,7 +375,7 @@ linux_vms = {
     service_account = "sa-linux-01"
     ssh_keys_linux  = "<YOUR_SSH_KEY>"
   },
-  "spoke2-vm" = {
+  spoke2-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
     linux_disk_size    = "50"
@@ -396,7 +396,7 @@ linux_vms = {
 # Internal Network Loadbalancer
 
 lbs_internal = {
-  "internal-lb" = {
+  internal-lb = {
     name              = "internal-lb"
     health_check_port = "80"
     backends          = ["fw-vmseries-03", "fw-vmseries-04"]
@@ -409,7 +409,7 @@ lbs_internal = {
 # Global HTTP Loadbalancer
 
 lbs_global_http = {
-  "global-http" = {
+  global-http = {
     name                  = "global-http"
     backends              = ["fw-vmseries-01", "fw-vmseries-02"]
     max_rate_per_instance = 5000
