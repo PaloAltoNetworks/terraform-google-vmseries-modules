@@ -23,44 +23,49 @@ resource "google_storage_bucket" "this" {
   }
 }
 
+locals {
+  folders = length(var.folders) == 0 ? [""] : var.folders
+}
+
+
+resource "google_storage_bucket_object" "config_empty" {
+  for_each = toset(local.folders)
+
+  name    = each.value != "" ? "${each.value}/config/" : "config/"
+  content = "config/"
+  bucket  = google_storage_bucket.this.name
+}
+
+resource "google_storage_bucket_object" "content_empty" {
+  for_each = toset(local.folders)
+
+  name    = each.value != "" ? "${each.value}/content/" : "content/"
+  content = "content/"
+  bucket  = google_storage_bucket.this.name
+}
+
+resource "google_storage_bucket_object" "license_empty" {
+  for_each = toset(local.folders)
+
+  name    = each.value != "" ? "${each.value}/license/" : "license/"
+  content = "license/"
+  bucket  = google_storage_bucket.this.name
+}
+
+resource "google_storage_bucket_object" "software_empty" {
+  for_each = toset(local.folders)
+
+  name    = each.value != "" ? "${each.value}/software/" : "software/"
+  content = "software/"
+  bucket  = google_storage_bucket.this.name
+}
+
 resource "google_storage_bucket_object" "file" {
   for_each = local.filenames
 
   name   = each.value
   source = each.key
   bucket = google_storage_bucket.this.name
-}
-
-resource "google_storage_bucket_object" "config_empty" {
-  count = contains([for f in values(var.files) : true if trimprefix(f, "config/") != f], true) ? 0 : 1
-
-  name    = "config/"
-  content = "config/"
-  bucket  = google_storage_bucket.this.name
-}
-
-resource "google_storage_bucket_object" "content_empty" {
-  count = contains([for f in values(var.files) : true if trimprefix(f, "content/") != f], true) ? 0 : 1
-
-  name    = "content/"
-  content = "content/"
-  bucket  = google_storage_bucket.this.name
-}
-
-resource "google_storage_bucket_object" "license_empty" {
-  count = contains([for f in values(var.files) : true if trimprefix(f, "license/") != f], true) ? 0 : 1
-
-  name    = "license/"
-  content = "license/"
-  bucket  = google_storage_bucket.this.name
-}
-
-resource "google_storage_bucket_object" "software_empty" {
-  count = contains([for f in values(var.files) : true if trimprefix(f, "software/") != f], true) ? 0 : 1
-
-  name    = "software/"
-  content = "software/"
-  bucket  = google_storage_bucket.this.name
 }
 
 data "google_compute_default_service_account" "this" {}
