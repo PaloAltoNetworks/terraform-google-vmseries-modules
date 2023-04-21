@@ -1,15 +1,26 @@
-#General
+# General
 project     = "<PROJECT_ID>"
 region      = "us-east1"
 name_prefix = ""
 location    = "us"
 
-#Service accounts
+# Service accounts
 
 service_accounts = {
   "sa-vmseries-01" = {
     service_account_id = "sa-vmseries-01"
     display_name       = "VM-Series SA"
+    roles = [
+      "roles/compute.networkViewer",
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/monitoring.viewer",
+      "roles/viewer"
+    ]
+  },
+  "sa-linux-01" = {
+    service_account_id = "sa-linux-01"
+    display_name       = "Linux VMs SA"
     roles = [
       "roles/compute.networkViewer",
       "roles/logging.logWriter",
@@ -27,10 +38,10 @@ bootstrap_buckets = {
   }
 }
 
-#VPC
+# VPC
 
 networks = {
-  "mgmt-network" = {
+  "mgmt" = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-mgmt-vpc"
@@ -41,7 +52,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "untrust-network" = {
+  "untrust" = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-untrust-vpc"
@@ -52,7 +63,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "trust-network" = {
+  "trust" = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "fw-trust-vpc"
@@ -63,7 +74,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "spoke1-network" = {
+  "spoke1" = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "spoke1-vpc"
@@ -74,7 +85,7 @@ networks = {
     allowed_protocol                = "all"
     allowed_ports                   = []
   },
-  "spoke2-network" = {
+  "spoke2" = {
     create_network                  = true
     create_subnetwork               = true
     name                            = "spoke2-vpc"
@@ -87,7 +98,7 @@ networks = {
   }
 }
 
-#VPC Peerings
+# VPC Peerings
 
 vpc_peerings = {
   "trust-to-spoke1" = {
@@ -120,7 +131,7 @@ vpc_peerings = {
   }
 }
 
-#static routes
+# Static routes
 
 routes = {
   "fw-default-trust" = {
@@ -131,10 +142,13 @@ routes = {
   }
 }
 
-#vmseries
+# VM-Series
 vmseries_common = {
-  ssh_keys       = "<YOUR_SSH_KEY>"
-  vmseries_image = "vmseries-flex-byol-1022h2"
+  ssh_keys         = "<YOUR_SSH_KEY>"
+  vmseries_image   = "vmseries-flex-byol-1022h2"
+  machine_type     = "n2-standard-4"
+  min_cpu_platform = "Intel Cascade Lake"
+  service_account  = "sa-vmseries-01"
   bootstrap_options = {
     type                = "dhcp-client"
     mgmt-interface-swap = "enable"
@@ -143,12 +157,9 @@ vmseries_common = {
 
 vmseries = {
   "fw-vmseries-01" = {
-    name             = "fw-vmseries-01"
-    zone             = "us-east1-b"
-    machine_type     = "n2-standard-4"
-    min_cpu_platform = "Intel Cascade Lake"
-    tags             = ["vmseries"]
-    service_account  = "sa-vmseries-01"
+    name = "fw-vmseries-01"
+    zone = "us-east1-b"
+    tags = ["vmseries"]
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
       "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -195,12 +206,9 @@ vmseries = {
     ]
   },
   "fw-vmseries-02" = {
-    name             = "fw-vmseries-02"
-    zone             = "us-east1-c"
-    machine_type     = "n2-standard-4"
-    min_cpu_platform = "Intel Cascade Lake"
-    tags             = ["vmseries"]
-    service_account  = "sa-vmseries-01"
+    name = "fw-vmseries-02"
+    zone = "us-east1-c"
+    tags = ["vmseries"]
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
       "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -247,12 +255,9 @@ vmseries = {
     ]
   },
   "fw-vmseries-03" = {
-    name             = "fw-vmseries-03"
-    zone             = "us-east1-b"
-    machine_type     = "n2-standard-4"
-    min_cpu_platform = "Intel Cascade Lake"
-    tags             = ["vmseries"]
-    service_account  = "sa-vmseries-01"
+    name = "fw-vmseries-03"
+    zone = "us-east1-b"
+    tags = ["vmseries"]
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
       "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -300,12 +305,9 @@ vmseries = {
     ]
   },
   "fw-vmseries-04" = {
-    name             = "fw-vmseries-04"
-    zone             = "us-east1-c"
-    machine_type     = "n2-standard-4"
-    min_cpu_platform = "Intel Cascade Lake"
-    tags             = ["vmseries"]
-    service_account  = "sa-vmseries-01"
+    name = "fw-vmseries-04"
+    zone = "us-east1-c"
+    tags = ["vmseries"]
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
       "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
@@ -354,7 +356,7 @@ vmseries = {
   }
 }
 
-#Spoke Linux VMs
+# Spoke Linux VMs
 
 linux_vms = {
   "spoke1-vm" = {
@@ -370,7 +372,7 @@ linux_vms = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    service_account = "sa-vmseries-01"
+    service_account = "sa-linux-01"
     ssh_keys_linux  = "<YOUR_SSH_KEY>"
   },
   "spoke2-vm" = {
@@ -386,12 +388,12 @@ linux_vms = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    service_account = "sa-vmseries-01"
+    service_account = "sa-linux-01"
     ssh_keys_linux  = "<YOUR_SSH_KEY>"
   }
 }
 
-#Internal Network Loadbalancer
+# Internal Network Loadbalancer
 
 lbs_internal = {
   "internal-lb" = {
@@ -404,7 +406,7 @@ lbs_internal = {
   }
 }
 
-#Global HTTP Loadbalancer
+# Global HTTP Loadbalancer
 
 lbs_global_http = {
   "global-http" = {

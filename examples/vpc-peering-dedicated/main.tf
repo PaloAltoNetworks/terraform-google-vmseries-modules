@@ -106,25 +106,25 @@ module "vmseries" {
 
   name                  = "${var.name_prefix}${each.value.name}"
   zone                  = each.value.zone
-  ssh_keys              = var.vmseries_common.ssh_keys
-  vmseries_image        = var.vmseries_common.vmseries_image
-  machine_type          = each.value.machine_type
-  min_cpu_platform      = try(each.value.min_cpu_platform, "Intel Cascade Lake")
-  tags                  = try(each.value.tags, [])
-  service_account       = module.iam_service_account[each.value.service_account].email
-  scopes                = try(each.value.scopes, [])
+  ssh_keys              = try(each.value.ssh_keys, var.vmseries_common.ssh_keys)
+  vmseries_image        = try(each.value.vmseries_image, var.vmseries_common.vmseries_image)
+  machine_type          = try(each.value.machine_type, var.vmseries_common.machine_type)
+  min_cpu_platform      = try(each.value.min_cpu_platform, var.vmseries_common.vmseries_image, "Intel Cascade Lake")
+  tags                  = try(each.value.tags, var.vmseries_common.tags, [])
+  service_account       = try(module.iam_service_account[each.value.service_account].email, module.iam_service_account[var.vmseries_common.service_account].email)
+  scopes                = try(each.value.scopes, var.vmseries_common.scopes, [])
   create_instance_group = true
 
-  bootstrap_options = try(merge({ vmseries-bootstrap-gce-storagebucket = "${module.bootstrap[each.value.bootstrap-bucket-key].bucket_name}/${each.key}/" }, var.vmseries_common.bootstrap_options), merge(
-    try(each.value.bootstrap_options, {}),
-    try(var.vmseries_common.bootstrap_options, {})
+  bootstrap_options = try(
+    merge(
+      { vmseries-bootstrap-gce-storagebucket = "${module.bootstrap[each.value.bootstrap-bucket-key].bucket_name}/${each.key}/" },
+    var.vmseries_common.bootstrap_options),
+    merge(
+      try(each.value.bootstrap_options, {}),
+      try(var.vmseries_common.bootstrap_options, {})
   ))
 
-  named_ports = try([for v in each.value.named_ports :
-    {
-      name = v.name
-      port = v.port
-  }], [])
+  named_ports = try(each.value.named_ports, [])
 
   network_interfaces = [for v in each.value.network_interfaces :
     {
