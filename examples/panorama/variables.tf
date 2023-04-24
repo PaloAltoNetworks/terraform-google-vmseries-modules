@@ -12,7 +12,7 @@ variable "region" {
 variable "name_prefix" {
   description = "A string to prefix resource namings"
   type        = string
-  default     = "example-"
+  default     = ""
 }
 
 # VPC

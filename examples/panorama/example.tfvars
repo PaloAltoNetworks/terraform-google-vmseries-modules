@@ -1,7 +1,7 @@
 # General
 project     = "<PROJECT_ID>"
 region      = "us-central1"
-name_prefix = "example-"
+name_prefix = ""
 
 # VPC
 
