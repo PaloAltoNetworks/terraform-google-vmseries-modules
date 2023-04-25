@@ -18,7 +18,7 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one external regional network loadbalancer (for inbound traffic)
 
-![vpc-peering-network-tags](https://user-images.githubusercontent.com/43091730/234361117-7dff4f1c-ea38-4774-a773-7ea9b0b34a37.png)
+![vpc-peering-network-tags](https://user-images.githubusercontent.com/43091730/234361631-651c0eaa-fb4c-46dd-b654-ddb1c5a600f0.png)
 
 ## Prerequisites
 
