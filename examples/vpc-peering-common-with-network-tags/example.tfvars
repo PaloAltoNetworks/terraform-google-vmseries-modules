@@ -1,7 +1,7 @@
 # General
 project     = "<PROJECT_ID>"
-region-1    = "us-east1"
-region-2    = "us-west1"
+region_1    = "us-east1"
+region_2    = "us-west1"
 name_prefix = ""
 location    = "us"
 
@@ -41,7 +41,7 @@ bootstrap_buckets = {
 
 # VPC
 
-networks-region-1 = {
+networks_region_1 = {
   mgmt = {
     create_network                  = true
     create_subnetwork               = true
@@ -88,7 +88,7 @@ networks-region-1 = {
   }
 }
 
-networks-region-2 = {
+networks_region_2 = {
   mgmt = {
     create_network    = false
     create_subnetwork = true
@@ -139,7 +139,7 @@ vpc_peerings = {
 }
 
 # Static routes
-routes-region-1 = {
+routes_region_1 = {
   fw-default-trust = {
     name              = "fw-default-trust"
     destination_range = "0.0.0.0/0"
@@ -148,7 +148,7 @@ routes-region-1 = {
   }
 }
 
-routes-region-2 = {
+routes_region_2 = {
   fw-default-trust = {
     name              = "fw-default-trust"
     destination_range = "0.0.0.0/0"
@@ -171,7 +171,7 @@ vmseries_common = {
   }
 }
 
-vmseries-region-1 = {
+vmseries_region_1 = {
   fw-vmseries-01 = {
     name = "fw-vmseries-01"
     zone = "us-east1-b"
@@ -276,7 +276,7 @@ vmseries-region-1 = {
   }
 }
 
-vmseries-region-2 = {
+vmseries_region_2 = {
   fw-vmseries-03 = {
     name = "fw-vmseries-03"
     zone = "us-west1-b"
@@ -298,7 +298,7 @@ vmseries-region-2 = {
       trust_gcp_router_ip   = "10.20.12.1"
       untrust_gcp_router_ip = "10.20.11.1"
       private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-2) after the infrastructure is deployed
+      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed
       trust_loopback_ip     = "10.20.12.5/32"
     }
     named_ports = [
@@ -349,7 +349,7 @@ vmseries-region-2 = {
       trust_gcp_router_ip   = "10.20.12.1"
       untrust_gcp_router_ip = "10.20.11.1"
       private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-2) after the infrastructure is deployed
+      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed
       trust_loopback_ip     = "10.20.12.5/32"
     }
     named_ports = [
@@ -382,7 +382,7 @@ vmseries-region-2 = {
 }
 
 # Spoke Linux VMs
-linux_vms-region-1 = {
+linux_vms_region_1 = {
   spoke1-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
@@ -401,7 +401,7 @@ linux_vms-region-1 = {
   }
 }
 
-linux_vms-region-2 = {
+linux_vms_region_2 = {
   spoke2-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-west1-b"
@@ -421,7 +421,7 @@ linux_vms-region-2 = {
 }
 
 # Internal Network Loadbalancer
-lbs_internal-region-1 = {
+lbs_internal_region_1 = {
   internal-lb = {
     name              = "internal-lb"
     health_check_port = "80"
@@ -432,7 +432,7 @@ lbs_internal-region-1 = {
   }
 }
 
-lbs_internal-region-2 = {
+lbs_internal_region_2 = {
   internal-lb = {
     name              = "internal-lb"
     health_check_port = "80"
@@ -444,7 +444,7 @@ lbs_internal-region-2 = {
 }
 
 # External Network Loadbalancer
-lbs_external-region-1 = {
+lbs_external_region_1 = {
   external-lb = {
     name     = "external-lb"
     backends = ["fw-vmseries-01", "fw-vmseries-02"]
@@ -458,7 +458,7 @@ lbs_external-region-1 = {
   }
 }
 
-lbs_external-region-2 = {
+lbs_external_region_2 = {
   external-lb = {
     name     = "external-lb"
     backends = ["fw-vmseries-03", "fw-vmseries-04"]

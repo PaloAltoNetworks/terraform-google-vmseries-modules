@@ -4,12 +4,12 @@ variable "project" {
   type        = string
   default     = null
 }
-variable "region-1" {
+variable "region_1" {
   description = "The first region into which to deploy the infrastructure in to."
   type        = string
   default     = "us-east1"
 }
-variable "region-2" {
+variable "region_2" {
   description = "The second region into which to deploy the infrastructure in to."
   type        = string
   default     = "us-west1"
@@ -84,16 +84,16 @@ variable "bootstrap_buckets" {
 
 #VPC
 
-variable "networks-region-1" {
+variable "networks_region_1" {
   description = <<-EOF
-  A map containing each network setting for Region-1.
+  A map containing each network setting for region_1.
 
   This map also contains the VPC networks creation for the deployment.
 
   Example of variable deployment :
 
   ```
-  networks-region-1 = {
+  networks_region_1 = {
     mgmt = {
       create_network                  = true
       create_subnetwork               = true
@@ -114,16 +114,16 @@ variable "networks-region-1" {
   EOF
 }
 
-variable "networks-region-2" {
+variable "networks_region_2" {
   description = <<-EOF
-  A map containing each network setting for Region-2.
+  A map containing each network setting for region_2.
 
   In this map - only subnetworks are being  created, while referencing previously created VPC networks.
 
   Example of variable deployment :
 
   ```
-  networks-region-2 = {
+  networks_region_2 = {
     mgmt = {
       create_network    = false
       create_subnetwork = true
@@ -174,16 +174,16 @@ variable "vpc_peerings" {
   default     = {}
 }
 
-variable "routes-region-1" {
+variable "routes_region_1" {
   description = <<-EOF
-  A map containing each route setting for Region-1. Note that you can only add routes using a next-hop type of internal load-balance rule.
+  A map containing each route setting for region_1. Note that you can only add routes using a next-hop type of internal load-balance rule.
 
-  The code automatically binds this route to an instance network tag that has the value of region-1 variable.
+  The code automatically binds this route to an instance network tag that has the value of region_1 variable.
 
   Example of variable deployment :
 
   ```
-  routes-region-1 = {
+  routes-region_1 = {
     fw-default-trust = {
       name              = "fw-default-trust"
       destination_range = "0.0.0.0/0"
@@ -199,16 +199,16 @@ variable "routes-region-1" {
   default     = {}
 }
 
-variable "routes-region-2" {
+variable "routes_region_2" {
   description = <<-EOF
-  A map containing each route setting for Region-2. Note that you can only add routes using a next-hop type of internal load-balance rule.
+  A map containing each route setting for region_2. Note that you can only add routes using a next-hop type of internal load-balance rule.
 
-  The code automatically binds this route to an instance network tag that has the value of region-2 variable.
+  The code automatically binds this route to an instance network tag that has the value of region_2 variable.
 
   Example of variable deployment :
 
   ```
-  routes-region-2 = {
+  routes-region_2 = {
     fw-default-trust = {
       name              = "fw-default-trust"
       destination_range = "0.0.0.0/0"
@@ -246,14 +246,14 @@ variable "vmseries_common" {
   Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`).
   EOF
 }
-variable "vmseries-region-1" {
+variable "vmseries_region_1" {
   description = <<-EOF
-  A map containing each individual vmseries setting for region-1 instances.
+  A map containing each individual vmseries setting for region_1 instances.
 
   Example of variable deployment :
 
   ```
-  vmseries-region-1 = {
+  vmseries_region_1 = {
     fw-vmseries-01 = {
       name = "fw-vmseries-01"
       zone = "us-east1-b"
@@ -275,7 +275,7 @@ variable "vmseries-region-1" {
         trust_gcp_router_ip   = "10.10.12.1"
         untrust_gcp_router_ip = "10.10.11.1"
         private_network_cidr  = "192.168.0.0/16"
-        untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-1) after the infrastructure is deployed
+        untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_1) after the infrastructure is deployed
         trust_loopback_ip     = "10.10.12.5/32"
       }
       named_ports = [
@@ -326,7 +326,7 @@ variable "vmseries-region-1" {
         trust_gcp_router_ip   = "10.10.12.1"
         untrust_gcp_router_ip = "10.10.11.1"
         private_network_cidr  = "192.168.0.0/16"
-        untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-1) after the infrastructure is deployed
+        untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_1) after the infrastructure is deployed
         trust_loopback_ip     = "10.10.12.5/32"
       }
       named_ports = [
@@ -366,14 +366,14 @@ variable "vmseries-region-1" {
   EOF
 }
 
-variable "vmseries-region-2" {
+variable "vmseries_region_2" {
   description = <<-EOF
-  A map containing each individual vmseries setting for region-2 instances.
+  A map containing each individual vmseries setting for region_2 instances.
 
   Example of variable deployment :
 
   ```
-  vmseries-region-2 = {
+  vmseries_region_2 = {
     fw-vmseries-03 = {
       name = "fw-vmseries-03"
       zone = "us-west1-b"
@@ -395,7 +395,7 @@ variable "vmseries-region-2" {
         trust_gcp_router_ip   = "10.20.12.1"
         untrust_gcp_router_ip = "10.20.11.1"
         private_network_cidr  = "192.168.0.0/16"
-        untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-2) after the infrastructure is deployed
+        untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed
         trust_loopback_ip     = "10.20.12.5/32"
       }
       named_ports = [
@@ -446,7 +446,7 @@ variable "vmseries-region-2" {
         trust_gcp_router_ip   = "10.20.12.1"
         untrust_gcp_router_ip = "10.20.11.1"
         private_network_cidr  = "192.168.0.0/16"
-        untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (Region-2) after the infrastructure is deployed
+        untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed
         trust_loopback_ip     = "10.20.12.5/32"
       }
       named_ports = [
@@ -488,14 +488,14 @@ variable "vmseries-region-2" {
 
 #Load Balancers
 
-variable "lbs_internal-region-1" {
+variable "lbs_internal_region_1" {
   description = <<-EOF
-  A map containing each internal loadbalancer setting for region-1 instances.
+  A map containing each internal loadbalancer setting for region_1 instances.
 
   Example of variable deployment :
 
   ```
-  lbs_internal-region-1 = {
+  lbs_internal_region_1 = {
     internal-lb = {
       name              = "internal-lb"
       health_check_port = "80"
@@ -514,14 +514,14 @@ variable "lbs_internal-region-1" {
   default     = {}
 }
 
-variable "lbs_internal-region-2" {
+variable "lbs_internal_region_2" {
   description = <<-EOF
-  A map containing each internal loadbalancer setting for region-2 instances.
+  A map containing each internal loadbalancer setting for region_2 instances.
 
   Example of variable deployment :
 
   ```
-  lbs_internal-region-2 = {
+  lbs_internal_region_2 = {
     internal-lb = {
       name              = "internal-lb"
       health_check_port = "80"
@@ -540,19 +540,19 @@ variable "lbs_internal-region-2" {
   default     = {}
 }
 
-variable "lbs_external-region-1" {
+variable "lbs_external_region_1" {
   description = <<-EOF
-  A map containing each external loadbalancer setting for region-1 instances.
+  A map containing each external loadbalancer setting for region_1 instances.
 
   Example of variable deployment :
 
   ```
-  lbs_external-region-1 = {
+  lbs_external_region_1 = {
     external-lb = {
       name     = "external-lb"
       backends = ["fw-vmseries-01", "fw-vmseries-02"]
       rules = {
-        all-ports-region-1 = {
+        all-ports-region_1 = {
           ip_protocol = "L3_DEFAULT"
         }
       }
@@ -569,19 +569,19 @@ variable "lbs_external-region-1" {
   default     = {}
 }
 
-variable "lbs_external-region-2" {
+variable "lbs_external_region_2" {
   description = <<-EOF
-  A map containing each external loadbalancer setting for region-2 instances.
+  A map containing each external loadbalancer setting for region_2 instances.
 
   Example of variable deployment :
 
   ```
-  lbs_external-region-2 = {
+  lbs_external_region_2 = {
     external-lb = {
       name     = "external-lb"
       backends = ["fw-vmseries-03", "fw-vmseries-04"]
       rules = {
-        all-ports-region-2 = {
+        all-ports-region_2 = {
           ip_protocol = "L3_DEFAULT"
         }
       }
@@ -600,14 +600,14 @@ variable "lbs_external-region-2" {
 
 #Spoke VPCs Linux VMs
 
-variable "linux_vms-region-1" {
+variable "linux_vms_region_1" {
   description = <<-EOF
-  A map containing each Linux VM configuration in region-1 that will be placed in spoke VPC network for testing purposes.
+  A map containing each Linux VM configuration in region_1 that will be placed in spoke VPC network for testing purposes.
 
   Example of varaible deployment:
 
   ```
-  linux_vms-region-1 = {
+  linux_vms_region_1 = {
     spoke1-vm = {
       linux_machine_type = "n2-standard-4"
       zone               = "us-east1-b"
@@ -631,14 +631,14 @@ variable "linux_vms-region-1" {
   default     = {}
 }
 
-variable "linux_vms-region-2" {
+variable "linux_vms_region_2" {
   description = <<-EOF
-  A map containing each Linux VM configuration in region-2 that will be placed in spoke VPC network for testing purposes.
+  A map containing each Linux VM configuration in region_2 that will be placed in spoke VPC network for testing purposes.
 
   Example of varaible deployment:
 
   ```
-  linux_vms-region-2 = {
+  linux_vms_region_2 = {
     spoke2-vm = {
       linux_machine_type = "n2-standard-4"
       zone               = "us-west1-b"

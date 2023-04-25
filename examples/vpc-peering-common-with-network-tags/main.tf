@@ -10,7 +10,7 @@ module "iam_service_account" {
 
 resource "local_file" "bootstrap_xml_region_1" {
 
-  for_each = { for k, v in var.vmseries-region-1 : k => v
+  for_each = { for k, v in var.vmseries_region_1 : k => v
     if can(v.bootstrap_template_map)
   }
 
@@ -28,7 +28,7 @@ resource "local_file" "bootstrap_xml_region_1" {
 
 resource "local_file" "bootstrap_xml_region_2" {
 
-  for_each = { for k, v in var.vmseries-region-2 : k => v
+  for_each = { for k, v in var.vmseries_region_2 : k => v
     if can(v.bootstrap_template_map)
   }
 
@@ -46,7 +46,7 @@ resource "local_file" "bootstrap_xml_region_2" {
 
 resource "local_file" "init_cfg_region_1" {
 
-  for_each = { for k, v in var.vmseries-region-1 : k => v
+  for_each = { for k, v in var.vmseries_region_1 : k => v
     if can(v.bootstrap_template_map)
   }
 
@@ -62,7 +62,7 @@ resource "local_file" "init_cfg_region_1" {
 
 resource "local_file" "init_cfg_region_2" {
 
-  for_each = { for k, v in var.vmseries-region-2 : k => v
+  for_each = { for k, v in var.vmseries_region_2 : k => v
     if can(v.bootstrap_template_map)
   }
 
@@ -81,26 +81,26 @@ module "bootstrap" {
 
   for_each = var.bootstrap_buckets
 
-  folders = keys(merge(var.vmseries-region-1, var.vmseries-region-2))
+  folders = keys(merge(var.vmseries_region_1, var.vmseries_region_2))
 
   name_prefix     = "${var.name_prefix}${each.value.bucket_name_prefix}"
   service_account = module.iam_service_account[each.value.service_account].email
   location        = var.location
   files = merge(
-    { for k, v in var.vmseries-region-1 : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
-    { for k, v in var.vmseries-region-1 : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
-    { for k, v in var.vmseries-region-2 : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
-    { for k, v in var.vmseries-region-2 : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
+    { for k, v in var.vmseries_region_1 : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
+    { for k, v in var.vmseries_region_1 : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
+    { for k, v in var.vmseries_region_2 : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
+    { for k, v in var.vmseries_region_2 : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
   )
 }
 
 module "vpc_region_1" {
   source = "../../modules/vpc"
 
-  networks = { for k, v in var.networks-region-1 : k => merge(v, {
+  networks = { for k, v in var.networks_region_1 : k => merge(v, {
     name            = "${var.name_prefix}${v.name}"
-    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}-${var.region-1}"
-    region          = var.region-1
+    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}-${var.region_1}"
+    region          = var.region_1
     })
   }
 
@@ -109,37 +109,37 @@ module "vpc_region_1" {
 module "vpc_region_2" {
   source = "../../modules/vpc"
 
-  networks = { for k, v in var.networks-region-2 : k => merge(v, {
+  networks = { for k, v in var.networks_region_2 : k => merge(v, {
     name            = "${var.name_prefix}${v.name}"
-    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}-${var.region-2}"
-    region          = var.region-2
+    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}-${var.region_2}"
+    region          = var.region_2
     })
   }
   depends_on = [module.vpc_region_1]
 }
 
-resource "google_compute_route" "route_region-1" {
+resource "google_compute_route" "route_region_1" {
 
-  for_each = var.routes-region-1
+  for_each = var.routes_region_1
 
-  name         = "${var.name_prefix}${each.value.name}-${var.region-1}"
+  name         = "${var.name_prefix}${each.value.name}-${var.region_1}"
   dest_range   = each.value.destination_range
   network      = module.vpc_region_1.networks["${var.name_prefix}${each.value.network}"].self_link
   next_hop_ilb = module.lb_internal_region_1[each.value.lb_internal_key].address
   priority     = 100
-  tags         = [var.region-1]
+  tags         = [var.region_1]
 }
 
-resource "google_compute_route" "route_region-2" {
+resource "google_compute_route" "route_region_2" {
 
-  for_each = var.routes-region-2
+  for_each = var.routes_region_2
 
-  name         = "${var.name_prefix}${each.value.name}-${var.region-2}"
+  name         = "${var.name_prefix}${each.value.name}-${var.region_2}"
   dest_range   = each.value.destination_range
   network      = module.vpc_region_2.networks["${var.name_prefix}${each.value.network}"].self_link
   next_hop_ilb = module.lb_internal_region_2[each.value.lb_internal_key].address
   priority     = 100
-  tags         = [var.region-2]
+  tags         = [var.region_2]
 }
 
 module "vpc_peering" {
@@ -164,9 +164,9 @@ module "vpc_peering" {
 module "vmseries_region_1" {
   source = "../../modules/vmseries"
 
-  for_each = var.vmseries-region-1
+  for_each = var.vmseries_region_1
 
-  name                  = "${var.name_prefix}${each.value.name}-${var.region-1}"
+  name                  = "${var.name_prefix}${each.value.name}-${var.region_1}"
   zone                  = each.value.zone
   ssh_keys              = try(each.value.ssh_keys, var.vmseries_common.ssh_keys)
   vmseries_image        = try(each.value.vmseries_image, var.vmseries_common.vmseries_image)
@@ -190,7 +190,7 @@ module "vmseries_region_1" {
 
   network_interfaces = [for v in each.value.network_interfaces :
     {
-      subnetwork       = module.vpc_region_1.subnetworks["${var.name_prefix}${v.subnetwork}-${var.region-1}"].self_link
+      subnetwork       = module.vpc_region_1.subnetworks["${var.name_prefix}${v.subnetwork}-${var.region_1}"].self_link
       private_ip       = v.private_ip
       create_public_ip = try(v.create_public_ip, false)
   }]
@@ -199,9 +199,9 @@ module "vmseries_region_1" {
 module "vmseries_region_2" {
   source = "../../modules/vmseries"
 
-  for_each = var.vmseries-region-2
+  for_each = var.vmseries_region_2
 
-  name                  = "${var.name_prefix}${each.value.name}-${var.region-2}"
+  name                  = "${var.name_prefix}${each.value.name}-${var.region_2}"
   zone                  = each.value.zone
   ssh_keys              = try(each.value.ssh_keys, var.vmseries_common.ssh_keys)
   vmseries_image        = try(each.value.vmseries_image, var.vmseries_common.vmseries_image)
@@ -225,7 +225,7 @@ module "vmseries_region_2" {
 
   network_interfaces = [for v in each.value.network_interfaces :
     {
-      subnetwork       = module.vpc_region_2.subnetworks["${var.name_prefix}${v.subnetwork}-${var.region-2}"].self_link
+      subnetwork       = module.vpc_region_2.subnetworks["${var.name_prefix}${v.subnetwork}-${var.region_2}"].self_link
       private_ip       = v.private_ip
       create_public_ip = try(v.create_public_ip, false)
   }]
@@ -237,9 +237,9 @@ data "google_compute_image" "my_image" {
 }
 
 resource "google_compute_instance" "linux_vm_region_1" {
-  for_each = var.linux_vms-region-1
+  for_each = var.linux_vms_region_1
 
-  name         = "${var.name_prefix}${each.key}-${var.region-1}"
+  name         = "${var.name_prefix}${each.key}-${var.region_1}"
   machine_type = each.value.linux_machine_type
   zone         = each.value.zone
 
@@ -251,11 +251,11 @@ resource "google_compute_instance" "linux_vm_region_1" {
   }
 
   network_interface {
-    subnetwork = module.vpc_region_1.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region-1}"].self_link
+    subnetwork = module.vpc_region_1.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region_1}"].self_link
     network_ip = each.value.private_ip
   }
 
-  tags = [var.region-1]
+  tags = [var.region_1]
 
   metadata = {
     ssh-keys       = each.value.ssh_keys_linux
@@ -270,9 +270,9 @@ resource "google_compute_instance" "linux_vm_region_1" {
 }
 
 resource "google_compute_instance" "linux_vm_region_2" {
-  for_each = var.linux_vms-region-2
+  for_each = var.linux_vms_region_2
 
-  name         = "${var.name_prefix}${each.key}-${var.region-2}"
+  name         = "${var.name_prefix}${each.key}-${var.region_2}"
   machine_type = each.value.linux_machine_type
   zone         = each.value.zone
 
@@ -284,11 +284,11 @@ resource "google_compute_instance" "linux_vm_region_2" {
   }
 
   network_interface {
-    subnetwork = module.vpc_region_2.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region-2}"].self_link
+    subnetwork = module.vpc_region_2.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region_2}"].self_link
     network_ip = each.value.private_ip
   }
 
-  tags = [var.region-2]
+  tags = [var.region_2]
 
   metadata = {
     ssh-keys       = each.value.ssh_keys_linux
@@ -305,15 +305,15 @@ resource "google_compute_instance" "linux_vm_region_2" {
 module "lb_internal_region_1" {
   source = "../../modules/lb_internal"
 
-  for_each = var.lbs_internal-region-1
+  for_each = var.lbs_internal_region_1
 
-  region = var.region-1
+  region = var.region_1
 
-  name              = "${var.name_prefix}${each.value.name}-${var.region-1}"
+  name              = "${var.name_prefix}${each.value.name}-${var.region_1}"
   health_check_port = try(each.value.health_check_port, "80")
   backends          = { for v in each.value.backends : v => module.vmseries_region_1[v].instance_group_self_link }
   ip_address        = each.value.ip_address
-  subnetwork        = module.vpc_region_1.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region-1}"].self_link
+  subnetwork        = module.vpc_region_1.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region_1}"].self_link
   network           = module.vpc_region_1.networks["${var.name_prefix}${each.value.network}"].self_link
   all_ports         = true
 }
@@ -321,15 +321,15 @@ module "lb_internal_region_1" {
 module "lb_internal_region_2" {
   source = "../../modules/lb_internal"
 
-  for_each = var.lbs_internal-region-2
+  for_each = var.lbs_internal_region_2
 
-  region = var.region-2
+  region = var.region_2
 
-  name              = "${var.name_prefix}${each.value.name}-${var.region-2}"
+  name              = "${var.name_prefix}${each.value.name}-${var.region_2}"
   health_check_port = try(each.value.health_check_port, "80")
   backends          = { for v in each.value.backends : v => module.vmseries_region_2[v].instance_group_self_link }
   ip_address        = each.value.ip_address
-  subnetwork        = module.vpc_region_2.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region-2}"].self_link
+  subnetwork        = module.vpc_region_2.subnetworks["${var.name_prefix}${each.value.subnetwork}-${var.region_2}"].self_link
   network           = module.vpc_region_2.networks["${var.name_prefix}${each.value.network}"].self_link
   all_ports         = true
 }
@@ -339,11 +339,11 @@ module "lb_external_region_1" {
 
   project = var.project
 
-  for_each = var.lbs_external-region-1
+  for_each = var.lbs_external_region_1
 
-  region = var.region-1
+  region = var.region_1
 
-  name                    = "${var.name_prefix}${each.value.name}-${var.region-1}"
+  name                    = "${var.name_prefix}${each.value.name}-${var.region_1}"
   backend_instance_groups = { for v in each.value.backends : v => module.vmseries_region_1[v].instance_group_self_link }
   rules                   = { for k, v in each.value.rules : k => v }
 
@@ -356,11 +356,11 @@ module "lb_external_region_2" {
 
   project = var.project
 
-  for_each = var.lbs_external-region-2
+  for_each = var.lbs_external_region_2
 
-  region = var.region-2
+  region = var.region_2
 
-  name                    = "${var.name_prefix}${each.value.name}-${var.region-2}"
+  name                    = "${var.name_prefix}${each.value.name}-${var.region_2}"
   backend_instance_groups = { for v in each.value.backends : v => module.vmseries_region_2[v].instance_group_self_link }
   rules                   = { for k, v in each.value.rules : k => v }
 
