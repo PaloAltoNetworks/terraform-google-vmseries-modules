@@ -45,10 +45,10 @@ Apply complete! Resources: 8 added, 0 changed, 0 destroyed. (Number of resources
 
 Outputs:
 
-panorama_private_ip = {
+panorama_private_ips = {
   "panorama-01" = "172.21.21.2"
 }
-panorama_public_ip = {
+panorama_public_ips = {
   "panorama-01" = "x.x.x.x"
 }
 ```
