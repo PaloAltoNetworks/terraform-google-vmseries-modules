@@ -41,10 +41,11 @@ module "vmseries" {
 # Global HTTP Load Balancer
 
 module "glb" {
-  source                = "../../modules/lb_http_ext_global"
-  name                  = "${var.name_prefix}glb"
-  backend_groups        = { for k, v in module.vmseries : k => module.vmseries[k].instance_group_self_link }
-  max_rate_per_instance = 50000
+  source                 = "../../modules/lb_http_ext_global"
+  name                   = "${var.name_prefix}glb"
+  backend_groups         = { for k, v in module.vmseries : k => module.vmseries[k].instance_group_self_link }
+  custom_request_headers = var.custom_request_headers
+  max_rate_per_instance  = 50000
 }
 
 #########################################################################

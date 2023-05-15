@@ -87,6 +87,11 @@ variable "http_forward" {
   default     = true
 }
 
+variable "custom_request_headers" {
+  type        = list(string)
+  default     = []
+  description = "(Optional) Headers that the HTTP/S load balancer should add to proxied responses."
+}
 variable "ssl" {
   description = "Set to `true` to enable SSL support, requires variable `ssl_certificates` - a list of self_link certs"
   type        = bool
