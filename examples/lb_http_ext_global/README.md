@@ -43,6 +43,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_custom_request_headers"></a> [custom\_request\_headers](#input\_custom\_request\_headers) | n/a | `list` | `[]` | no |
 | <a name="input_mgmt_sources"></a> [mgmt\_sources](#input\_mgmt\_sources) | n/a | `list` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | n/a | `string` | `"example-"` | no |
 | <a name="input_project"></a> [project](#input\_project) | n/a | `any` | n/a | yes |
