@@ -258,7 +258,6 @@ resource "google_compute_instance" "linux_vm_region_1" {
   tags = [var.region_1]
 
   metadata = {
-    ssh-keys       = each.value.ssh_keys_linux
     enable-oslogin = true
   }
 
@@ -291,7 +290,6 @@ resource "google_compute_instance" "linux_vm_region_2" {
   tags = [var.region_2]
 
   metadata = {
-    ssh-keys       = each.value.ssh_keys_linux
     enable-oslogin = true
   }
 

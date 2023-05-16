@@ -622,7 +622,6 @@ variable "linux_vms_region_1" {
         "https://www.googleapis.com/auth/monitoring.write",
       ]
       service_account = "sa-linux-01"
-      ssh_keys_linux  = "admin:<YOUR_SSH_KEY>"
     }
   }
   ```
@@ -653,7 +652,6 @@ variable "linux_vms_region_2" {
         "https://www.googleapis.com/auth/monitoring.write",
       ]
       service_account = "sa-linux-01"
-      ssh_keys_linux  = "admin:<YOUR_SSH_KEY>"
     }
   }
   ```

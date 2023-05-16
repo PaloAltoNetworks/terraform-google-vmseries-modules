@@ -373,7 +373,6 @@ linux_vms = {
       "https://www.googleapis.com/auth/monitoring.write",
     ]
     service_account = "sa-linux-01"
-    ssh_keys_linux  = "<YOUR_SSH_KEY>"
   },
   spoke2-vm = {
     linux_machine_type = "n2-standard-4"
@@ -389,7 +388,6 @@ linux_vms = {
       "https://www.googleapis.com/auth/monitoring.write",
     ]
     service_account = "sa-linux-01"
-    ssh_keys_linux  = "<YOUR_SSH_KEY>"
   }
 }
 
