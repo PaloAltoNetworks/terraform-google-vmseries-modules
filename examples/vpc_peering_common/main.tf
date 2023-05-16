@@ -159,7 +159,6 @@ resource "google_compute_instance" "linux_vm" {
   }
 
   metadata = {
-    ssh-keys       = each.value.ssh_keys_linux
     enable-oslogin = true
   }
 
