@@ -336,7 +336,6 @@ variable "linux_vms" {
         "https://www.googleapis.com/auth/monitoring.write",
       ]
       service_account = "sa-vmseries-01"
-      ssh_keys_linux  = "admin:ssh-rsa AAAAB3..."
     }
   }
   ```
