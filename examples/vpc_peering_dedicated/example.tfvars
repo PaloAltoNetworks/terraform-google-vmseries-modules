@@ -167,7 +167,7 @@ vmseries = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
       panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
       dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements
@@ -216,7 +216,7 @@ vmseries = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
       panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
       dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements
@@ -265,7 +265,7 @@ vmseries = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
       panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
       dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements
@@ -315,7 +315,7 @@ vmseries = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
       panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
       dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements

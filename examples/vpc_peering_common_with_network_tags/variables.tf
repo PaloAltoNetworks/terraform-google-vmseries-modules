@@ -264,7 +264,7 @@ variable "vmseries_region_1" {
         "https://www.googleapis.com/auth/logging.write",
         "https://www.googleapis.com/auth/monitoring.write",
       ]
-      bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+      bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
       bootstrap_options = {
         panorama-server = "1.1.1.1"
         dns-primary     = "8.8.8.8"
@@ -315,7 +315,7 @@ variable "vmseries_region_1" {
         "https://www.googleapis.com/auth/logging.write",
         "https://www.googleapis.com/auth/monitoring.write",
       ]
-      bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+      bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
       bootstrap_options = {
         panorama-server = "1.1.1.1"
         dns-primary     = "8.8.8.8"
@@ -384,7 +384,7 @@ variable "vmseries_region_2" {
         "https://www.googleapis.com/auth/logging.write",
         "https://www.googleapis.com/auth/monitoring.write",
       ]
-      bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+      bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
       bootstrap_options = {
         panorama-server = "1.1.1.1"
         dns-primary     = "8.8.8.8"
@@ -435,7 +435,7 @@ variable "vmseries_region_2" {
         "https://www.googleapis.com/auth/logging.write",
         "https://www.googleapis.com/auth/monitoring.write",
       ]
-      bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+      bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"
       bootstrap_options = {
         panorama-server = "1.1.1.1"
         dns-primary     = "8.8.8.8"
