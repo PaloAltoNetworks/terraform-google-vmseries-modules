@@ -192,7 +192,7 @@ module "lb_external" {
 
   name                    = "${var.name_prefix}${each.value.name}"
   backend_instance_groups = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
-  rules                   = { for k, v in each.value.rules : k => v }
+  rules                   = each.value.rules
 
   health_check_http_port         = each.value.http_health_check_port
   health_check_http_request_path = try(each.value.http_health_check_request_path, "/php/login.php")
