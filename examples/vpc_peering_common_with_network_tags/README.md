@@ -176,6 +176,10 @@ Configuration committed successfully
 
 Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and your previously configured password.
 
+## Change the public Loopback public IP Address
+
+For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and change the value of `1.1.1.1` with the value from the `EXTERNAL_LB_PUBLIC_IP` from the terraform outputs.
+
 ## Check traffic from spoke VMs
 
 The firewalls are bootstrapped with a generic `allow any` policy just for demo purposes along with an outboud SNAT policy to allow Inernet access from spoke VMs.
