@@ -3,7 +3,6 @@ project     = "<PROJECT_ID>"
 region_1    = "us-east1"
 region_2    = "us-west1"
 name_prefix = ""
-location    = "us"
 
 # Service accounts
 
@@ -35,6 +34,7 @@ service_accounts = {
 bootstrap_buckets = {
   vmseries-bootstrap-bucket-01 = {
     bucket_name_prefix = "bucket-01-"
+    location           = "us"
     service_account    = "sa-vmseries-01"
   }
 }

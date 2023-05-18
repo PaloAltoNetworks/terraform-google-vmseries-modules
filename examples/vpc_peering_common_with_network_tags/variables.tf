@@ -19,11 +19,6 @@ variable "name_prefix" {
   type        = string
   default     = "example-"
 }
-variable "location" {
-  description = "Location in which the GCS Bucket will be deployed. Available locations can be found under https://cloud.google.com/storage/docs/locations."
-  type        = string
-  default     = "us"
-}
 
 #Service Account
 
@@ -68,6 +63,7 @@ variable "bootstrap_buckets" {
   bootstrap_buckets = {
     "vmseries-bootstrap-bucket-01" = {
       bucket_name_prefix = "bucket-01-"
+      location           = "us"
       service_account    = "sa-vmseries-01"
     }
   }

@@ -85,7 +85,7 @@ module "bootstrap" {
 
   name_prefix     = "${var.name_prefix}${each.value.bucket_name_prefix}"
   service_account = module.iam_service_account[each.value.service_account].email
-  location        = var.location
+  location        = each.value.location
   files = merge(
     { for k, v in var.vmseries_region_1 : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
     { for k, v in var.vmseries_region_1 : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
