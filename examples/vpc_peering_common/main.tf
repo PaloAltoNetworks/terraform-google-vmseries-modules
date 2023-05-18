@@ -187,7 +187,7 @@ module "lb_external" {
   source = "../../modules/lb_external"
 
   for_each = var.lbs_external
-  
+
   project = var.project
 
   name                    = "${var.name_prefix}${each.value.name}"
