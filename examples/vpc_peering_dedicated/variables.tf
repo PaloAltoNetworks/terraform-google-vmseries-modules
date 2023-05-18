@@ -56,10 +56,10 @@ variable "bootstrap_buckets" {
 
   ```
   bootstrap_buckets = {
-    "vmseries-bootstrap-bucket-01" = {
-      bucket_name_prefix = "bucket-01-"
-      location           = "us"
-      service_account    = "sa-vmseries-01"
+    vmseries-bootstrap-bucket-01 = {
+      bucket_name_prefix  = "bucket-01-"
+      location            = "us"
+      service_account_key = "sa-vmseries-01"
     }
   }
   ```
@@ -168,8 +168,11 @@ variable "vmseries_common" {
 
   ```
   vmseries_common = {
-    ssh_keys       = "admin:ssh-rsa AAAAB3..."
-    vmseries_image = "vmseries-flex-byol-1022h2"
+    ssh_keys            = "admin:AAABBB..."
+    vmseries_image      = "vmseries-flex-byol-1022h2"
+    machine_type        = "n2-standard-4"
+    min_cpu_platform    = "Intel Cascade Lake"
+    service_account_key = "sa-vmseries-01"
     bootstrap_options = {
       type                = "dhcp-client"
       mgmt-interface-swap = "enable"
@@ -315,10 +318,10 @@ variable "linux_vms" {
 
   ```
   linux_vms = {
-    "spoke1-vm" = {
+    spoke1-vm = {
       linux_machine_type = "n2-standard-4"
       zone               = "us-east1-b"
-      linux_disk_size    = "50"
+      linux_disk_size    = "50" # Modify this value as per deployment requirements
       subnetwork         = "spoke1-sub"
       private_ip         = "192.168.1.2"
       scopes = [
@@ -328,7 +331,7 @@ variable "linux_vms" {
         "https://www.googleapis.com/auth/logging.write",
         "https://www.googleapis.com/auth/monitoring.write",
       ]
-      service_account = "sa-vmseries-01"
+      service_account_key = "sa-linux-01"
     }
   }
   ```

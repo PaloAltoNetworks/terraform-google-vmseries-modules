@@ -50,7 +50,7 @@ module "bootstrap" {
   folders = keys(var.vmseries)
 
   name_prefix     = "${var.name_prefix}${each.value.bucket_name_prefix}"
-  service_account = module.iam_service_account[each.value.service_account].email
+  service_account = module.iam_service_account[each.value.service_account_key].email
   location        = each.value.location
   files = merge(
     { for k, v in var.vmseries : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
@@ -111,7 +111,7 @@ module "vmseries" {
   machine_type          = try(each.value.machine_type, var.vmseries_common.machine_type)
   min_cpu_platform      = try(each.value.min_cpu_platform, var.vmseries_common.min_cpu_platform, "Intel Cascade Lake")
   tags                  = try(each.value.tags, var.vmseries_common.tags, [])
-  service_account       = try(module.iam_service_account[each.value.service_account].email, module.iam_service_account[var.vmseries_common.service_account].email)
+  service_account       = try(module.iam_service_account[each.value.service_account_key].email, module.iam_service_account[var.vmseries_common.service_account_key].email)
   scopes                = try(each.value.scopes, var.vmseries_common.scopes, [])
   create_instance_group = true
 
@@ -164,7 +164,7 @@ resource "google_compute_instance" "linux_vm" {
 
 
   service_account {
-    email  = module.iam_service_account[each.value.service_account].email
+    email  = module.iam_service_account[each.value.service_account_key].email
     scopes = each.value.scopes
   }
 }

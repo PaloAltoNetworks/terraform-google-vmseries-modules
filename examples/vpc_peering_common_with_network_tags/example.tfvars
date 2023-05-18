@@ -33,9 +33,9 @@ service_accounts = {
 
 bootstrap_buckets = {
   vmseries-bootstrap-bucket-01 = {
-    bucket_name_prefix = "bucket-01-"
-    location           = "us"
-    service_account    = "sa-vmseries-01"
+    bucket_name_prefix  = "bucket-01-"
+    location            = "us"
+    service_account_key = "sa-vmseries-01"
   }
 }
 
@@ -160,11 +160,11 @@ routes_region_2 = {
 # VM-Series
 
 vmseries_common = {
-  ssh_keys         = "admin:<YOUR_SSH_KEY>"
-  vmseries_image   = "vmseries-flex-byol-1022h2"
-  machine_type     = "n2-standard-4"
-  min_cpu_platform = "Intel Cascade Lake"
-  service_account  = "sa-vmseries-01"
+  ssh_keys            = "admin:<YOUR_SSH_KEY>"
+  vmseries_image      = "vmseries-flex-byol-1022h2"
+  machine_type        = "n2-standard-4"
+  min_cpu_platform    = "Intel Cascade Lake"
+  service_account_key = "sa-vmseries-01"
   bootstrap_options = {
     type                = "dhcp-client"
     mgmt-interface-swap = "enable"
@@ -396,7 +396,7 @@ linux_vms_region_1 = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    service_account = "sa-linux-01"
+    service_account_key = "sa-linux-01"
   }
 }
 
@@ -414,7 +414,7 @@ linux_vms_region_2 = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    service_account = "sa-linux-01"
+    service_account_key = "sa-linux-01"
   }
 }
 
