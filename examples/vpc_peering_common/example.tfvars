@@ -1,6 +1,6 @@
 # General
 project     = "<PROJECT_ID>"
-region      = "us-east1"
+region      = "us-east1" # Modify this value as per deployment requirements
 name_prefix = ""
 
 # Service accounts
@@ -169,9 +169,9 @@ vmseries = {
     ]
     bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
-      panorama-server = "1.1.1.1"
-      dns-primary     = "8.8.8.8"
-      dns-secondary   = "8.8.4.4"
+      panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
+      dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements
+      dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
       trust_gcp_router_ip   = "10.10.12.1"
@@ -220,9 +220,9 @@ vmseries = {
     ]
     bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
     bootstrap_options = {
-      panorama-server = "1.1.1.1"
-      dns-primary     = "8.8.8.8"
-      dns-secondary   = "8.8.4.4"
+      panorama-server = "1.1.1.1" # Modify this value as per deployment requirements
+      dns-primary     = "8.8.8.8" # Modify this value as per deployment requirements
+      dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
       trust_gcp_router_ip   = "10.10.12.1"
@@ -265,7 +265,7 @@ linux_vms = {
   spoke1-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
-    linux_disk_size    = "50"
+    linux_disk_size    = "50" # Modify this value as per deployment requirements
     subnetwork         = "spoke1-sub"
     private_ip         = "192.168.1.2"
     scopes = [
@@ -280,7 +280,7 @@ linux_vms = {
   spoke2-vm = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
-    linux_disk_size    = "50"
+    linux_disk_size    = "50" # Modify this value as per deployment requirements
     subnetwork         = "spoke2-sub"
     private_ip         = "192.168.2.2"
     scopes = [
