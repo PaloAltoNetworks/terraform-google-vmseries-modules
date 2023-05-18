@@ -186,9 +186,9 @@ module "lb_internal" {
 module "lb_external" {
   source = "../../modules/lb_external"
 
-  project = var.project
-
   for_each = var.lbs_external
+  
+  project = var.project
 
   name                    = "${var.name_prefix}${each.value.name}"
   backend_instance_groups = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }

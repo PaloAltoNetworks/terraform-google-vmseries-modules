@@ -335,9 +335,9 @@ module "lb_internal_region_2" {
 module "lb_external_region_1" {
   source = "../../modules/lb_external"
 
-  project = var.project
-
   for_each = var.lbs_external_region_1
+
+  project = var.project
 
   region = var.region_1
 
@@ -352,9 +352,9 @@ module "lb_external_region_1" {
 module "lb_external_region_2" {
   source = "../../modules/lb_external"
 
-  project = var.project
-
   for_each = var.lbs_external_region_2
+
+  project = var.project
 
   region = var.region_2
 
