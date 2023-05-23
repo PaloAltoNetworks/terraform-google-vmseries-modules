@@ -21,11 +21,7 @@ This guide introduces the Terraform code maintained within this repository, whic
 
 ## Topology
 
-
-
-
-
-
+![gcp-common](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/acd1773a-f6c4-41a9-a307-031b46b70e88)
 
 ## Deploy the infrastructure
 
