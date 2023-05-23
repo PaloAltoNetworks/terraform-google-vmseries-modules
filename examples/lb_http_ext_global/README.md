@@ -21,10 +21,7 @@ This guide introduces the Terraform code maintained within this repository, whic
 
 ## Topology
 
-
-
-
-
+![gcp-dedicatedinbound](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/730530bf-5da6-4943-b686-cbe8fb249b7e)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
