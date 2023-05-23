@@ -1,22 +1,36 @@
-# VM-Series: Hub-and-Spoke with VPC Peering
+# VM-Series Reference Architecture - Common Deployment Option
 
-## Overview
+## Audience
 
- In this build, you will deploy a common set of VM-Series firewalls to secure internet inbound, internet outbound, and east-west traffic for a Google Cloud hub and spoke network.  The build shows how traffic flows through the VM-Series firewalls and load balancers.
+This guide is for technical readers, including system architects and design engineers, who want to deploy the Palo Alto Networks VM-Series firewalls and Panorama within a public-cloud infrastructure. This guide assumes the reader is familiar with the basic concepts of applications, networking, virtualization, security, high availability, as well as public cloud concepts with specific focus on GCP.
 
-**Important Information**
+## Introduction
 
-* Do not use this build for any production environments.  The build should only be used for learning and/or for proof-of-concept scenarios.
-* The example.tfvars sets the VM-Series license to pay-as-you-go bundle2.  This means there is an additional charge on top of the compute running cost.  Please see <a href="https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/license-the-vm-series-firewall/vm-series-firewall-licensing">VM-Series licensing</a> for more information.
-* If you do not want to deploy the spoke networks, delete the `spokes.tf` before applying the Terraform plan.
+There are many design models which can be used to secure application environments in GCP. Palo Alto Networks produces [validated reference architecture design and deployment documentation](https://www.paloaltonetworks.com/resources/reference-architectures), which guides towards the best security outcomes, reducing rollout time and avoiding common integration efforts. These architectures are designed, tested, and documented to provide faster, predictable deployments.
 
-## Objectives 
+This guide uses a VPC Peering design. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
+This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
 
-* Review the VM-Series hub-and-spoke architecture using VPC network peering. 
-* Build the environment using Terraform.
-* Validate and visualize internet inbound, internet outbound, and east-west (VPC to VPC) traffic through Google Cloud load balancers and the VM-Series firewalls.
+This guide follows the _common_ deployment option, described in more detail in the [Reference Architecture documentation](https://www.paloaltonetworks.com/resources/reference-architectures).
+
+The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls low. However, the technical integration complexity is high.
+
+## Terraform
+
+This guide introduces the Terraform code maintained within this repository, which will deploy the reference architecture described above.
 
 ## Topology
+
+
+
+
+
+
+
+## Deploy the infrastructure
+
+* The example.tfvars sets the VM-Series license to pay-as-you-go bundle2.  This means there is an additional charge on top of the compute running cost.  Please see <a href="https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/license-the-vm-series-firewall/vm-series-firewall-licensing">VM-Series licensing</a> for more information.
+* If you do not want to deploy the spoke networks, delete the `spokes.tf` before applying the Terraform plan.
 
 Below is the network topology of the build.  Everything  in the diagram is built with Terraform, including the local configuration of the compute resources.  All traffic to/from the spoke VPC networks flows through the VM-Series firewalls for inspection.  The VM-Series network interfaces are attached to the management, untrust, and trust networks.  All cloud workloads that are protected by the VM-Series are deployed in the spoke networks which are VPC peers with the trust network.
 
