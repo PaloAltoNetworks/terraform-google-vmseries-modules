@@ -1,29 +1,32 @@
-# VM-Series Reference Architecture - Common Deployment Option
+# Reference Architecture with Terraform: VM-Series in GCP, Common Deployment Option
 
-## Audience
+Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
+The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with common VM-Series for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
 
-This guide is for technical readers, including system architects and design engineers, who want to deploy the Palo Alto Networks VM-Series firewalls and Panorama within a public-cloud infrastructure. This guide assumes the reader is familiar with the basic concepts of applications, networking, virtualization, security, high availability, as well as public cloud concepts with specific focus on GCP.
+## Reference Architecture Design
 
-## Introduction
+![Simplified High Level Topology Diagram]()
 
-There are many design models which can be used to secure application environments in GCP. Palo Alto Networks produces [validated reference architecture design and deployment documentation](https://www.paloaltonetworks.com/resources/reference-architectures), which guides towards the best security outcomes, reducing rollout time and avoiding common integration efforts. These architectures are designed, tested, and documented to provide faster, predictable deployments.
+This code implements:
+- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
+- the _common option_, which routes all traffic flows onto a single set of VM-Series
 
-This guide uses a VPC Peering design. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
+## Detailed Architecture and Design
+
+### Centralized Design
+
+This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
 This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
 
-This guide follows the _common_ deployment option, described in more detail in the [Reference Architecture documentation](https://www.paloaltonetworks.com/resources/reference-architectures).
+### Common Option
 
 The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls low. However, the technical integration complexity is high.
 
-## Terraform
-
-This guide introduces the Terraform code maintained within this repository, which will deploy the reference architecture described above.
-
-## Topology
-
 ![gcp-common](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/acd1773a-f6c4-41a9-a307-031b46b70e88)
 
-## Deploy the infrastructure
+## Usage
+
+### Deployment Steps
 
 * The example.tfvars sets the VM-Series license to pay-as-you-go bundle2.  This means there is an additional charge on top of the compute running cost.  Please see <a href="https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/license-the-vm-series-firewall/vm-series-firewall-licensing">VM-Series licensing</a> for more information.
 * If you do not want to deploy the spoke networks, delete the `spokes.tf` before applying the Terraform plan.
@@ -77,7 +80,7 @@ The untrust interface also serves as the backend of an external TCP/UDP load bal
 </table>
 
 
-## Build
+### Build
 
 1. Open Google cloud shell.
 
@@ -119,7 +122,7 @@ vmseries02_access = "https://x.x.x.x"
 ```
 
 
-## Verify Build Completion 
+### Verify Build Completion 
 
 1. The virtual machines can take an additional 10 minutes to finish their bootup process.  
   
@@ -134,7 +137,7 @@ Username: paloalto
 Password: Pal0Alt0@123
 ```
 
-## Internet Inbound Traffic 
+### Internet Inbound Traffic 
 In this section, we will test internet inbound traffic to the web application hosted in spoke1.  The inbound request will be distributed by the external TCP/UDP load balancer to the VM-Series untrust interfaces.  The firewalls will inspect and translate the source address to the firewall's trust interface `192.168.2.x/24` and the destination address to the internal load balancer in spoke1 `10.1.0.10`.  
 
 <p align="center"><i>Inbound: Client-to-Server Request</i></p>
@@ -188,7 +191,7 @@ In this section, we will test internet inbound traffic to the web application ho
 </p>
 
 
-## Internet Outbound Traffic
+### Internet Outbound Traffic
 
 In this section, we will test internet outbound traffic from the spoke networks through the VM-Series firewalls.
 
@@ -246,7 +249,7 @@ traceroute www.paloaltonetworks.com
 
 
 
-## East-West Traffic
+### East-West Traffic
 
 Now, we will test east-west traffic between the spoke networks. The east-west traffic flow is similar to the internet outbound flow as described in the previous section.  However, instead of routing the spoke's request through the untrust interface, the VM-Series will hairpin the traffic through its trust interface.  Hairpinning east-west traffic provides a simplified design without sacrificing security capabilities. 
 
@@ -291,7 +294,7 @@ curl http://10.1.0.10/?[1-100]
 </p>
 
 
-## Destroy Environment
+### Destroy Environment
 
 When you are ready, destroy the environment by entering the following in cloud shell. 
 
