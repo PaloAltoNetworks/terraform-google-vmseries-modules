@@ -36,7 +36,7 @@ networks = {
     name                            = "fw-mgmt-vpc"
     subnetwork_name                 = "fw-mgmt-sub"
     ip_cidr_range                   = "10.10.10.0/28"
-    allowed_sources                 = ["<YOUR_MGMT_SOURCE_IP_ADDR>"]
+    allowed_sources                 = ["5.5.5.5/32"]
     delete_default_routes_on_create = false
     allowed_protocol                = "all"
     allowed_ports                   = []
@@ -121,6 +121,7 @@ vpc_peerings = {
 }
 
 #static routes
+
 routes = {
   "fw-default-trust" = {
     name              = "fw-default-trust"
@@ -131,7 +132,6 @@ routes = {
 }
 
 #vmseries
-
 vmseries_common = {
   ssh_keys       = "<YOUR_SSH_KEY>"
   vmseries_image = "vmseries-flex-byol-1022h2"
@@ -166,8 +166,6 @@ vmseries = {
       trust_gcp_router_ip   = "10.10.12.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "1.1.1.1/32" #This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
     }
     named_ports = [
       {
@@ -220,8 +218,6 @@ vmseries = {
       trust_gcp_router_ip   = "10.10.12.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "1.1.1.1/32" #This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
     }
     named_ports = [
       {
@@ -249,10 +245,117 @@ vmseries = {
         private_ip = "10.10.12.3"
       }
     ]
+  },
+  "fw-vmseries-03" = {
+    name             = "fw-vmseries-03"
+    zone             = "us-east1-b"
+    machine_type     = "n2-standard-4"
+    min_cpu_platform = "Intel Cascade Lake"
+    tags             = ["vmseries"]
+    service_account  = "sa-vmseries-01"
+    scopes = [
+      "https://www.googleapis.com/auth/compute.readonly",
+      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+    ]
+    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_options = {
+      panorama-server = "1.1.1.1"
+      dns-primary     = "8.8.8.8"
+      dns-secondary   = "8.8.4.4"
+    }
+    bootstrap_template_map = {
+      trust_gcp_router_ip   = "10.10.12.1"
+      untrust_gcp_router_ip = "10.10.11.1"
+      private_network_cidr  = "192.168.0.0/16"
+      trust_loopback_ip     = "10.10.12.5/32"
+    }
+    named_ports = [
+      {
+        name = "http"
+        port = 80
+      },
+      {
+        name = "https"
+        port = 443
+      }
+    ]
+    network_interfaces = [
+      {
+        subnetwork       = "fw-untrust-sub"
+        private_ip       = "10.10.11.6"
+        create_public_ip = true
+      },
+      {
+        subnetwork       = "fw-mgmt-sub"
+        private_ip       = "10.10.10.6"
+        create_public_ip = true
+      },
+      {
+        subnetwork = "fw-trust-sub"
+        private_ip = "10.10.12.6"
+      }
+    ]
+  },
+  "fw-vmseries-04" = {
+    name             = "fw-vmseries-04"
+    zone             = "us-east1-c"
+    machine_type     = "n2-standard-4"
+    min_cpu_platform = "Intel Cascade Lake"
+    tags             = ["vmseries"]
+    service_account  = "sa-vmseries-01"
+    scopes = [
+      "https://www.googleapis.com/auth/compute.readonly",
+      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+    ]
+    bootstrap-bucket-key = "vmseries-bootstrap-bucket-01"
+    bootstrap_options = {
+      panorama-server = "1.1.1.1"
+      dns-primary     = "8.8.8.8"
+      dns-secondary   = "8.8.4.4"
+    }
+    bootstrap_template_map = {
+      trust_gcp_router_ip   = "10.10.12.1"
+      untrust_gcp_router_ip = "10.10.11.1"
+      private_network_cidr  = "192.168.0.0/16"
+      trust_loopback_ip     = "10.10.12.5/32"
+    }
+    named_ports = [
+      {
+        name = "http"
+        port = 80
+      },
+      {
+        name = "https"
+        port = 443
+      }
+    ]
+    network_interfaces = [
+      {
+        subnetwork       = "fw-untrust-sub"
+        private_ip       = "10.10.11.7"
+        create_public_ip = true
+      },
+      {
+        subnetwork       = "fw-mgmt-sub"
+        private_ip       = "10.10.10.7"
+        create_public_ip = true
+      },
+      {
+        subnetwork = "fw-trust-sub"
+        private_ip = "10.10.12.7"
+      }
+    ]
   }
 }
 
 #Spoke Linux VMs
+
 linux_vms = {
   "spoke1-vm" = {
     linux_machine_type = "n2-standard-4"
@@ -289,28 +392,27 @@ linux_vms = {
 }
 
 #Internal Network Loadbalancer
+
 lbs_internal = {
   "internal-lb" = {
     name              = "internal-lb"
     health_check_port = "80"
-    backends          = ["fw-vmseries-01", "fw-vmseries-02"]
+    backends          = ["fw-vmseries-03", "fw-vmseries-04"]
     ip_address        = "10.10.12.5"
     subnetwork        = "fw-trust-sub"
     network           = "fw-trust-vpc"
   }
 }
 
-#External Network Loadbalancer
-lbs_external = {
-  "external-lb" = {
-    name     = "external-lb"
-    backends = ["fw-vmseries-01", "fw-vmseries-02"]
-    rules = {
-      "all-ports" = {
-        ip_protocol = "L3_DEFAULT"
-      }
-    }
-    http_health_check_port         = "80"
-    http_health_check_request_path = "/php/login.php"
+#Global HTTP Loadbalancer
+
+lbs_global_http = {
+  "global-http" = {
+    name                  = "global-http"
+    backends              = ["fw-vmseries-01", "fw-vmseries-02"]
+    max_rate_per_instance = 5000
+    backend_port_name     = "http"
+    backend_protocol      = "HTTP"
+    health_check_port     = 80
   }
 }
