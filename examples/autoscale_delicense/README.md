@@ -13,7 +13,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_us_central1_delicense"></a> [us\_central1\_delicense](#module\_us\_central1\_delicense) | ../../modules/autoscale_deliense | n/a |
+| <a name="module_us_central1_delicense"></a> [us\_central1\_delicense](#module\_us\_central1\_delicense) | ../../modules/autoscale_delicense | n/a |
 
 ## Resources
 

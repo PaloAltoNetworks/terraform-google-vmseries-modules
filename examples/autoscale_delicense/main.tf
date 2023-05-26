@@ -1,5 +1,5 @@
 module "us_central1_delicense" {
-  source             = "../../modules/autoscale_deliense"
+  source             = "../../modules/autoscale_delicense"
   bucket_name        = var.bucket_name
   cloud_functions    = var.cloud_functions
   cfn_identity_name  = var.cfn_identity_name
