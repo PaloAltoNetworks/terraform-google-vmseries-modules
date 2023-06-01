@@ -23,5 +23,6 @@ variable "roles" {
 }
 
 variable "project_id" {
-  type = string
+  description = "ID of a project in which the service account will be created."
+  type        = string
 }
