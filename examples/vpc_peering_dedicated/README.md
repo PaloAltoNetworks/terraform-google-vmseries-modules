@@ -180,7 +180,7 @@ The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untru
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0, < 2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 
 ## Providers
 
