@@ -1,3 +1,6 @@
+---
+show_in_hub: false
+---
 # Palo Alto Networks VM-Series Common Firewall Option with network tags
 
 The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture in two regions and using network tags feature for traffic distribution within a GCP project.
