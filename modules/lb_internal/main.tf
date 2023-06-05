@@ -12,10 +12,11 @@ resource "google_compute_region_backend_service" "this" {
   name   = var.name
   region = var.region
 
-  health_checks    = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
-  network          = var.network
-  session_affinity = var.session_affinity
-  timeout_sec      = var.timeout_sec
+  health_checks                   = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
+  network                         = var.network
+  session_affinity                = var.session_affinity
+  timeout_sec                     = var.timeout_sec
+  connection_draining_timeout_sec = var.connection_draining_timeout_sec
 
   dynamic "backend" {
     for_each = var.backends

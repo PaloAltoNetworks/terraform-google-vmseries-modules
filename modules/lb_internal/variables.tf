@@ -98,3 +98,9 @@ variable "allow_global_access" {
   default     = false
   type        = bool
 }
+
+variable "connection_draining_timeout_sec" {
+  type        = number
+  description = "(Optional) Time for which instance will be drained (not accept new connections, but still work to finish started)."
+  default     = null
+}
