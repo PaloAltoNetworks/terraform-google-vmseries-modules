@@ -11,25 +11,26 @@ Any existing networks/subnetworks can work equally well, independent on how they
 For Terraform 0.13+, a viable alternative is to use [Goggle-authored Terraform modules](https://registry.terraform.io/modules/terraform-google-modules/network)
 and employ `for_each` or `count` parameters when needed.
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -39,7 +40,7 @@ No modules.
 | [google_compute_network.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_network) | data source |
 | [google_compute_subnetwork.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -49,7 +50,7 @@ No modules.
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Project in which to create or look for VPCs and subnets | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | GCP region for all the created subnetworks and for all the imported subnetworks. Set to null to use a default provider's region.<br><br>To add subnetworks with another region use a separate instance of this module (and specify `create_network=false` to avoid creating a duplicate network). | `string` | `null` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

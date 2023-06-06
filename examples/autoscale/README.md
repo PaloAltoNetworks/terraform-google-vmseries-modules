@@ -74,21 +74,22 @@ terraform plan
 terraform apply
 ```
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.58 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.58 |
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
@@ -101,13 +102,13 @@ terraform apply
 | <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
 | <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
 | [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -129,7 +130,7 @@ terraform apply
 | <a name="input_vmseries_per_zone_max"></a> [vmseries\_per\_zone\_max](#input\_vmseries\_per\_zone\_max) | The max number of firewalls to run in each zone. | `number` | `2` | no |
 | <a name="input_vmseries_per_zone_min"></a> [vmseries\_per\_zone\_min](#input\_vmseries\_per\_zone\_min) | The minimum number of firewalls to run in each zone. | `number` | `1` | no |
 
-## Outputs
+### Outputs
 
 No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
