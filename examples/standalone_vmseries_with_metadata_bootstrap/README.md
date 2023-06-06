@@ -7,29 +7,30 @@ A Terraform module example for deploying a VM-Series NGFW in GCP using the [meta
 
 This example can be used to familarize oneself with both the VM-Series NGFW and Terraform - it creates a single instance of virtualized firewall in a Security VPC with a management-only interface and lacks any traffic inspection.
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 
-## Providers
+### Providers
 
 No providers.
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_management_vpc"></a> [management\_vpc](#module\_management\_vpc) | ../../modules/vpc | n/a |
 | <a name="module_vmseries"></a> [vmseries](#module\_vmseries) | ../../modules/vmseries | n/a |
 
-## Resources
+### Resources
 
 No resources.
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -41,7 +42,7 @@ No resources.
 | <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | n/a | `any` | n/a | yes |
 | <a name="input_vmseries_image"></a> [vmseries\_image](#input\_vmseries\_image) | n/a | `any` | n/a | yes |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
