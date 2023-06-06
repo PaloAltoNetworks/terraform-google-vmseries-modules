@@ -1,3 +1,6 @@
+---
+show_in_hub: false
+---
 # Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
 This example deploys VM-Series firewalls into a managed instance group.  The VM-Series firewalls can be scaled horizontally based on custom PAN-OS metrics delivered to Google Stackdriver.

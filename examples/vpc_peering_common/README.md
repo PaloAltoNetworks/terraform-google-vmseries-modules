@@ -1,10 +1,37 @@
-# Palo Alto Networks VM-Series Common Firewall Option
+---
+short_title: Common Firewall Option
+type: refarch
+show_in_hub: true
+---
+# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Common NGFW Option
+
+Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
+The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with common VM-Series for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
+
+## Reference Architecture Design
+
+![simple](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/942d7e0a-eafb-42fb-ba53-6fefedb4b69d)
+
+This code implements:
+- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
+- the _common option_, which routes all traffic flows onto a single set of VM-Series
+
+## Detailed Architecture and Design
+
+### Centralized Design
+
+This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
+This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
+
+### Common Option
+
+The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls is low. However, the technical integration complexity is high.
+
+![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png)
 
 The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
 
-The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrise the initial Day 0 configuration.
-
-## Topology
+The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrize the initial Day 0 configuration.
 
 With default variable values the topology consists of :
  - 5 VPC networks :
@@ -18,17 +45,16 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one external regional network loadbalancer (for inbound traffic)
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png))
-
 ## Prerequisites
 
-1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
+The following steps should be followed before deploying the Terraform code presented here.
 
+1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
 2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration)
 
-## Build
+## Usage
 
-1. Access Google Cloud Shell or any other environment which has access to your GCP project
+1. Access Google Cloud Shell or any other environment that has access to your GCP project
 
 2. Clone the repository:
 
@@ -37,22 +63,21 @@ git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
 cd terraform-google-vmseries-modules/examples/vpc-peering-common
 ```
 
-3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. There is also a few variables that have some default values but which should also be changed as per deployment requirements :
- - General
-   - region
- - vmseries
-   - bootstrap_options
-     - panorama-server
-     - dns-primary
-     - dns-secondary
-  - linux_vms
-    - linux_disk_size
+3. Copy the `example.tfvars` to `terraform.tfvars`.
 
-4. Apply the terraform code:
+`project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. 
+
+There are also a few variables that have some default values but which should also be changed as per deployment requirements
+
+ - `region`
+ - `vmseries.<fw-name>.bootstrap_options`
+ - `linux_vms.<vm-name>.linux_disk_size`
+
+1. Apply the terraform code:
 
 ```
 terraform init
-terraform apply -var-file=example.tfvars
+terraform apply 
 ```
 
 4. Check the output plan and confirm the apply.

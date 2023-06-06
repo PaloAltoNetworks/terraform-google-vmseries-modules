@@ -1,3 +1,6 @@
+---
+show_in_hub: false
+---
 # Palo Alto Networks VM-Series NGFW Module Example
 
 A Terraform module example for deploying a VM-Series NGFW in GCP using the [metadata](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/choose-a-bootstrap-method#idf6412176-e973-488e-9d7a-c568fe1e33a9) bootstrap method.
