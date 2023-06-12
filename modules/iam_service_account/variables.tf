@@ -21,3 +21,8 @@ variable "roles" {
   ]
   type = set(string)
 }
+
+variable "project_id" {
+  description = "ID of a project in which the service account will be created."
+  type        = string
+}

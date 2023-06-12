@@ -1,9 +1,3 @@
-terraform {
-  required_providers {
-    google = { version = "~> 3.30" }
-  }
-}
-
 data "google_client_config" "this" {}
 
 locals {

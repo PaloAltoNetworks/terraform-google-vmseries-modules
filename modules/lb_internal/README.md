@@ -1,24 +1,25 @@
 # Internally-Facing Regional TCP/UDP Load Balancer on GCP
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.30 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.30 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -27,13 +28,14 @@ No modules.
 | [google_compute_region_backend_service.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_backend_service) | resource |
 | [google_client_config.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_all_ports"></a> [all\_ports](#input\_all\_ports) | Forward all ports of the ip\_protocol from the frontend to the backends. Needs to be null if `ports` are provided. | `bool` | `null` | no |
 | <a name="input_allow_global_access"></a> [allow\_global\_access](#input\_allow\_global\_access) | (Optional) If true, clients can access ILB from all regions. By default false, only allow from the ILB's local region; useful if the ILB is a next hop of a route. | `bool` | `false` | no |
 | <a name="input_backends"></a> [backends](#input\_backends) | Names of primary backend groups (IGs or IGMs). Typically use `module.vmseries.instance_group_self_links` here. | `map(string)` | n/a | yes |
+| <a name="input_connection_draining_timeout_sec"></a> [connection\_draining\_timeout\_sec](#input\_connection\_draining\_timeout\_sec) | (Optional) Time for which instance will be drained (not accept new connections, but still work to finish started). | `number` | `null` | no |
 | <a name="input_disable_connection_drain_on_failover"></a> [disable\_connection\_drain\_on\_failover](#input\_disable\_connection\_drain\_on\_failover) | (Optional) On failover or failback, this field indicates whether connection drain will be honored. Setting this to true has the following effect: connections to the old active pool are not drained. Connections to the new active pool use the timeout of 10 min (currently fixed). Setting to false has the following effect: both old and new connections will have a drain timeout of 10 min. This can be set to true only if the protocol is TCP. The default is false. | `bool` | `null` | no |
 | <a name="input_drop_traffic_if_unhealthy"></a> [drop\_traffic\_if\_unhealthy](#input\_drop\_traffic\_if\_unhealthy) | (Optional) Used only when no healthy VMs are detected in the primary and backup instance groups. When set to true, traffic is dropped. When set to false, new connections are sent across all VMs in the primary group. The default is false. | `bool` | `null` | no |
 | <a name="input_failover_backends"></a> [failover\_backends](#input\_failover\_backends) | (Optional) Names of failover backend groups (IGs or IGMs). Failover groups are ignored unless the primary groups do not meet collective health threshold. | `map(string)` | `{}` | no |
@@ -50,7 +52,7 @@ No modules.
 | <a name="input_subnetwork"></a> [subnetwork](#input\_subnetwork) | n/a | `string` | n/a | yes |
 | <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | (Optional) How many seconds to wait for the backend before dropping the connection. Default is 30 seconds. Valid range is [1, 86400]. | `number` | `null` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

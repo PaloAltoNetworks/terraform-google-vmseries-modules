@@ -1,9 +1,3 @@
-terraform {
-  required_providers {
-    google = { version = "~> 3.30" }
-  }
-}
-
 resource "google_compute_global_forwarding_rule" "http" {
   count      = var.http_forward ? 1 : 0
   name       = "${var.name}-http"
@@ -57,10 +51,11 @@ resource "google_compute_url_map" "default" {
 }
 
 resource "google_compute_backend_service" "default" {
-  name        = var.name
-  port_name   = var.backend_port_name
-  protocol    = var.backend_protocol
-  timeout_sec = var.timeout_sec
+  name                   = var.name
+  port_name              = var.backend_port_name
+  protocol               = var.backend_protocol
+  custom_request_headers = var.custom_request_headers
+  timeout_sec            = var.timeout_sec
   dynamic "backend" {
     for_each = var.backend_groups
     content {

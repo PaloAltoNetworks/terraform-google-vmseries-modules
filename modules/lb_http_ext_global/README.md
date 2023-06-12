@@ -31,25 +31,26 @@ Invalid value for field 'resource.backends[0].balancingMode': 'UTILIZATION'. Bal
 
 Thus if you re-use the same IG for this module (HTTP LB) you need balancing_mode=RATE (and specify the max rate - don't worry it's not a circuit breaker). The balancing_mode=UTILIZATION is incompatible with ILB.
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.30 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.30 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -63,7 +64,7 @@ No modules.
 | [google_compute_target_https_proxy.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) | resource |
 | [google_compute_url_map.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map) | resource |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -74,6 +75,7 @@ No modules.
 | <a name="input_capacity_scaler"></a> [capacity\_scaler](#input\_capacity\_scaler) | n/a | `number` | `null` | no |
 | <a name="input_cdn"></a> [cdn](#input\_cdn) | Set to `true` to enable cdn on backend. | `bool` | `false` | no |
 | <a name="input_certificate"></a> [certificate](#input\_certificate) | Content of the SSL certificate. Required if `ssl` is `true` and `ssl_certificates` is empty. | `string` | `""` | no |
+| <a name="input_custom_request_headers"></a> [custom\_request\_headers](#input\_custom\_request\_headers) | (Optional) Headers that the HTTP/S load balancer should add to proxied responses. | `list(string)` | `[]` | no |
 | <a name="input_health_check_name"></a> [health\_check\_name](#input\_health\_check\_name) | Name for the health check. If not provided, defaults to `<var.name>-healthcheck`. | `string` | `null` | no |
 | <a name="input_health_check_port"></a> [health\_check\_port](#input\_health\_check\_port) | TCP port to use for health check. | `number` | `80` | no |
 | <a name="input_http_forward"></a> [http\_forward](#input\_http\_forward) | Set to `false` to disable HTTP port 80 forward | `bool` | `true` | no |
@@ -90,7 +92,7 @@ No modules.
 | <a name="input_url_map"></a> [url\_map](#input\_url\_map) | The url\_map resource to use. Default is to send all traffic to first backend. | `string` | `null` | no |
 | <a name="input_use_ssl_certificates"></a> [use\_ssl\_certificates](#input\_use\_ssl\_certificates) | If true, use the certificates provided by `ssl_certificates`, otherwise, create cert from `private_key` and `certificate` | `bool` | `false` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
