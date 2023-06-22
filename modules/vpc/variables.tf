@@ -23,6 +23,7 @@ variable "networks" {
       allowed_sources = ["209.85.152.0/22"]
       log_metadata    = "INCLUDE_ALL_METADATA"
       mtu             = 1500
+      routing_mode    = "REGIONAL"
     }
   }
   ```
@@ -39,6 +40,7 @@ variable "networks" {
       allowed_protocol = "UDP"
       allowed_ports    = ["53", "123-125"]
       log_metadata     = "EXCLUDE_ALL_METADATA"
+      routing_mode     = "GLOBAL"
 
       delete_default_routes_on_create = true
     }
