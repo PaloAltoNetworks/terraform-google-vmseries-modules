@@ -1,24 +1,25 @@
 # Auto-Scaling for Palo Alto Networks VM-Series
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.54 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 4.54 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -33,7 +34,7 @@ No modules.
 | [google_compute_default_service_account.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_default_service_account) | data source |
 | [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -61,7 +62,7 @@ No modules.
 | <a name="input_update_policy_type"></a> [update\_policy\_type](#input\_update\_policy\_type) | What to do when the underlying template changes (e.g. PAN-OS upgrade). OPPORTUNISTIC is the only recommended value. Also PROACTIVE is allowed. | `string` | `"OPPORTUNISTIC"` | no |
 | <a name="input_zones"></a> [zones](#input\_zones) | A map of the zone names for zonal managed instance groups. A managed instance group will be created for every zone entered.<br>Required if `regional_mig` is set to `false`. | `map(string)` | `{}` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

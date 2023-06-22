@@ -1,4 +1,7 @@
-# Autoscale VM-Series Firewalls with MIGs
+---
+show_in_hub: false
+---
+# Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
 ## Overview
 This example deploys VM-Series firewalls through a Managed Instance Group (MIG). The MIG enables the VM-Series to horizontally scale (ie. autoscaling) based on custom PAN-OS metrics delivered to Google Cloud Monitoring.
@@ -111,19 +114,20 @@ terraform apply
 ```
 > **Note:** The health probes on the external load balancer be down. This is because a service must be configured behind the firewall to respond to the load balancer's health probes.
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.58 |
 
-## Providers
+### Providers
 
 No providers.
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
@@ -136,11 +140,11 @@ No providers.
 | <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
 | <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
 
-## Resources
+### Resources
 
 No resources.
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -161,7 +165,7 @@ No resources.
 | <a name="input_vmseries_instances_min"></a> [vmseries\_instances\_min](#input\_vmseries\_instances\_min) | The minimum number of VM-Series that the autoscaler can scale down to. This cannot be less than 0. | `number` | `2` | no |
 | <a name="input_vmseries_machine_type"></a> [vmseries\_machine\_type](#input\_vmseries\_machine\_type) | (Optional) The instance type for the VM-Series firewalls. | `string` | `"n2-standard-4"` | no |
 
-## Outputs
+### Outputs
 
 No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

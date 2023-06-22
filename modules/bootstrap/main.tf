@@ -1,3 +1,11 @@
+locals {
+  bootstrap_filenames = { for f in fileset(var.bootstrap_files_dir, "**") : f => "${var.bootstrap_files_dir}/${f}" }
+  # invert var.files map 
+  inverted_files     = { for k, v in var.files : v => k }
+  inverted_filenames = merge(local.bootstrap_filenames, local.inverted_files)
+  # invert local.filenames map
+  filenames = { for k, v in local.inverted_filenames : v => k }
+}
 resource "random_string" "randomstring" {
   length    = 10
   min_lower = 10
@@ -53,7 +61,7 @@ resource "google_storage_bucket_object" "software_empty" {
 }
 
 resource "google_storage_bucket_object" "file" {
-  for_each = var.files
+  for_each = local.filenames
 
   name   = each.value
   source = each.key
