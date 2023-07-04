@@ -13,7 +13,6 @@ data "google_compute_zones" "main" {}
   to Panorama.  All autoscale deployments require Panorama.  It is recommended to have the 
   management network preconfigured with network access to Panorama. 
 */
-# Some new comment
 module "vpc_mgmt" {
   source       = "terraform-google-modules/network/google"
   version      = "~> 4.0"
