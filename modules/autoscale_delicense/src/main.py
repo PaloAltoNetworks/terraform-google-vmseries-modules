@@ -12,7 +12,7 @@ class init_parameters:
     This Class is used for create data structure with values used in further function.
     """
     pan_ip: str = getenv('PANORAMA_IP')
-    license_manager: str = getenv('LM')
+    # license_manager: str = getenv('LM')
     secret_name: str = getenv('SECRET_NAME')
 
 
@@ -33,6 +33,8 @@ def autoscale_delete_event(event, context):
     zone = pubsub_message['resource']['labels']['zone']
     details = get_instance_details(project_id, zone, instance_id)
     interfaces = details['networkInterfaces']
+    items = details['metadata']['items']
+    igm_name = find_igm_name(items)
     primary_ip = get_primary_ip(interfaces)
     info(f"Start de-license process for instance: {instance_id}")
 
@@ -41,7 +43,7 @@ def autoscale_delete_event(event, context):
     panorama = Panorama(init_parameters().pan_ip, credentials.get('user'), credentials.get('pass'))
 
     # list all devices under the configured license manager
-    cmd = f'show plugins sw_fw_license devices license-manager \"{init_parameters().license_manager}\"'
+    cmd = f'show plugins sw_fw_license devices license-manager \"{igm_name}\"'
     firewalls_parsed = panorama_cmd(panorama, cmd)
 
     if firewalls_parsed.attrib['status'] == 'success':
@@ -61,7 +63,7 @@ def autoscale_delete_event(event, context):
                         info(f'-> SERIAL: {serial}')
                         if serial_obj.text is not None:
                             info(f'-> De-licensing Firewall: {serial} ...')
-                            cmd = f'request plugins sw_fw_license deactivate license-manager \"{init_parameters().license_manager}\" devices member "{serial}"'
+                            cmd = f'request plugins sw_fw_license deactivate license-manager \"{igm_name}\" devices member "{serial}"'
                             resp_parsed = panorama_cmd(panorama, cmd)
                             if resp_parsed.attrib['status'] == 'success':
                                 info('Success')
@@ -79,6 +81,13 @@ def get_instance_details(project, zone, instance_name):
     request = compute.instances().get(project=project, zone=zone, instance=instance_name)
     response = request.execute()
     return response
+
+
+def find_igm_name(items):
+    for item in items:
+        if item['key'] == 'created-by':
+            igm = (item['value']).split("/")[-1]
+            return igm
 
 
 def get_primary_ip(interfaces):

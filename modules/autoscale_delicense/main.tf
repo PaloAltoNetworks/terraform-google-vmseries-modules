@@ -62,9 +62,7 @@ resource "google_cloudfunctions_function" "this" {
   environment_variables = {
     "PROJECT_ID"  = each.value.project_id
     "ZONE"        = each.value.zone
-    "IGM_NAME"    = each.value.igm_name
     "PANORAMA_IP" = each.value.panorama_ip
-    "LM"          = each.value.lm
     "SECRET_NAME" = each.value.secret_name
   }
   service_account_email         = google_service_account.this.email
