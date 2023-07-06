@@ -22,6 +22,6 @@ module "panorama" {
   subnet            = module.vpc.subnetworks["${var.name_prefix}${each.value.panorama_subnet}"].self_link
   private_static_ip = each.value.private_static_ip
   attach_public_ip  = each.value.attach_public_ip
-  log_disks         = each.value.log_disks
+  log_disks         = try(each.value.log_disks, [])
   depends_on        = [module.vpc]
 }
