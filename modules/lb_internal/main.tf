@@ -9,11 +9,13 @@ resource "google_compute_health_check" "this" {
 }
 
 resource "google_compute_region_backend_service" "this" {
-  name   = var.name
-  region = var.region
+  provider = google-beta
+
+  name    = var.name
+  network = var.network
+  region  = var.region
 
   health_checks                   = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
-  network                         = var.network
   session_affinity                = var.session_affinity
   timeout_sec                     = var.timeout_sec
   connection_draining_timeout_sec = var.connection_draining_timeout_sec
@@ -31,6 +33,16 @@ resource "google_compute_region_backend_service" "this" {
     content {
       group    = backend.value
       failover = true
+    }
+  }
+
+  # This feature requires beta provider as of 2023-03-16
+  dynamic "connection_tracking_policy" {
+    for_each = var.connection_tracking_policy != null ? ["this"] : []
+    content {
+      tracking_mode                                = try(var.connection_tracking_policy.mode, null)
+      idle_timeout_sec                             = try(var.connection_tracking_policy.idle_timeout_sec, null)
+      connection_persistence_on_unhealthy_backends = try(var.connection_tracking_policy.persistence_on_unhealthy_backends, null)
     }
   }
 
