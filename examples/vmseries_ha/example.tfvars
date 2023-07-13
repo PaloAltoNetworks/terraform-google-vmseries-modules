@@ -1,7 +1,7 @@
 # General
-project     = "<PROJECT_ID>"
+project     = "gcp-gcs-pso"
 region      = "us-east1" # Modify this value as per deployment requirements
-name_prefix = ""
+name_prefix = "hgu-ha-"
 
 # Service accounts
 
@@ -47,7 +47,7 @@ networks = {
     name                            = "fw-mgmt-vpc"
     subnetwork_name                 = "fw-mgmt-sub"
     ip_cidr_range                   = "10.10.10.0/28"
-    allowed_sources                 = ["10.10.10.0/24", "<YOUR_MGMT_SOURCE_IP_ADDR>"]
+    allowed_sources                 = ["10.10.10.0/24", "130.41.203.208/32"]
     delete_default_routes_on_create = false
     allowed_protocol                = "all"
     allowed_ports                   = []
@@ -143,19 +143,19 @@ vpc_peerings = {
 }
 
 # Static routes
-routes = {
-  fw-default-trust = {
-    name              = "fw-default-trust"
-    destination_range = "0.0.0.0/0"
-    network           = "fw-trust-vpc"
-    lb_internal_key   = "internal-lb"
-  }
-}
+# routes = {
+#   fw-default-trust = {
+#     name              = "fw-default-trust"
+#     destination_range = "0.0.0.0/0"
+#     network           = "fw-trust-vpc"
+#     lb_internal_key   = "internal-lb"
+#   }
+# }
 
 # VM-Series
 
 vmseries_common = {
-  ssh_keys            = "admin:<YOUR_SSH_KEY>"
+  ssh_keys            = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFmnSmvG05A5NZW8weDwXaMGlGhgZdnKCi5XI6rMFm66J71frgAfgu3u3jihGb8MzJKRP5hiVN/7R305Br7/UskLd/kMkEsRPATdhZ6QdCLekBZkv845xJjByik9WYWQSDlGbnC9PKVTwXZwthtXbGIBkrdz9f4uVNre4zEfAgwUMS27JRE94v5KBrWjNW5N49ag9Xb4kE2MVMoSPFKr5a5P2ky2k9tcauUrVim6duS5WIWQH9YqZ4MtdOmwSea+gMfN09WBi5RXlLJe+p2YPE3S5E0AeL4z6uFQS1LP7DDw2YEe/pznt7rTQsR70JmZITUWwfmOKiPlIp8bd7itJGDp3rmpTyxhUyyV/znXNIgFS+zLDn/yIX9C83n4v5uP+LiThyjubhTjIv5HqPX3Z6+FqclE6Zpy5vAXGtkCCPMG7c3yVwGU6QbKMYQflcFV8/bOUYs5jM81Az9UuscqSnMlL28lPR0KVMn49VIHPtRXbx9/sr5Pa1pytzdATyo30wZPZWlZWVV2TCGBERPPkBzR/Exqe9erZNHTTQdilvHQDoyvfy4DvdeJbngHStEKr8aFqQ1hOzmeZLhORps0AxmbMbFjSjcYVPeJS/rzOsN8jhvWDNctPGNHMPPYJxhZrx7A+4xy2kmseIyUtu5/uWFURoHr69L2Q8W30Q2U71Ow== hgunica@M-KY9YLWR7JP"
   vmseries_image      = "vmseries-flex-byol-1022h2"
   machine_type        = "n2-standard-4"
   min_cpu_platform    = "Intel Cascade Lake"
@@ -339,7 +339,7 @@ lbs_external = {
     name     = "external-lb"
     backends = ["fw-vmseries-01", "fw-vmseries-02"]
     rules = {
-      all-ports = {
+      all-ports-vmseries-ha = {
         ip_protocol = "L3_DEFAULT"
       }
     }

@@ -27,7 +27,7 @@ resource "local_file" "bootstrap_xml" {
       ha2_subnet_mask       = cidrnetmask(each.value.bootstrap_template_map.ha2_ip)
       ha2_gateway_ip        = each.value.bootstrap_template_map.ha2_gcp_router_ip
       managementpeer_private_ip = each.value.bootstrap_template_map.managementpeer_private_ip
-      test-vm-ip             = resource.google_compute_instance.linux_vms[each.value.bootstrap_template_map.linux_vm_key].private_ip
+      test-vm-ip             = resource.google_compute_instance.linux_vm[each.value.bootstrap_template_map.linux_vm_key].network_interface[0].network_ip
     }
   )
 }
@@ -179,6 +179,9 @@ module "lb_internal" {
   source = "../../modules/lb_internal"
 
   for_each = var.lbs_internal
+
+  project = var.project
+  region  = var.region
 
   name              = "${var.name_prefix}${each.value.name}"
   health_check_port = try(each.value.health_check_port, "80")
