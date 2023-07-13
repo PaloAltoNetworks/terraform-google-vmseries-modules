@@ -339,6 +339,6 @@ variable "linux_vms" {
   }
   ```
   EOF
-  type        = map(any)
+  type        = any
   default     = {}
 }

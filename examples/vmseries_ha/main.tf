@@ -18,16 +18,16 @@ resource "local_file" "bootstrap_xml" {
   filename = "files/${each.key}/config/bootstrap.xml"
   content = templatefile("templates/bootstrap_common.tmpl",
     {
-      trust_gcp_router_ip   = each.value.bootstrap_template_map.trust_gcp_router_ip
-      private_network_cidr  = each.value.bootstrap_template_map.private_network_cidr
-      untrust_gcp_router_ip = each.value.bootstrap_template_map.untrust_gcp_router_ip
-      trust_loopback_ip     = each.value.bootstrap_template_map.trust_loopback_ip
-      untrust_loopback_ip   = each.value.bootstrap_template_map.untrust_loopback_ip
-      ha2_private_ip        = split("/", each.value.bootstrap_template_map.ha2_ip)[0]
-      ha2_subnet_mask       = cidrnetmask(each.value.bootstrap_template_map.ha2_ip)
-      ha2_gateway_ip        = each.value.bootstrap_template_map.ha2_gcp_router_ip
+      trust_gcp_router_ip       = each.value.bootstrap_template_map.trust_gcp_router_ip
+      private_network_cidr      = each.value.bootstrap_template_map.private_network_cidr
+      untrust_gcp_router_ip     = each.value.bootstrap_template_map.untrust_gcp_router_ip
+      trust_loopback_ip         = each.value.bootstrap_template_map.trust_loopback_ip
+      untrust_loopback_ip       = each.value.bootstrap_template_map.untrust_loopback_ip
+      ha2_private_ip            = split("/", each.value.bootstrap_template_map.ha2_ip)[0]
+      ha2_subnet_mask           = cidrnetmask(each.value.bootstrap_template_map.ha2_ip)
+      ha2_gateway_ip            = each.value.bootstrap_template_map.ha2_gcp_router_ip
       managementpeer_private_ip = each.value.bootstrap_template_map.managementpeer_private_ip
-      test-vm-ip             = resource.google_compute_instance.linux_vm[each.value.bootstrap_template_map.linux_vm_key].network_interface[0].network_ip
+      test-vm-ip                = resource.google_compute_instance.linux_vm[each.value.bootstrap_template_map.linux_vm_key].network_interface[0].network_ip
     }
   )
 }
@@ -62,6 +62,7 @@ module "bootstrap" {
     { for k, v in var.vmseries : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
     { for k, v in var.vmseries : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
   )
+  depends_on = [local_file.bootstrap_xml, local_file.init_cfg]
 }
 
 module "vpc" {
@@ -164,6 +165,7 @@ resource "google_compute_instance" "linux_vm" {
     network_ip = each.value.private_ip
   }
 
+  metadata_startup_script = try(each.value.metadata_startup_script, "")
   metadata = {
     enable-oslogin = true
   }
@@ -179,9 +181,6 @@ module "lb_internal" {
   source = "../../modules/lb_internal"
 
   for_each = var.lbs_internal
-
-  project = var.project
-  region  = var.region
 
   name              = "${var.name_prefix}${each.value.name}"
   health_check_port = try(each.value.health_check_port, "80")

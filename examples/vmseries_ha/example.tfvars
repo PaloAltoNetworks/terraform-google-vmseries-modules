@@ -1,7 +1,7 @@
 # General
-project     = "gcp-gcs-pso"
+project     = "<PROJECT_ID>"
 region      = "us-east1" # Modify this value as per deployment requirements
-name_prefix = "hgu-ha-"
+name_prefix = ""
 
 # Service accounts
 
@@ -47,7 +47,7 @@ networks = {
     name                            = "fw-mgmt-vpc"
     subnetwork_name                 = "fw-mgmt-sub"
     ip_cidr_range                   = "10.10.10.0/28"
-    allowed_sources                 = ["10.10.10.0/24", "130.41.203.208/32"]
+    allowed_sources                 = ["10.10.10.0/24", "<YOUR_MGMT_IP_ADDR>"]
     delete_default_routes_on_create = false
     allowed_protocol                = "all"
     allowed_ports                   = []
@@ -58,7 +58,7 @@ networks = {
     name                            = "fw-untrust-vpc"
     subnetwork_name                 = "fw-untrust-sub"
     ip_cidr_range                   = "10.10.11.0/28"
-    allowed_sources                 = ["35.191.0.0/16", "209.85.152.0/22", "209.85.204.0/22"]
+    allowed_sources                 = ["35.191.0.0/16", "209.85.152.0/22", "209.85.204.0/22", "<YOUR_MGMT_IP_ADDR>"]
     delete_default_routes_on_create = false
     allowed_protocol                = "all"
     allowed_ports                   = []
@@ -143,19 +143,19 @@ vpc_peerings = {
 }
 
 # Static routes
-# routes = {
-#   fw-default-trust = {
-#     name              = "fw-default-trust"
-#     destination_range = "0.0.0.0/0"
-#     network           = "fw-trust-vpc"
-#     lb_internal_key   = "internal-lb"
-#   }
-# }
+routes = {
+  fw-default-trust = {
+    name              = "fw-default-trust"
+    destination_range = "0.0.0.0/0"
+    network           = "fw-trust-vpc"
+    lb_internal_key   = "internal-lb"
+  }
+}
 
 # VM-Series
 
 vmseries_common = {
-  ssh_keys            = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFmnSmvG05A5NZW8weDwXaMGlGhgZdnKCi5XI6rMFm66J71frgAfgu3u3jihGb8MzJKRP5hiVN/7R305Br7/UskLd/kMkEsRPATdhZ6QdCLekBZkv845xJjByik9WYWQSDlGbnC9PKVTwXZwthtXbGIBkrdz9f4uVNre4zEfAgwUMS27JRE94v5KBrWjNW5N49ag9Xb4kE2MVMoSPFKr5a5P2ky2k9tcauUrVim6duS5WIWQH9YqZ4MtdOmwSea+gMfN09WBi5RXlLJe+p2YPE3S5E0AeL4z6uFQS1LP7DDw2YEe/pznt7rTQsR70JmZITUWwfmOKiPlIp8bd7itJGDp3rmpTyxhUyyV/znXNIgFS+zLDn/yIX9C83n4v5uP+LiThyjubhTjIv5HqPX3Z6+FqclE6Zpy5vAXGtkCCPMG7c3yVwGU6QbKMYQflcFV8/bOUYs5jM81Az9UuscqSnMlL28lPR0KVMn49VIHPtRXbx9/sr5Pa1pytzdATyo30wZPZWlZWVV2TCGBERPPkBzR/Exqe9erZNHTTQdilvHQDoyvfy4DvdeJbngHStEKr8aFqQ1hOzmeZLhORps0AxmbMbFjSjcYVPeJS/rzOsN8jhvWDNctPGNHMPPYJxhZrx7A+4xy2kmseIyUtu5/uWFURoHr69L2Q8W30Q2U71Ow== hgunica@M-KY9YLWR7JP"
+  ssh_keys            = "admin:<YOUR_SSH_KEY>"
   vmseries_image      = "vmseries-flex-byol-1022h2"
   machine_type        = "n2-standard-4"
   min_cpu_platform    = "Intel Cascade Lake"
@@ -185,15 +185,15 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      trust_gcp_router_ip   = "10.10.12.1"
-      untrust_gcp_router_ip = "10.10.11.1"
-      private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
-      ha2_ip                = "10.10.13.2/28"
-      ha2_gcp_router_ip     = "10.10.13.1"
+      trust_gcp_router_ip       = "10.10.12.1"
+      untrust_gcp_router_ip     = "10.10.11.1"
+      private_network_cidr      = "192.168.0.0/16"
+      untrust_loopback_ip       = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
+      trust_loopback_ip         = "10.10.12.5/32"
+      ha2_ip                    = "10.10.13.2/28"
+      ha2_gcp_router_ip         = "10.10.13.1"
       managementpeer_private_ip = "10.10.10.3"
-      linux_vm_key          = "spoke1-vm"
+      linux_vm_key              = "spoke1-vm"
     }
     named_ports = [
       {
@@ -244,15 +244,15 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      trust_gcp_router_ip   = "10.10.12.1"
-      untrust_gcp_router_ip = "10.10.11.1"
-      private_network_cidr  = "192.168.0.0/16"
-      untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
-      ha2_ip                = "10.10.13.3/28"
-      ha2_gcp_router_ip     = "10.10.13.1"
+      trust_gcp_router_ip       = "10.10.12.1"
+      untrust_gcp_router_ip     = "10.10.11.1"
+      private_network_cidr      = "192.168.0.0/16"
+      untrust_loopback_ip       = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
+      trust_loopback_ip         = "10.10.12.5/32"
+      ha2_ip                    = "10.10.13.3/28"
+      ha2_gcp_router_ip         = "10.10.13.1"
       managementpeer_private_ip = "10.10.10.2"
-      linux_vm_key          = "spoke1-vm"
+      linux_vm_key              = "spoke1-vm"
     }
     named_ports = [
       {
@@ -302,7 +302,30 @@ linux_vms = {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring.write",
     ]
-    service_account_key = "sa-linux-01"
+    service_account_key     = "sa-linux-01"
+    metadata_startup_script = <<SCRIPT
+    echo "while :" >> /network-check.sh
+    echo "do" >> /network-check.sh
+    echo "  timeout -k 2 2 ping -c 1  8.8.8.8 >> /dev/null" >> /network-check.sh
+    echo "  if [ $? -eq 0 ]; then" >> /network-check.sh
+    echo "    echo \$(date) -- Online -- Source IP = \$(curl https://checkip.amazonaws.com -s --connect-timeout 1)" >> /network-check.sh
+    echo "  else" >> /network-check.sh
+    echo "    echo \$(date) -- Offline" >> /network-check.sh
+    echo "  fi" >> /network-check.sh
+    echo "  sleep 1" >> /network-check.sh
+    echo "done" >> /network-check.sh
+    chmod +x /network-check.sh
+
+    while ! ping -q -c 1 -W 1 google.com >/dev/null
+    do
+      echo "waiting for internet connection..."
+      sleep 10s
+    done
+    echo "internet connection available!"
+
+    apt update && apt install -y apache2 && echo "The connection to Spoke VM is successful!" > /var/www/html/index.html
+
+    SCRIPT
   },
   spoke2-vm = {
     linux_machine_type = "n2-standard-4"

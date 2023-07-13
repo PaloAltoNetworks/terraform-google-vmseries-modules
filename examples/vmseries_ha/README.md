@@ -1,5 +1,5 @@
 ---
-short_title: Common Firewall Option
+short_title: Common Firewall Option with High Availability
 type: refarch
 show_in_hub: true
 ---
@@ -13,7 +13,7 @@ The Terraform code presented here will deploy Palo Alto Networks VM-Series firew
 ![simple](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/942d7e0a-eafb-42fb-ba53-6fefedb4b69d)
 
 This code implements:
-- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
+- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series deployed in high availability to inspect all inbound, outbound, east-west, and enterprise traffic
 - the _common option_, which routes all traffic flows onto a single set of VM-Series
 
 ## Detailed Architecture and Design
@@ -23,21 +23,22 @@ This code implements:
 This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
 This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
 
-### Common Option
+### Common Option with High Availabikity
 
-The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls is low. However, the technical integration complexity is high.
+The common firewall option wiht High Availability leverages a single set of VM-Series firewalls that acts as a single entity. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls is low. However, the technical integration complexity is high.
 
 ![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png)
 
-The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
+The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture with [high availability configuration](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/about-the-vm-series-firewall/vm-series-in-high-availability)  within a GCP project.
 
 The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrize the initial Day 0 configuration.
 
 With default variable values the topology consists of :
- - 5 VPC networks :
+ - 6 VPC networks :
    - Management VPC
    - Untrust (outside) VPC
    - Trust (inside/security) VPC
+   - HA2 (strictly used for High Availability) VPC
    - Spoke-1 VPC
    - Spoke-2 VPC
  - 2 VM-Series firewalls
@@ -60,7 +61,7 @@ The following steps should be followed before deploying the Terraform code prese
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/vpc-peering-common
+cd terraform-google-vmseries-modules/examples/vmseries_ha
 ```
 
 3. Copy the `example.tfvars` to `terraform.tfvars`.
@@ -104,11 +105,13 @@ vmseries_private_ips = {
     "0" = "10.10.11.2"
     "1" = "10.10.10.2"
     "2" = "10.10.12.2"
+    "3" = "10.10.13.2"
   }
   "fw-vmseries-02" = {
     "0" = "10.10.11.3"
     "1" = "10.10.10.3"
     "2" = "10.10.12.3"
+    "3" = "10.10.13.3"
   }
 }
 vmseries_public_ips = {
@@ -133,7 +136,7 @@ Connect to the VM-Series instance(s) via SSH using your associated private key a
 ```
 ssh admin@x.x.x.x -i /PATH/TO/YOUR/KEY/id_rsa
 Welcome admin.
-admin@PA-VM> show system bootstrap status
+admin@PA-VM(active)> show system bootstrap status
 
 Bootstrap Phase               Status         Details
 ===============               ======         =======
@@ -142,15 +145,15 @@ Media Sanity Check            Success        Media sanity check successful
 Parsing of Initial Config     Successful     
 Auto-commit                   Successful
 
-admin@PA-VM> configure
+admin@PA-VM(active)> configure
 Entering configuration mode
 [edit]                                                                                                                                                                                  
-admin@PA-VM# set mgt-config users admin password
+admin@PA-VM(active)# set mgt-config users admin password
 Enter password   : 
 Confirm password : 
 
 [edit]                                                                                                                                                                                  
-admin@PA-VM# commit
+admin@PA-VM(active)# commit
 Configuration committed successfully
 ```
 
@@ -161,6 +164,8 @@ Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and 
 ## Change the public Loopback public IP Address
 
 For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and change the value of `1.1.1.1` with the value from the `EXTERNAL_LB_PUBLIC_IP` from the terraform outputs.
+
+In order to successfuly access the web server hosted on `spoke-1-vm` - also reconfigure the two NAT policies that contain the destination address of `1.1.1.1` with the IP address from `EXTERNAL_LB_PUBLIC_IP` in Policies -> NAT -> `no-nat-lb-healthchecks` + `inbound-app1`
 
 ## Check traffic from spoke VMs
 
@@ -181,6 +186,36 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 <USERNAME>@spoke1-vm:~$ping 8.8.8.8
 <USERNAME>@spoke1-vm:~$ping 192.168.2.2
 ```
+
+## Check traffic towards the test HTTP web server
+
+From any browser access `http://<EXTERNAL_LB_PUBLIC_IP>`
+
+## Test fail-over
+
+Connect to the spoke VM via gcloud CLI and continously ping a destination on the internet :
+
+```
+gcloud compute ssh spoke1-vm
+No zone specified. Using zone [us-east1-b] for instance: [spoke1-vm].
+External IP address was not found; defaulting to using IAP tunneling.
+WARNING: 
+
+To increase the performance of the tunnel, consider installing NumPy. For instructions,
+please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the_tcp_upload_bandwidth
+
+<USERNAME>@spoke1-vm:~$ping 8.8.8.8
+```
+
+Continously try to access the test HTTP web server - below is an example bash script that will continously try to access the web server :
+
+```
+while true; do curl -vvvv --connect-timeout 2 http://<EXTERNAL_LB_PUBLIC_IP>/; sleep 2; done
+```
+
+From the active VM-Series go to Device -> High Availability -> Operational Commands -> Suspend local device for high availability .
+
+Check the succesful inbound and outbound traffic fail-over to and from the spoke VM.
 
 ## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -226,7 +261,7 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 | <a name="input_bootstrap_buckets"></a> [bootstrap\_buckets](#input\_bootstrap\_buckets) | A map containing each bootstrap bucket setting.<br><br>Example of variable deployment:<pre>bootstrap_buckets = {<br>  vmseries-bootstrap-bucket-01 = {<br>    bucket_name_prefix  = "bucket-01-"<br>    location            = "us"<br>    service_account_key = "sa-vmseries-01"<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/bootstrap#Inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 | <a name="input_lbs_external"></a> [lbs\_external](#input\_lbs\_external) | A map containing each external loadbalancer setting.<br><br>Example of variable deployment :<pre>lbs_external = {<br>  "external-lb" = {<br>    name     = "external-lb"<br>    backends = ["fw-vmseries-01", "fw-vmseries-02"]<br>    rules = {<br>      "all-ports" = {<br>        ip_protocol = "L3_DEFAULT"<br>      }<br>    }<br>    http_health_check_port         = "80"<br>    http_health_check_request_path = "/php/login.php"<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_external#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 | <a name="input_lbs_internal"></a> [lbs\_internal](#input\_lbs\_internal) | A map containing each internal loadbalancer setting.<br><br>Example of variable deployment :<pre>lbs_internal = {<br>  "internal-lb" = {<br>    name              = "internal-lb"<br>    health_check_port = "80"<br>    backends          = ["fw-vmseries-01", "fw-vmseries-02"]<br>    ip_address        = "10.10.12.5"<br>    subnetwork        = "fw-trust-sub"<br>    network           = "fw-trust-vpc"<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_internal#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
-| <a name="input_linux_vms"></a> [linux\_vms](#input\_linux\_vms) | A map containing each Linux VM configuration that will be placed in SPOKE VPCs for testing purposes.<br><br>Example of varaible deployment:<pre>linux_vms = {<br>  spoke1-vm = {<br>    linux_machine_type = "n2-standard-4"<br>    zone               = "us-east1-b"<br>    linux_disk_size    = "50" # Modify this value as per deployment requirements<br>    subnetwork         = "spoke1-sub"<br>    private_ip         = "192.168.1.2"<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    service_account_key = "sa-linux-01"<br>  }<br>}</pre> | `map(any)` | `{}` | no |
+| <a name="input_linux_vms"></a> [linux\_vms](#input\_linux\_vms) | A map containing each Linux VM configuration that will be placed in SPOKE VPCs for testing purposes.<br><br>Example of varaible deployment:<pre>linux_vms = {<br>  spoke1-vm = {<br>    linux_machine_type = "n2-standard-4"<br>    zone               = "us-east1-b"<br>    linux_disk_size    = "50" # Modify this value as per deployment requirements<br>    subnetwork         = "spoke1-sub"<br>    private_ip         = "192.168.1.2"<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    service_account_key = "sa-linux-01"<br>  }<br>}</pre> | `any` | `{}` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | A string to prefix resource namings. | `string` | `"example-"` | no |
 | <a name="input_networks"></a> [networks](#input\_networks) | A map containing each network setting.<br><br>Example of variable deployment :<pre>networks = {<br>  "mgmt-network" = {<br>    create_network                  = true<br>    create_subnetwork               = true<br>    name                            = "fw-mgmt-vpc"<br>    subnetwork_name                 = "fw-mgmt-sub"<br>    ip_cidr_range                   = "10.10.10.0/28"<br>    allowed_sources                 = ["1.1.1.1/32"]<br>    delete_default_routes_on_create = false<br>    allowed_protocol                = "all"<br>    allowed_ports                   = []<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)<br><br>Multiple keys can be added and will be deployed by the code. | `any` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | The project name to deploy the infrastructure in to. | `string` | `null` | no |

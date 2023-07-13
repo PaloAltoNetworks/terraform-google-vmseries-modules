@@ -718,6 +718,24 @@
                   </destination>
                   <service>any</service>
                 </entry>
+                <entry name="no-nat-lb-healtchecks" uuid="9217ca57-8a63-4ada-9dde-2fc4223e7177">
+                  <to>
+                    <member>public</member>
+                  </to>
+                  <from>
+                    <member>public</member>
+                  </from>
+                  <source>
+                    <member>35.191.0.0/16</member>
+                    <member>130.211.0.0/22</member>
+                    <member>209.85.152.0/22</member>
+                    <member>209.85.204.0/22</member>
+                  </source>
+                  <destination>
+                    <member>${untrust_loopback_ip}</member>
+                  </destination>
+                  <service>any</service>
+                </entry>
                 <entry name="inbound-app1" uuid="84ea5967-03e2-408e-8e91-ba593ab86223">
                   <to>
                     <member>public</member>
@@ -736,6 +754,14 @@
                   <destination-translation>
                     <translated-address>${test-vm-ip}</translated-address>
                   </destination-translation>
+                  <disabled>no</disabled>
+                  <source-translation>
+                    <dynamic-ip-and-port>
+                      <interface-address>
+                        <interface>ethernet1/2</interface>
+                      </interface-address>
+                    </dynamic-ip-and-port>
+                  </source-translation>
                 </entry>
               </rules>
             </nat>
