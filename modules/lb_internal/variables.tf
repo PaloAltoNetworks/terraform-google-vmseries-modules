@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "project" {
+  description = "The project to deploy to. If unset the default provider project is used."
+  type        = string
+  default     = null
+}
+
 variable "region" {
   description = "Region to create ILB in."
   type        = string
