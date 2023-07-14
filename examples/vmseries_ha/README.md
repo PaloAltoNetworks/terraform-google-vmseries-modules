@@ -175,7 +175,7 @@ SSH to one of the spoke VMs using GCP IAP and gcloud command and test connectivi
 
 
 ```
-gcloud compute ssh spoke1-vm
+gcloud compute ssh <NAME-PREFIX-VALUE-FROM-TFVARS>spoke1-vm --zone=<NAME-OF-THE-ZONE-FROM-TFVARS>
 No zone specified. Using zone [us-east1-b] for instance: [spoke1-vm].
 External IP address was not found; defaulting to using IAP tunneling.
 WARNING: 
