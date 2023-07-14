@@ -196,7 +196,7 @@ From any browser access `http://<EXTERNAL_LB_PUBLIC_IP>`
 Connect to the spoke VM via gcloud CLI and continously ping a destination on the internet :
 
 ```
-gcloud compute ssh spoke1-vm
+gcloud compute ssh <NAME-PREFIX-VALUE-FROM-TFVARS>spoke1-vm --zone=<NAME-OF-THE-ZONE-FROM-TFVARS>
 No zone specified. Using zone [us-east1-b] for instance: [spoke1-vm].
 External IP address was not found; defaulting to using IAP tunneling.
 WARNING: 
