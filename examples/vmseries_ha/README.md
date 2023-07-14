@@ -163,7 +163,7 @@ Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and 
 
 ## Change the public Loopback public IP Address
 
-For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and change the value of `1.1.1.1` with the value from the `EXTERNAL_LB_PUBLIC_IP` from the terraform outputs.
+For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and change the value of `1.1.1.1` with the value of object `external-lb` from the `lbs_external_ips` in Terraform outputs.
 
 In order to successfuly access the web server hosted on `spoke-1-vm` - also reconfigure the two NAT policies that contain the destination address of `1.1.1.1` with the IP address from `EXTERNAL_LB_PUBLIC_IP` in Policies -> NAT -> `no-nat-lb-healthchecks` + `inbound-app1`
 
