@@ -74,6 +74,7 @@ resource "google_cloudfunctions_function" "this" {
 locals {
   source_dir    = "${path.module}/src"
   zip_file_name = "source_code.zip"
+  zip_file_name_sha = "source_code.${lower(replace(data.archive_file.this.output_base64sha256, "=", ""))}.zip"
 }
 
 data "archive_file" "this" {
@@ -83,7 +84,7 @@ data "archive_file" "this" {
 }
 
 resource "google_storage_bucket_object" "this" {
-  name   = local.zip_file_name
+  name   = local.zip_file_name_sha
   bucket = var.bucket_name
   source = "/tmp/${local.zip_file_name}"
 }
@@ -110,4 +111,12 @@ resource "google_project_iam_member" "sa_role" {
 }
 
 
+# Log router writer identity IAM
+resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
+  for_each = var.cloud_functions
 
+  project = var.project_id
+  topic   = each.value.topic_name
+  role    = "roles/pubsub.publisher"
+  member  = google_logging_project_sink.this[each.key].writer_identity
+}

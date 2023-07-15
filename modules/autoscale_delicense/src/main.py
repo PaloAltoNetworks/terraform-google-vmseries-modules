@@ -36,7 +36,7 @@ def autoscale_delete_event(event, context):
     items = details['metadata']['items']
     igm_name = find_igm_name(items)
     primary_ip = get_primary_ip(interfaces)
-    info(f"Start de-license process for instance: {instance_id}")
+    info(f"Start de-license process for instance: {instance_id}, primary IP: {primary_ip}")
 
     # get credentials from Secret Manager and login to Panorama
     credentials = get_secret()
@@ -57,6 +57,8 @@ def autoscale_delete_event(event, context):
                 ip = ip_obj.text
                 info(f'-> working on {ip}')
                 if ip is not None and ip == primary_ip:
+                    info(f"FW match by primary IP ({primary_ip})")
+                
                     serial_obj = fw.find('serial')
                     if serial_obj is not None:
                         serial = serial_obj.text
@@ -119,8 +121,9 @@ def panorama_cmd(panorama, cmd: str, xml: bool = True, cmd_xml: bool = True) -> 
     :return:
     """
     info(f"Call Panorama with: {cmd} command.")
-    request = panorama.op(cmd=cmd, xml=xml, cmd_xml=cmd_xml)
-    return et.fromstring(request)
+    response = panorama.op(cmd=cmd, xml=xml, cmd_xml=cmd_xml)
+    info(f"Response: {response}")
+    return et.fromstring(response)
 
 
 def get_secret() -> dict:
