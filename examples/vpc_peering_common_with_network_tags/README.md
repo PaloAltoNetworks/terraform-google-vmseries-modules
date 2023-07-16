@@ -1,3 +1,6 @@
+---
+show_in_hub: false
+---
 # Palo Alto Networks VM-Series Common Firewall Option with network tags
 
 The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture in two regions and using network tags feature for traffic distribution within a GCP project.
@@ -211,21 +214,22 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 <USERNAME>@spoke2-vm:~$ping 8.8.8.8
 ```
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0, < 2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | n/a |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
@@ -241,7 +245,7 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 | <a name="module_vpc_region_1"></a> [vpc\_region\_1](#module\_vpc\_region\_1) | ../../modules/vpc | n/a |
 | <a name="module_vpc_region_2"></a> [vpc\_region\_2](#module\_vpc\_region\_2) | ../../modules/vpc | n/a |
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -255,7 +259,7 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 | [local_file.init_cfg_region_2](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [google_compute_image.my_image](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_image) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -280,7 +284,7 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 | <a name="input_vmseries_region_2"></a> [vmseries\_region\_2](#input\_vmseries\_region\_2) | A map containing each individual vmseries setting for region\_2 instances.<br><br>Example of variable deployment :<pre>vmseries_region_2 = {<br>  fw-vmseries-03 = {<br>    name = "fw-vmseries-03"<br>    zone = "us-west1-b"<br>    tags = ["vmseries"]<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"<br>    bootstrap_options = {<br>      panorama-server = "1.1.1.1"<br>      dns-primary     = "8.8.8.8"<br>      dns-secondary   = "8.8.4.4"<br>    }<br>    bootstrap_template_map = {<br>      trust_gcp_router_ip   = "10.20.12.1"<br>      untrust_gcp_router_ip = "10.20.11.1"<br>      private_network_cidr  = "192.168.0.0/16"<br>      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed<br>      trust_loopback_ip     = "10.20.12.5/32"<br>    }<br>    named_ports = [<br>      {<br>        name = "http"<br>        port = 80<br>      },<br>      {<br>        name = "https"<br>        port = 443<br>      }<br>    ]<br>    network_interfaces = [<br>      {<br>        subnetwork       = "fw-untrust-sub"<br>        private_ip       = "10.20.11.2"<br>        create_public_ip = true<br>      },<br>      {<br>        subnetwork       = "fw-mgmt-sub"<br>        private_ip       = "10.20.10.2"<br>        create_public_ip = true<br>      },<br>      {<br>        subnetwork = "fw-trust-sub"<br>        private_ip = "10.20.12.2"<br>      }<br>    ]<br>  },<br>  fw-vmseries-04 = {<br>    name = "fw-vmseries-04"<br>    zone = "us-west1-c"<br>    tags = ["vmseries"]<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"<br>    bootstrap_options = {<br>      panorama-server = "1.1.1.1"<br>      dns-primary     = "8.8.8.8"<br>      dns-secondary   = "8.8.4.4"<br>    }<br>    bootstrap_template_map = {<br>      trust_gcp_router_ip   = "10.20.12.1"<br>      untrust_gcp_router_ip = "10.20.11.1"<br>      private_network_cidr  = "192.168.0.0/16"<br>      untrust_loopback_ip   = "2.2.2.2/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address (region_2) after the infrastructure is deployed<br>      trust_loopback_ip     = "10.20.12.5/32"<br>    }<br>    named_ports = [<br>      {<br>        name = "http"<br>        port = 80<br>      },<br>      {<br>        name = "https"<br>        port = 443<br>      }<br>    ]<br>    network_interfaces = [<br>      {<br>        subnetwork       = "fw-untrust-sub"<br>        private_ip       = "10.20.11.3"<br>        create_public_ip = true<br>      },<br>      {<br>        subnetwork       = "fw-mgmt-sub"<br>        private_ip       = "10.20.10.3"<br>        create_public_ip = true<br>      },<br>      {<br>        subnetwork = "fw-trust-sub"<br>        private_ip = "10.20.12.3"<br>      }<br>    ]<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vmseries#inputs)<br><br>The bootstrap\_template\_map contains variables that will be applied to the bootstrap template. Each firewall Day 0 bootstrap will be parametrised based on these inputs.<br>Multiple keys can be added and will be deployed by the code. | `any` | n/a | yes |
 | <a name="input_vpc_peerings"></a> [vpc\_peerings](#input\_vpc\_peerings) | A map containing each VPC peering setting.<br><br>This is done only once since it's being called at the network level and not at the subnetwork which is dependent on the region.<br><br>Example of variable deployment :<pre>vpc_peerings = {<br>  "trust-to-spoke1" = {<br>    local_network = "fw-trust-vpc"<br>    peer_network  = "spoke1-vpc"<br><br>    local_export_custom_routes                = true<br>    local_import_custom_routes                = true<br>    local_export_subnet_routes_with_public_ip = true<br>    local_import_subnet_routes_with_public_ip = true<br><br>    peer_export_custom_routes                = true<br>    peer_import_custom_routes                = true<br>    peer_export_subnet_routes_with_public_ip = true<br>    peer_import_subnet_routes_with_public_ip = true<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc-peering#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

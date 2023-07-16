@@ -1,95 +1,137 @@
+---
+show_in_hub: false
+---
 # Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
-This example deploys VM-Series firewalls into a managed instance group.  The VM-Series firewalls can be scaled horizontally based on custom PAN-OS metrics delivered to Google Stackdriver.
+## Overview
+This example deploys VM-Series firewalls through a Managed Instance Group (MIG). The MIG enables the VM-Series to horizontally scale (ie. autoscaling) based on custom PAN-OS metrics delivered to Google Cloud Monitoring.
 
-For managed instance group deployments, it is highly recommended to bootstrap the VM-Series firewalls to Panorama for automatic configuration.  
+Created resources include:
+* 3 x VPC Networks (`mgmt`, `untrust/public`, and `trust/hub` VPC networks).
+* 1 x Service Account
+* 1 x Managed Instance Group.
+* 1 x Internal TCP/UDP load balancer to distribute egress traffic to VM-Series trust/hub interfaces.
+* 1 x External TCP/UDP load balancer to distribute internet inbound traffic to VM-Series untrust/public interfaces.
+* 1 x Pub/Sub Topic and Subscription
 
-## Instructions
+![image](https://user-images.githubusercontent.com/2110772/188896518-1fe5abd2-1887-4c2f-bc63-95c6a03bbb4e.png)
 
-1. Set up Panorama on-premises or in a VPC network (consider using `examples/panorama`).  
-   * Panorama must have network connectivity to the management VPC network created in this example build. 
-   * If you already have a management VPC network, perform the following in `main.tf`:
-     1. Replace `module "vpc_mgmt"` with <a href="https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork">`data google_compute_subnetwork`</a> to pull your existing management subnetwork.  
-     2. Within the the VM-Series `autoscale` module, set the management NIC to use your data resource in the previous step.  For example:
+## Requirements
 
-<pre><b>
-data "google_compute_subnetwork" "mgmt" {
-    name   = "default-us-east1"
-    region = var.region
-}</b>
+1. A Panorama appliance with network connectivity over `TCP/443` & `TCP/3978` from the VM-Series MGMT interfaces. This example assumes VM-Series instances connect to Panorama over the internet.
 
-....
-....
+> If you do not have a Panorama appliance, please see `examples/panorama` to deploy Panorama on Google Cloud.
 
+2. A Panorama `Device Group`, `Template Stack`, and [`VM Authorization Key`](https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama). These values are required to bootstrap the VM-Series firewalls to Panorama.
+3. (For BYOL VM-Series licensing only) An authcode assigned to Device Group through [Panorama Software Firewall License Plugin](https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/license-the-vm-series-firewall/use-panorama-based-software-firewall-license-management).
+
+
+> For information on staging Panorama for VM-Series MIGs, see:
+> * [Panorama Staging for VM-Series MIGs](docs/panorama-staging-vmseries-migs.md)
+> * [Autoscaling Components for Google Cloud](https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/set-up-the-vm-series-firewall-on-google-cloud-platform/autoscaling-on-google-cloud-platform/autoscaling-components-for-gcp#id17COG5060BX)
+
+## Deploy
+
+1. Access a machine with Terraform installed or click **Open in Google Cloud Shell**.
+
+<p align="center" width="100%">
+  <a href="https://ssh.cloud.google.com/cloudshell/editor"><img width="350" src="https://user-images.githubusercontent.com/2110772/188896668-23fc9260-642a-4b7f-b64f-8e0b783b598a.png">
+  </a>
+</p>
+
+2. Enable the required APIs, clone the Github repository, and change directories to the example build.
+
+```
+gcloud services enable compute.googleapis.com
+git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
+cd terraform-google-vmseries-modules/examples/autoscale
+```
+
+3. Create a file named `terraform.tfvars` in a text editor of your choice (i.e. Cloud Shell Editor, `vim`, or `nano`) or copy an existing sample `example.tfvars` file.
+
+4. If created from scratch, paste the variables below into your `terraform.tfvars`. Modify the values to match your environment. A description of each variable can be found in [variables.tf](variables.tf).
+```
+project_id = "my-project-id"
+prefix     = "example-"
+region     = "us-central1"
+
+allowed_sources = ["0.0.0.0/0"]
+cidr_mgmt       = "10.0.0.0/28"
+cidr_untrust    = "10.0.1.0/28"
+cidr_trust      = "10.0.2.0/28"
+
+vmseries_image_name    = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle2-1014"
+vmseries_instances_min = 1
+vmseries_instances_max = 2
+
+panorama_address        = "1.1.1.1"
+panorama_device_group   = "my-panorama-device-group"
+panorama_template_stack = "my-panorama-template-stack"
+panorama_vm_auth_key    = "01234567890123456789"
+```
+
+5. (Optional) If you would like to deploy zonal MIGs instead of regional MIGs, make the following changes in [`main.tf`](main.tf).
+    * Within `module "autoscale"`, add the `zones` parameter and set `regional_mig=false`.
+    * Within `module "intlb"`, configure backends parameter to use each output for `zonal_instance_group_ids`.
+
+<pre>
 module "autoscale" {
-source = "../../modules/autoscale"
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/autoscale"
 
-zones = {
-    zone1 = data.google_compute_zones.main.names[0]
-    zone2 = data.google_compute_zones.main.names[1]
+  name             = "${local.prefix}vmseries"
+  region           = "us-central1"
+  <b>regional_mig = false</b>
+  <b>zones = {
+    zone1 = "us-central1-a"
+    zone2 = "us-central1-b"
+  }</b>
+  ...
+  ...
 }
+...
+...
+module "intlb" {
+  source = "PaloAltoNetworks/vmseries-modules/google//modules/lb_internal"
 
-prefix                = "${local.prefix}vmseries-mig"
-deployment_name       = "${local.prefix}vmseries-mig-deployment"
-machine_type          = var.vmseries_machine_type
-image                 = var.vmseries_image_name
-pool                  = module.extlb.target_pool
-scopes                = ["https://www.googleapis.com/auth/cloud-platform"]
-service_account_email = module.iam_service_account.email
-min_replicas_per_zone = var.vmseries_per_zone_min  // min firewalls per zone.
-max_replicas_per_zone = var.vmseries_per_zone_max  // max firewalls per zone.
-autoscaler_metrics    = var.autoscaler_metrics
-
-network_interfaces = [
-    {
-        subnetwork       = module.vpc_untrust.subnets_self_links[0]
-        create_public_ip = true
-    },
-    {
-        subnetwork       = <b>data.google_compute_subnetwork.mgmt.self_link</b>
-        create_public_ip = false 
-    },
-    {
-        subnetwork       = module.vpc_trust.subnets_self_links[0]
-        create_public_ip = false
-    }
-]
-
-....
-....
+  name              = "${local.prefix}internal-lb"
+  network           = data.google_compute_subnetwork.trust.network
+  subnetwork        = data.google_compute_subnetwork.trust.self_link
+  all_ports         = true
+  health_check_port = 80
+  backends = {
+    <b>backend1 = module.autoscale.zonal_instance_group_ids["zone1"]
+    backend2 = module.autoscale.zonal_instance_group_ids["zone2"]</b>
+  }
+  allow_global_access = true
+}
 </pre>
 
-3. On Panorama, create a <a href="https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-firewalls/manage-device-groups/add-a-device-group">Device Group</a>, <a href="https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-firewalls/manage-templates-and-template-stacks/configure-a-template-stack">Template Stack</a>, and generate a <a href="https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama">VM Auth Key</a>.
-4. Copy the example.tfvars into terraform.tfvars. Modify the values within terraform.tfvars to match your deployment.
-
-
-## Deploy Terraform
+6. Save your `terraform.tfvars` and deploy.
 
 ```
 terraform init
-terraform plan
 terraform apply
 ```
+> **Note:** The health probes on the external load balancer be down. This is because a service must be configured behind the firewall to respond to the load balancer's health probes.
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15.3, < 2.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 3.48 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 4.58 |
 
-## Providers
+### Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 3.48 |
+No providers.
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale | n/a |
+| <a name="module_autoscale"></a> [autoscale](#module\_autoscale) | ../../modules/autoscale/ | n/a |
 | <a name="module_extlb"></a> [extlb](#module\_extlb) | ../../modules/lb_external/ | n/a |
 | <a name="module_iam_service_account"></a> [iam\_service\_account](#module\_iam\_service\_account) | ../../modules/iam_service_account/ | n/a |
 | <a name="module_intlb"></a> [intlb](#module\_intlb) | ../../modules/lb_internal/ | n/a |
@@ -98,35 +140,32 @@ terraform apply
 | <a name="module_vpc_trust"></a> [vpc\_trust](#module\_vpc\_trust) | terraform-google-modules/network/google | ~> 4.0 |
 | <a name="module_vpc_untrust"></a> [vpc\_untrust](#module\_vpc\_untrust) | terraform-google-modules/network/google | ~> 4.0 |
 
-## Resources
+### Resources
 
-| Name | Type |
-|------|------|
-| [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
+No resources.
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface. | `list(string)` | `null` | no |
+| <a name="input_allowed_sources"></a> [allowed\_sources](#input\_allowed\_sources) | A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface. | `list(string)` | n/a | yes |
 | <a name="input_autoscaler_metrics"></a> [autoscaler\_metrics](#input\_autoscaler\_metrics) | The map with the keys being metrics identifiers (e.g. custom.googleapis.com/VMSeries/panSessionUtilization).<br>Each of the contained objects has attribute `target` which is a numerical threshold for a scale-out or a scale-in.<br>Each zonal group grows until it satisfies all the targets.<br><br>Additional optional attribute `type` defines the metric as either `GAUGE` (the default), `DELTA_PER_SECOND`, or `DELTA_PER_MINUTE`.<br>For full specification, see the `metric` inside the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `map` | <pre>{<br>  "custom.googleapis.com/VMSeries/panSessionActive": {<br>    "target": 100<br>  }<br>}</pre> | no |
-| <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | The CIDR range of the management subnetwork. | `string` | `null` | no |
-| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `null` | no |
-| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `null` | no |
-| <a name="input_panorama_address"></a> [panorama\_address](#input\_panorama\_address) | The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC.<br>This build assumes Panorama is reachable via the internet. The management VPC network uses a <br>NAT gateway to communicate to Panorama's external IP addresses. | `string` | n/a | yes |
+| <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | The CIDR range of the management subnetwork. | `string` | `"10.0.0.0/28"` | no |
+| <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `"10.0.2.0/28"` | no |
+| <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `"10.0.1.0/28"` | no |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to prepend the resource names. This is useful for identifing the created resources. | `string` | `""` | no |
+| <a name="input_panorama_address"></a> [panorama\_address](#input\_panorama\_address) | The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC. This build assumes Panorama is reachable via the internet. The management VPC network uses a NAT gateway to communicate to Panorama's external IP addresses. | `string` | n/a | yes |
 | <a name="input_panorama_device_group"></a> [panorama\_device\_group](#input\_panorama\_device\_group) | The name of the Panorama device group that will bootstrap the VM-Series firewalls. | `string` | n/a | yes |
 | <a name="input_panorama_template_stack"></a> [panorama\_template\_stack](#input\_panorama\_template\_stack) | The name of the Panorama template stack that will bootstrap the VM-Series firewalls. | `string` | n/a | yes |
 | <a name="input_panorama_vm_auth_key"></a> [panorama\_vm\_auth\_key](#input\_panorama\_vm\_auth\_key) | Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html | `string` | n/a | yes |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to GCP resource names, an arbitrary string | `string` | `null` | no |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID | `string` | n/a | yes |
-| <a name="input_public_key_path"></a> [public\_key\_path](#input\_public\_key\_path) | Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin` | `string` | `"~/.ssh/gcp-demo.pub"` | no |
-| <a name="input_region"></a> [region](#input\_region) | GCP Region | `string` | `"us-east1"` | no |
-| <a name="input_vmseries_image_name"></a> [vmseries\_image\_name](#input\_vmseries\_image\_name) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | `"https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-byol-1014"` | no |
-| <a name="input_vmseries_machine_type"></a> [vmseries\_machine\_type](#input\_vmseries\_machine\_type) | The Google Compute instance type to run the VM-Series firewall.  N1 and N2 instance types are supported. | `string` | `"n1-standard-4"` | no |
-| <a name="input_vmseries_per_zone_max"></a> [vmseries\_per\_zone\_max](#input\_vmseries\_per\_zone\_max) | The max number of firewalls to run in each zone. | `number` | `2` | no |
-| <a name="input_vmseries_per_zone_min"></a> [vmseries\_per\_zone\_min](#input\_vmseries\_per\_zone\_min) | The minimum number of firewalls to run in each zone. | `number` | `1` | no |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID to contain the created cloud resources. | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | GCP region | `string` | n/a | yes |
+| <a name="input_vmseries_image_name"></a> [vmseries\_image\_name](#input\_vmseries\_image\_name) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | n/a | yes |
+| <a name="input_vmseries_instances_max"></a> [vmseries\_instances\_max](#input\_vmseries\_instances\_max) | The maximum number of VM-Series that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of VM-Series should not be lower than minimal number of VM-Series. | `number` | `5` | no |
+| <a name="input_vmseries_instances_min"></a> [vmseries\_instances\_min](#input\_vmseries\_instances\_min) | The minimum number of VM-Series that the autoscaler can scale down to. This cannot be less than 0. | `number` | `2` | no |
+| <a name="input_vmseries_machine_type"></a> [vmseries\_machine\_type](#input\_vmseries\_machine\_type) | (Optional) The instance type for the VM-Series firewalls. | `string` | `"n2-standard-4"` | no |
 
-## Outputs
+### Outputs
 
 No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

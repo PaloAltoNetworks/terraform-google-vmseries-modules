@@ -1,9 +1,3 @@
-terraform {
-  required_providers {
-    google = { version = "~> 3.30" }
-  }
-}
-
 resource "google_compute_global_forwarding_rule" "http" {
   count      = var.http_forward ? 1 : 0
   name       = "${var.name}-http"

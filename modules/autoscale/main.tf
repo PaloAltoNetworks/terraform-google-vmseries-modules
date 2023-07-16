@@ -1,17 +1,19 @@
-resource "google_compute_instance_template" "this" {
-  name_prefix      = var.prefix
+data "google_compute_default_service_account" "main" {}
+
+# Instance template
+resource "google_compute_instance_template" "main" {
+  name_prefix      = var.name
   machine_type     = var.machine_type
   min_cpu_platform = var.min_cpu_platform
-  can_ip_forward   = true
   tags             = var.tags
   metadata         = var.metadata
+  can_ip_forward   = true
 
   service_account {
     scopes = var.scopes
     email  = var.service_account_email
   }
 
-  // Create multiple interfaces (max 8)
   dynamic "network_interface" {
     for_each = var.network_interfaces
 
@@ -37,21 +39,20 @@ resource "google_compute_instance_template" "this" {
   }
 }
 
-resource "google_compute_instance_group_manager" "this" {
-  for_each = var.zones
+# Zonal managed instance group and autoscaler
+resource "google_compute_instance_group_manager" "zonal" {
+  for_each = var.regional_mig ? {} : var.zones
 
-  base_instance_name = "${var.prefix}-fw"
-  name               = "${var.prefix}-igm-${each.value}"
+  name               = "${var.name}-${each.value}"
+  base_instance_name = var.name
+  target_pools       = var.target_pools
   zone               = each.value
-  target_pools       = compact([var.pool])
 
   version {
-    instance_template = google_compute_instance_template.this.id
+    instance_template = google_compute_instance_template.main.id
   }
 
   lifecycle {
-    # Ignore the name changes and only react to the version.instance_template changes.
-    # Google webui uses dummy name changes to implement Rolling Restart.
     ignore_changes = [
       version[0].name,
       version[1].name,
@@ -59,9 +60,7 @@ resource "google_compute_instance_group_manager" "this" {
   }
 
   update_policy {
-    type = var.update_policy_type
-    // Currently in google-beta provider.  Will merge when it becomes GA.
-    #min_ready_sec   = var.update_policy_min_ready_sec
+    type            = var.update_policy_type
     max_surge_fixed = 1
     minimal_action  = "REPLACE"
   }
@@ -75,27 +74,17 @@ resource "google_compute_instance_group_manager" "this" {
   }
 }
 
-resource "random_id" "autoscaler" {
-  for_each = var.zones
-  keepers = {
-    # Re-randomize on igm change. It forcibly recreates all users of this random_id.
-    google_compute_instance_group_manager = try(google_compute_instance_group_manager.this[each.key].id, null)
-  }
-  byte_length = 3
-}
+resource "google_compute_autoscaler" "zonal" {
+  for_each = var.regional_mig ? {} : var.zones
 
-resource "google_compute_autoscaler" "this" {
-  for_each = var.zones
-  name     = "${var.prefix}-${random_id.autoscaler[each.key].hex}-as-${each.value}"
-  target   = try(google_compute_instance_group_manager.this[each.key].id, "")
-  zone     = each.value
+  name   = "${var.name}-${each.value}"
+  target = google_compute_instance_group_manager.zonal[each.key].id
+  zone   = each.value
 
   autoscaling_policy {
-    max_replicas    = var.max_replicas_per_zone
-    min_replicas    = var.min_replicas_per_zone
+    min_replicas    = var.min_vmseries_replicas
+    max_replicas    = var.max_vmseries_replicas
     cooldown_period = var.cooldown_period
-
-    # cpu_utilization { target = 0.7 }
 
     dynamic "metric" {
       for_each = var.autoscaler_metrics
@@ -115,23 +104,90 @@ resource "google_compute_autoscaler" "this" {
   }
 }
 
-#---------------------------------------------------------------------------------
-# Pub-Sub is intended to be used by various cloud applications to register
-# new ip/port that would be consumed by Panorama and automatically onboarded.
+# Regional managed instance group and autoscaler
+data "google_compute_zones" "main" {
+  count = var.regional_mig ? 1 : 0
 
-resource "google_pubsub_topic" "this" {
-  name = "${var.deployment_name}-panorama-apps-deployment"
+  region = var.region
 }
 
-resource "google_pubsub_subscription" "this" {
-  name  = "${var.deployment_name}-panorama-plugin-subscription"
-  topic = google_pubsub_topic.this.id
+resource "google_compute_region_instance_group_manager" "regional" {
+  count = var.regional_mig ? 1 : 0
+
+  name               = var.name
+  base_instance_name = var.name
+  target_pools       = var.target_pools
+  region             = var.region
+
+  version {
+    instance_template = google_compute_instance_template.main.id
+  }
+
+  update_policy {
+    type            = var.update_policy_type
+    max_surge_fixed = length(data.google_compute_zones.main[0])
+    minimal_action  = "REPLACE"
+  }
+
+  dynamic "named_port" {
+    for_each = var.named_ports
+    content {
+      name = named_port.value.name
+      port = named_port.value.port
+    }
+  }
 }
 
-resource "google_pubsub_subscription_iam_member" "this" {
-  subscription = google_pubsub_subscription.this.id
+resource "google_compute_region_autoscaler" "regional" {
+  count = var.regional_mig ? 1 : 0
+
+  name   = var.name
+  target = google_compute_region_instance_group_manager.regional[0].id
+  region = var.region
+
+  autoscaling_policy {
+    min_replicas    = var.min_vmseries_replicas
+    max_replicas    = var.max_vmseries_replicas
+    cooldown_period = var.cooldown_period
+
+    dynamic "metric" {
+      for_each = var.autoscaler_metrics
+      content {
+        name   = metric.key
+        type   = try(metric.value.type, "GAUGE")
+        target = metric.value.target
+      }
+    }
+
+    scale_in_control {
+      time_window_sec = var.scale_in_control_time_window_sec
+      max_scaled_in_replicas {
+        fixed = var.scale_in_control_replicas_fixed
+      }
+    }
+  }
+}
+
+# Pub/Sub for Panorama Plugin
+resource "google_pubsub_topic" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+
+  name = "${var.name}-mig"
+}
+
+resource "google_pubsub_subscription" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+
+  name  = "${var.name}-mig"
+  topic = google_pubsub_topic.main[0].id
+}
+
+resource "google_pubsub_subscription_iam_member" "main" {
+  count = var.create_pubsub_topic ? 1 : 0
+
+  subscription = google_pubsub_subscription.main[0].id
   role         = "roles/pubsub.subscriber"
-  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.this.email)}"
+  member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
 }
 
 data "google_compute_default_service_account" "this" {}
@@ -146,10 +202,9 @@ resource "random_id" "postfix" {
 locals {
   delicensing_cfn = {
     panorama_ip             = var.panorama_ip
-    bucket_name             = "${var.prefix}-${local.cfn_name}-${random_id.postfix.hex}"
+    bucket_name             = "${var.prefix}${var.delicensing_cfn_name}-${random_id.postfix.hex}"
     source_dir              = "${path.module}/src"
-    zip_file_name           = "delicensing_cfn.zip"
-    zip_file_name_sha       = "delicensing_cfn.${lower(replace(data.archive_file.delicensing_cfn.output_base64sha256, "=", ""))}.zip"
+    zip_file_name           = "delicensing_cfn"
     runtime_sa_account_id   = "${var.prefix}${var.delicensing_cfn_name}-sa-${random_id.postfix.hex}"
     runtime_sa_display_name = "Delicensing Cloud Function runtime SA"
     runtime_sa_roles = [
@@ -172,15 +227,18 @@ locals {
 resource "google_secret_manager_secret" "delicensing_cfn_pano_creds" {
   count     = var.enable_delicensing ? 1 : 0
   secret_id = local.delicensing_cfn.secret_name
+  replication {
+    automatic = true
+  }
 }
 
 # Create a log sink to match the delete of a VM from a Managed Instance group during the initial phase
 resource "google_logging_project_sink" "delicensing_cfn" {
   count = var.enable_delicensing ? 1 : 0
 
-  destination            = "pubsub.googleapis.com/${google_pubsub_topic.this[0].id}"
+  destination            = "pubsub.googleapis.com/${google_pubsub_topic.delicensing_cfn[0].id}"
   name                   = local.delicensing_cfn.log_sink_name
-  filter                 = local.delicensing_cfn.log_sink_filter
+  filter                 = "protoPayload.requestMetadata.callerSuppliedUserAgent=\"GCE Managed Instance Group\" AND protoPayload.methodName=\"v1.compute.instances.delete\" AND protoPayload.response.progress=\"0\""
   unique_writer_identity = true
 }
 
@@ -194,7 +252,7 @@ resource "google_pubsub_topic" "delicensing_cfn" {
 resource "google_pubsub_subscription" "delicensing_cfn" {
   count                   = var.enable_delicensing ? 1 : 0
   name                    = local.delicensing_cfn.subscription_name
-  topic                   = google_pubsub_topic.delicensing[0].name
+  topic                   = google_pubsub_topic.delicensing_cfn[0].name
   ack_deadline_seconds    = 10
   enable_message_ordering = false
 }
@@ -213,17 +271,14 @@ resource "google_vpc_access_connector" "delicensing_cfn" {
   network       = data.google_compute_network.panorama_network[0].self_link
 }
 
-data "google_project" "project" {
-}
-
 resource "google_cloudfunctions_function" "delicensing_cfn" {
   count                 = var.enable_delicensing ? 1 : 0
   name                  = var.delicensing_cfn_name
   description           = local.delicensing_cfn.description
   runtime               = "python310"
   entry_point           = local.delicensing_cfn.entry_point
-  source_archive_bucket = google_storage_bucket.delicensing_cfn.self_link
-  source_archive_object = google_storage_bucket_object.delicensing_cfn.self_link
+  source_archive_bucket = google_storage_bucket.delicensing_cfn[0].self_link
+  source_archive_object = google_storage_bucket_object.delicensing_cfn[0].self_link
   #checkov:skip=CKV2_GCP_10:When using event trigger, HTTP Trigger is invalid and not used
   event_trigger {
     event_type = "google.pubsub.topic.publish"
@@ -234,9 +289,9 @@ resource "google_cloudfunctions_function" "delicensing_cfn" {
   max_instances       = 20
   environment_variables = {
     "PANORAMA_IP" = var.panorama_ip
-    "SECRET_NAME" = google_secret_manager_secret.delicensing_cfn_pano_creds.secret_id
+    "SECRET_NAME" = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
   }
-  service_account_email         = google_service_account.delicensing_cfn.email
+  service_account_email         = google_service_account.delicensing_cfn[0].email
   depends_on                    = [google_storage_bucket_object.delicensing_cfn]
   vpc_connector                 = google_vpc_access_connector.delicensing_cfn[0].self_link
   vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
@@ -256,32 +311,37 @@ data "archive_file" "delicensing_cfn" {
   count       = var.enable_delicensing ? 1 : 0
   type        = "zip"
   source_dir  = local.delicensing_cfn.source_dir
-  output_path = "/tmp/${local.delicensing_cfn.zip_file_name}"
+  output_path = "/tmp/${local.delicensing_cfn.zip_file_name}.zip"
 }
 
 resource "google_storage_bucket_object" "delicensing_cfn" {
   count  = var.enable_delicensing ? 1 : 0
-  name   = local.delicensing_cfn.zip_file_name_sha
+  name   = "${local.delicensing_cfn.zip_file_name}.${lower(replace(data.archive_file.delicensing_cfn[0].output_base64sha256, "=", ""))}.zip"
   bucket = local.delicensing_cfn.bucket_name
-  source = "/tmp/${local.delicensing_cfn.zip_file_name}"
+  source = "/tmp/${local.delicensing_cfn.zip_file_name}.zip"
 }
 
 # CFN Service Account
 resource "google_service_account" "delicensing_cfn" {
   count        = var.enable_delicensing ? 1 : 0
-  account_id   = local.delicensing_cfn.cfn_identity_account_id
-  display_name = local.delicensing_cfn.cfn_identity_display_name
+  account_id   = local.delicensing_cfn.runtime_sa_account_id
+  display_name = local.delicensing_cfn.runtime_sa_display_name
 }
+
+
+data "google_project" "this" { }
 
 resource "google_project_iam_member" "delicensing_cfn" {
   for_each = var.enable_delicensing ? toset(local.delicensing_cfn.runtime_sa_roles) : []
+  project = data.google_project.this.project_id
   role     = each.key
-  member   = "serviceAccount:${google_service_account.delicensing_cfn.email}"
+  member   = "serviceAccount:${google_service_account.delicensing_cfn[0].email}"
 }
 
 # Allow log router writer to write to pub/sub
 resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
   count  = var.enable_delicensing ? 1 : 0
+  project = data.google_project.this.project_id
   topic  = local.delicensing_cfn.topic_name
   role   = "roles/pubsub.publisher"
   member = google_logging_project_sink.delicensing_cfn[0].writer_identity

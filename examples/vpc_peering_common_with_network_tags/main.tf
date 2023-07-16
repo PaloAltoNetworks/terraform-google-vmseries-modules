@@ -6,6 +6,7 @@ module "iam_service_account" {
   service_account_id = "${var.name_prefix}${each.value.service_account_id}"
   display_name       = "${var.name_prefix}${each.value.display_name}"
   roles              = each.value.roles
+  project_id         = var.project
 }
 
 resource "local_file" "bootstrap_xml_region_1" {

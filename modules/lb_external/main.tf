@@ -1,9 +1,3 @@
-terraform {
-  required_providers {
-    google = { version = "~> 3.30" }
-  }
-}
-
 data "google_client_config" "this" {}
 
 locals {
@@ -59,13 +53,15 @@ resource "google_compute_forwarding_rule" "rule" {
 
 # Create `google_compute_target_pool` if required by `var.rules`
 resource "google_compute_target_pool" "this" {
-  count            = local.target_pool_needed ? 1 : 0
-  name             = var.name
-  session_affinity = var.session_affinity
+  count = local.target_pool_needed ? 1 : 0
+
+  name    = var.name
+  project = var.project
+  region  = local.region
+
   instances        = var.instances
   health_checks    = var.create_health_check ? [google_compute_http_health_check.this[0].self_link] : []
-  region           = var.region
-  project          = var.project
+  session_affinity = var.session_affinity
 
   lifecycle {
     # Ignore changes because autoscaler changes this in the background.
@@ -94,12 +90,14 @@ resource "google_compute_region_backend_service" "this" {
 
   count = local.backend_service_needed ? 1 : 0
 
-  name                  = var.name
-  region                = local.region
+  name    = var.name
+  project = var.project
+  region  = local.region
+
   load_balancing_scheme = "EXTERNAL"
   health_checks         = var.create_health_check ? [google_compute_region_health_check.this[0].self_link] : []
   protocol              = "UNSPECIFIED"
-  project               = var.project
+  session_affinity      = var.session_affinity
 
   dynamic "backend" {
     for_each = var.backend_instance_groups
@@ -108,11 +106,14 @@ resource "google_compute_region_backend_service" "this" {
     }
   }
 
-  # this section requires the google-beta provider as of 2022-04-13
-  connection_tracking_policy {
-    tracking_mode                                = var.connection_tracking_mode
-    connection_persistence_on_unhealthy_backends = var.connection_persistence_on_unhealthy_backends
-    idle_timeout_sec                             = var.idle_timeout_sec
+  # This feature requires beta provider as of 2023-03-16
+  dynamic "connection_tracking_policy" {
+    for_each = var.connection_tracking_policy != null ? ["this"] : []
+    content {
+      tracking_mode                                = try(var.connection_tracking_policy.mode, null)
+      idle_timeout_sec                             = try(var.connection_tracking_policy.idle_timeout_sec, null)
+      connection_persistence_on_unhealthy_backends = try(var.connection_tracking_policy.persistence_on_unhealthy_backends, null)
+    }
   }
 }
 

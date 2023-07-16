@@ -1,54 +1,76 @@
 variable "project_id" {
-  description = "GCP Project ID"
+  description = "GCP Project ID to contain the created cloud resources."
   type        = string
 }
 
-#variable "auth_file" {
-#  description = "GCP Project auth JSON file"
-#  type        = string
-#}
+variable "name_prefix" {
+  description = "Prefix to prepend the resource names. This is useful for identifing the created resources."
+  type        = string
+  default     = ""
+}
 
 variable "region" {
-  description = "GCP Region"
-  default     = "us-east1"
+  description = "GCP region"
   type        = string
 }
 
-variable "public_key_path" {
-  description = "Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin`"
-  default     = "~/.ssh/gcp-demo.pub"
+variable "allowed_sources" {
+  description = "A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface."
+  type        = list(string)
 }
 
 variable "vmseries_image_name" {
-  description = "Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
-  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-byol-1014"
+  description = " Link to VM-Series PAN-OS image. Can be either a full self_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image)."
+  type        = string
+  #default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle2-1014"
+}
+
+variable "vmseries_instances_min" {
+  description = "The minimum number of VM-Series that the autoscaler can scale down to. This cannot be less than 0."
+  type        = number
+  default     = 2
+}
+
+variable "vmseries_instances_max" {
+  description = "The maximum number of VM-Series that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of VM-Series should not be lower than minimal number of VM-Series."
+  type        = number
+  default     = 5
+}
+
+variable "ssh_keys" {
+  type        = string
+  default     = ""
+  description = "VM-Series SSH keys. Format: 'admin:<ssh-rsa AAAA...>'"
+}
+
+
+variable "panorama_address" {
+  description = "The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC. This build assumes Panorama is reachable via the internet. The management VPC network uses a NAT gateway to communicate to Panorama's external IP addresses."
   type        = string
 }
+
+variable "panorama_device_group" {
+  description = "The name of the Panorama device group that will bootstrap the VM-Series firewalls."
+  type        = string
+}
+
+variable "panorama_template_stack" {
+  description = "The name of the Panorama template stack that will bootstrap the VM-Series firewalls."
+  type        = string
+}
+
+variable "panorama_vm_auth_key" {
+  description = "Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html"
+  type        = string
+}
+
 
 variable "vmseries_machine_type" {
-  description = "The Google Compute instance type to run the VM-Series firewall.  N1 and N2 instance types are supported."
-  default     = "n1-standard-4"
+  description = "(Optional) The instance type for the VM-Series firewalls."
   type        = string
+  default     = "n2-standard-4"
 }
 
-
-variable "vmseries_per_zone_max" {
-  description = "The max number of firewalls to run in each zone."
-  default     = 2
-  type        = number
-}
-
-variable "vmseries_per_zone_min" {
-  description = "The minimum number of firewalls to run in each zone."
-  default     = 1
-  type        = number
-}
-
-variable "prefix" {
-  description = "Prefix to GCP resource names, an arbitrary string"
-  default     = null
-  type        = string
-}
 
 variable "autoscaler_metrics" {
   description = <<-EOF
@@ -66,50 +88,20 @@ variable "autoscaler_metrics" {
   }
 }
 
-variable "allowed_sources" {
-  description = "A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface."
-  type        = list(string)
-  default     = null
-}
-
 variable "cidr_mgmt" {
   description = "The CIDR range of the management subnetwork."
   type        = string
-  default     = null
+  default     = "10.0.0.0/28"
 }
 
 variable "cidr_untrust" {
   description = "The CIDR range of the untrust subnetwork."
   type        = string
-  default     = null
+  default     = "10.0.1.0/28"
 }
 
 variable "cidr_trust" {
   description = "The CIDR range of the trust subnetwork."
   type        = string
-  default     = null
-}
-
-variable "panorama_vm_auth_key" {
-  description = "Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html"
-  type        = string
-}
-
-variable "panorama_address" {
-  description = <<-EOF
-  The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC.  
-  This build assumes Panorama is reachable via the internet. The management VPC network uses a 
-  NAT gateway to communicate to Panorama's external IP addresses.
-  EOF
-  type        = string
-}
-
-variable "panorama_device_group" {
-  description = "The name of the Panorama device group that will bootstrap the VM-Series firewalls."
-  type        = string
-}
-
-variable "panorama_template_stack" {
-  description = "The name of the Panorama template stack that will bootstrap the VM-Series firewalls."
-  type        = string
+  default     = "10.0.2.0/28"
 }

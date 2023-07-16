@@ -1,7 +1,8 @@
 data "google_client_config" "this" {}
 
 resource "google_compute_health_check" "this" {
-  name = "${var.name}-${data.google_client_config.this.region}-check-tcp${var.health_check_port}"
+  name    = "${var.name}-${data.google_client_config.this.region}-check-tcp${var.health_check_port}"
+  project = var.project
 
   tcp_health_check {
     port = var.health_check_port
@@ -9,11 +10,14 @@ resource "google_compute_health_check" "this" {
 }
 
 resource "google_compute_region_backend_service" "this" {
-  name   = var.name
-  region = var.region
+  provider = google-beta
+
+  name    = var.name
+  network = var.network
+  project = var.project
+  region  = var.region
 
   health_checks                   = [var.health_check != null ? var.health_check : google_compute_health_check.this.self_link]
-  network                         = var.network
   session_affinity                = var.session_affinity
   timeout_sec                     = var.timeout_sec
   connection_draining_timeout_sec = var.connection_draining_timeout_sec
@@ -34,6 +38,16 @@ resource "google_compute_region_backend_service" "this" {
     }
   }
 
+  # This feature requires beta provider as of 2023-03-16
+  dynamic "connection_tracking_policy" {
+    for_each = var.connection_tracking_policy != null ? ["this"] : []
+    content {
+      tracking_mode                                = try(var.connection_tracking_policy.mode, null)
+      idle_timeout_sec                             = try(var.connection_tracking_policy.idle_timeout_sec, null)
+      connection_persistence_on_unhealthy_backends = try(var.connection_tracking_policy.persistence_on_unhealthy_backends, null)
+    }
+  }
+
   dynamic "failover_policy" {
     for_each = var.disable_connection_drain_on_failover != null || var.drop_traffic_if_unhealthy != null || var.failover_ratio != null ? ["one"] : []
 
@@ -46,8 +60,9 @@ resource "google_compute_region_backend_service" "this" {
 }
 
 resource "google_compute_forwarding_rule" "this" {
-  name   = var.name
-  region = var.region
+  name    = var.name
+  project = var.project
+  region  = var.region
 
   load_balancing_scheme = "INTERNAL"
   ip_address            = var.ip_address

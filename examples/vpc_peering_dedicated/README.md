@@ -1,10 +1,33 @@
-# Palo Alto Networks VM-Series Dedicated Inbound Firewall Option
+---
+short_title: Dedicated Firewall Option
+type: refarch
+show_in_hub: true
+---
+# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Dedicated Inbound NGFW Option
 
-The scope of this code is to deploy an example of the [VM-Series Dedicated Inbound Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
+Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
+The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with dedicated-inbound VM-Series; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
 
-The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrise the initial Day 0 configuration.
+## Reference Architecture Design
 
-## Topology
+![simple](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/942d7e0a-eafb-42fb-ba53-6fefedb4b69d)
+
+This code implements:
+- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
+- the _dedicated inbound option_, which separates inbound traffic flows onto a separate set of VM-Series
+
+## Detailed Architecture and Design
+
+### Centralized Design
+
+This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
+This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
+
+### Dedicated Inbound Option
+
+The dedicated inbound option separates traffic flows across two separate sets of VM-Series firewalls. One set of VM-Series firewalls is dedicated to inbound traffic flows, allowing for greater flexibility and scaling of inbound traffic loads. The second set of VM-Series firewalls services all outbound, east-west, and enterprise network traffic flows. This deployment choice offers increased scale and operational resiliency and reduces the chances of high bandwidth use from the inbound traffic flows affecting other traffic flows within the deployment.
+
+![gcp-dedicatedinbound](https://user-images.githubusercontent.com/43091730/232493285-372de660-6c10-4957-ae3a-183e891af815.png)
 
 With default variable values the topology consists of :
  - 5 VPC networks :
@@ -18,12 +41,12 @@ With default variable values the topology consists of :
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one Global HTTP loadbalancer (for inbound traffic)
 
-![VM-Series-Dedicated-Inbound-Firewall-Option](https://user-images.githubusercontent.com/43091730/232493285-372de660-6c10-4957-ae3a-183e891af815.png)
 
 ## Prerequisites
 
-1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
+The following steps should be followed before deploying the Terraform code presented here.
 
+1. Prepare [VM-Series licenses](https://support.paloaltonetworks.com/)
 2. Configure the terraform [google provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration)
 
 ## Build
@@ -37,16 +60,15 @@ git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
 cd terraform-google-vmseries-modules/examples/vpc-peering-dedicated
 ```
 
-3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. There is also a few variables that have some default values but which should also be changed as per deployment requirements :
- - General
-   - region
- - vmseries
-   - bootstrap_options
-     - panorama-server
-     - dns-primary
-     - dns-secondary
-  - linux_vms
-    - linux_disk_size
+3. Copy the `example.tfvars` to `terraform.tfvars`.
+
+`project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. 
+
+There are also a few variables that have some default values but which should also be changed as per deployment requirements
+
+ - `region`
+ - `vmseries.<fw-name>.bootstrap_options`
+ - `linux_vms.<vm-name>.linux_disk_size`
 
 4. Apply the terraform code:
 
@@ -175,21 +197,22 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 
 The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untrust` interfaces. In order to properly route traffic - configure a DNAT + SNAT Policy on the dedicated inbound firewall pair to send traffic towards a VM inside your network (SNAT is also required to properly route return traffic back to the proper firewall).
 
+## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0, < 2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | n/a |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
@@ -201,7 +224,7 @@ The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untru
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 | <a name="module_vpc_peering"></a> [vpc\_peering](#module\_vpc\_peering) | ../../modules/vpc-peering | n/a |
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -211,7 +234,7 @@ The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untru
 | [local_file.init_cfg](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [google_compute_image.my_image](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_image) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -229,7 +252,7 @@ The GCP Global HTTP LB acts as a proxy and sends traffic to the VM-Series `Untru
 | <a name="input_vmseries_common"></a> [vmseries\_common](#input\_vmseries\_common) | A map containing common vmseries setting.<br><br>Example of variable deployment :<pre>vmseries_common = {<br>  ssh_keys            = "admin:AAABBB..."<br>  vmseries_image      = "vmseries-flex-byol-1022h2"<br>  machine_type        = "n2-standard-4"<br>  min_cpu_platform    = "Intel Cascade Lake"<br>  service_account_key = "sa-vmseries-01"<br>  bootstrap_options = {<br>    type                = "dhcp-client"<br>    mgmt-interface-swap = "enable"<br>  }<br>}</pre>Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`). | `any` | n/a | yes |
 | <a name="input_vpc_peerings"></a> [vpc\_peerings](#input\_vpc\_peerings) | A map containing each VPC peering setting.<br><br>Example of variable deployment :<pre>vpc_peerings = {<br>  "trust-to-spoke1" = {<br>    local_network = "fw-trust-vpc"<br>    peer_network  = "spoke1-vpc"<br><br>    local_export_custom_routes                = true<br>    local_import_custom_routes                = true<br>    local_export_subnet_routes_with_public_ip = true<br>    local_import_subnet_routes_with_public_ip = true<br><br>    peer_export_custom_routes                = true<br>    peer_import_custom_routes                = true<br>    peer_export_subnet_routes_with_public_ip = true<br>    peer_import_subnet_routes_with_public_ip = true<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc-peering#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

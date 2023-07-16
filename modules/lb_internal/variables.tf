@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "project" {
+  description = "The project to deploy to. If unset the default provider project is used."
+  type        = string
+  default     = null
+}
+
 variable "region" {
   description = "Region to create ILB in."
   type        = string
@@ -63,11 +69,26 @@ variable "network" {
 }
 
 variable "session_affinity" {
-  description = "(Optional, TCP only) Try to direct sessions to the same backend, can be: CLIENT_IP, CLIENT_IP_PORT_PROTO, CLIENT_IP_PROTO, NONE (default is NONE)."
+  description = <<-EOF
+  Controls distribution of new connections (or fragmented UDP packets) from clients to the backends, can influence available connection tracking configurations.
+  Valid values are: NONE (default), CLIENT_IP_NO_DESTINATION, CLIENT_IP, CLIENT_IP_PROTO, CLIENT_IP_PORT_PROTO.
+  EOF
   default     = null
   type        = string
 }
 
+variable "connection_tracking_policy" {
+  description = <<-EOF
+  Connection tracking policy settings. Following options are available:
+  - `mode`                              - (Optional|string) `PER_CONNECTION` (default) or `PER_SESSION`
+  - `idle_timeout_sec`                  - (Optional|number) Defaults to 600 seconds, can only be modified in specific conditions (see link below)
+  - `persistence_on_unhealthy_backends` - (Optional|string) `DEFAULT_FOR_PROTOCOL` (default), `ALWAYS_PERSIST` or `NEVER_PERSIST`
+
+  More information about supported configurations in conjunction with `session_affinity` is available in [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-balancing/docs/internal#connection-tracking) documentation.
+  EOF
+  default     = null
+  type        = map(any)
+}
 
 variable "timeout_sec" {
   description = "(Optional) How many seconds to wait for the backend before dropping the connection. Default is 30 seconds. Valid range is [1, 86400]."
