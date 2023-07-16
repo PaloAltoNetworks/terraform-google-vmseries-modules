@@ -1,0 +1,5 @@
+# Function dependencies, for example:
+# package>=version
+google-api-python-client==2.86.0
+pan-os-python
+google-cloud-secret-manager

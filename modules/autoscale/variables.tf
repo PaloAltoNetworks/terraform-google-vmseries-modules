@@ -189,3 +189,35 @@ variable "network_interfaces" {
   EOF
   type        = list(any)
 }
+
+### Delicensing
+
+variable "enable_delicensing" {
+  type        = bool
+  default     = false
+  description = <<-EOF
+  (Optional) Create resources for instant VM Series delicensing when VM is destroyed.
+  When set to `false` delicensing is performed as defined in "SW Firewall License" plugin configuration
+  EOF
+}
+
+variable "panorama_ip" {
+  type        = string
+  default     = null
+  description = "Panorama IP address"
+}
+
+variable "vpc_connector_network" {
+  type        = string
+  default     = null
+  description = "Panorama VPC network Name"
+}
+
+variable "vpc_connector_cidr" {
+  type        = string
+  default     = null
+  description = <<-EOF
+  VPC connector /28 CIDR.
+  VPC connector will be user for delicensing CFN to access Panorama VPC network.
+  EOF
+}
