@@ -43,9 +43,8 @@ variable "ssh_keys" {
   description = "VM-Series SSH keys. Format: 'admin:<ssh-rsa AAAA...>'"
 }
 
-
 variable "panorama_address" {
-  description = "The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC. This build assumes Panorama is reachable via the internet. The management VPC network uses a NAT gateway to communicate to Panorama's external IP addresses."
+  description = "The Panorama IP address/FQDN.  The Panorama must be reachable from the management VPC. This build assumes Panorama is reachable via the internet. The management VPC network uses a NAT gateway to communicate to Panorama's external IP addresses."
   type        = string
 }
 
@@ -62,15 +61,20 @@ variable "panorama_template_stack" {
 variable "panorama_vm_auth_key" {
   description = "Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html"
   type        = string
+  default     = null
 }
 
+variable "panorama_auth_key" {
+  description = "Panorama authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/license-the-vm-series-firewall/use-panorama-based-software-firewall-license-management"
+  type        = string
+  default     = null
+}
 
 variable "vmseries_machine_type" {
   description = "(Optional) The instance type for the VM-Series firewalls."
   type        = string
   default     = "n2-standard-4"
 }
-
 
 variable "autoscaler_metrics" {
   description = <<-EOF

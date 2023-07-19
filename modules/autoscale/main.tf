@@ -190,42 +190,45 @@ resource "google_pubsub_subscription_iam_member" "main" {
   member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
 }
 
-data "google_compute_default_service_account" "this" {}
-
 #---------------------------------------------------------------------------------
 # The following resources are used for delicensing
+
+data "google_project" "this" {}
 
 resource "random_id" "postfix" {
   byte_length = 2
 }
 
 locals {
+  delicensing_cfn_name    = try(var.delicensing_cloud_function_config.function_name, "delicensing-cfn")
+  delicensing_name_prefix = try(var.delicensing_cloud_function_config.name_prefix, "")
+
   delicensing_cfn = {
-    panorama_ip             = var.panorama_ip
-    bucket_name             = "${var.prefix}${var.delicensing_cfn_name}-${random_id.postfix.hex}"
+    panorama_address        = try(var.delicensing_cloud_function_config.panorama_address, "")
+    function_name           = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}-${random_id.postfix.hex}"
+    bucket_name             = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}-${random_id.postfix.hex}"
     source_dir              = "${path.module}/src"
-    zip_file_name           = "delicensing_cfn"
-    runtime_sa_account_id   = "${var.prefix}${var.delicensing_cfn_name}-sa-${random_id.postfix.hex}"
+    zip_file_name           = local.delicensing_cfn_name
+    runtime_sa_account_id   = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}-sa-${random_id.postfix.hex}"
     runtime_sa_display_name = "Delicensing Cloud Function runtime SA"
     runtime_sa_roles = [
-      # "roles/iam.serviceAccountUser",
       "roles/secretmanager.secretAccessor",
       "roles/compute.viewer",
     ]
-    topic_name         = "${var.prefix}${var.delicensing_cfn_name}_topic-${random_id.postfix.hex}"
-    log_sink_name      = "${var.prefix}${var.delicensing_cfn_name}_logsink-${random_id.postfix.hex}"
+    topic_name         = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}_topic-${random_id.postfix.hex}"
+    log_sink_name      = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}_logsink-${random_id.postfix.hex}"
     entry_point        = "autoscale_delete_event"
     description        = "Cloud Function to delicense firewalls in Panorama on scale-in events"
-    subscription_name  = "${var.prefix}${var.delicensing_cfn_name}_subscription"
-    secret_name        = "${var.prefix}${var.delicensing_cfn_name}_pano_creds-${random_id.postfix.hex}"
-    vpc_connector_name = "${var.prefix}${var.delicensing_cfn_name}-vpc-connector-${random_id.postfix.hex}"
+    subscription_name  = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}_subscription"
+    secret_name        = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}_pano_creds-${random_id.postfix.hex}"
+    vpc_connector_name = "${local.delicensing_name_prefix}${local.delicensing_cfn_name}-${random_id.postfix.hex}"
   }
 }
 
 # Secret to store Panorama credentials.
-# Credentials itself are set manually.
+# Credentials itself are set manually after secret store is created by Terraform.
 resource "google_secret_manager_secret" "delicensing_cfn_pano_creds" {
-  count     = var.enable_delicensing ? 1 : 0
+  count     = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   secret_id = local.delicensing_cfn.secret_name
   replication {
     automatic = true
@@ -234,8 +237,7 @@ resource "google_secret_manager_secret" "delicensing_cfn_pano_creds" {
 
 # Create a log sink to match the delete of a VM from a Managed Instance group during the initial phase
 resource "google_logging_project_sink" "delicensing_cfn" {
-  count = var.enable_delicensing ? 1 : 0
-
+  count                  = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   destination            = "pubsub.googleapis.com/${google_pubsub_topic.delicensing_cfn[0].id}"
   name                   = local.delicensing_cfn.log_sink_name
   filter                 = "protoPayload.requestMetadata.callerSuppliedUserAgent=\"GCE Managed Instance Group\" AND protoPayload.methodName=\"v1.compute.instances.delete\" AND protoPayload.response.progress=\"0\""
@@ -244,105 +246,115 @@ resource "google_logging_project_sink" "delicensing_cfn" {
 
 # Create a pub/sub topic for messaging log sink events
 resource "google_pubsub_topic" "delicensing_cfn" {
-  count = var.enable_delicensing ? 1 : 0
+  count = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   name  = local.delicensing_cfn.topic_name
 }
 
-# Create a pub/sub subscription to pull messages from the topic
-resource "google_pubsub_subscription" "delicensing_cfn" {
-  count                   = var.enable_delicensing ? 1 : 0
-  name                    = local.delicensing_cfn.subscription_name
-  topic                   = google_pubsub_topic.delicensing_cfn[0].name
-  ack_deadline_seconds    = 10
-  enable_message_ordering = false
+# Allow log router writer identity to publish to pub/sub
+resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
+  count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project = data.google_project.this.project_id
+  topic   = local.delicensing_cfn.topic_name
+  role    = "roles/pubsub.publisher"
+  member  = google_logging_project_sink.delicensing_cfn[0].writer_identity
 }
 
-# VPC Connector required to access local Panorama instance
-data "google_compute_network" "panorama_network" {
-  count = var.enable_delicensing ? 1 : 0
-  name  = var.vpc_connector_network
-}
-
+# VPC Connector required for Cloud Function to access local Panorama instance
 resource "google_vpc_access_connector" "delicensing_cfn" {
-  count         = var.enable_delicensing ? 1 : 0
+  count         = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   name          = local.delicensing_cfn.vpc_connector_name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_cidr
-  network       = data.google_compute_network.panorama_network[0].self_link
+  region        = var.delicensing_cloud_function_config.region
+  ip_cidr_range = var.delicensing_cloud_function_config.vpc_connector_cidr
+  network       = var.delicensing_cloud_function_config.vpc_connector_network
 }
 
-resource "google_cloudfunctions_function" "delicensing_cfn" {
-  count                 = var.enable_delicensing ? 1 : 0
-  name                  = var.delicensing_cfn_name
-  description           = local.delicensing_cfn.description
-  runtime               = "python310"
-  entry_point           = local.delicensing_cfn.entry_point
-  source_archive_bucket = google_storage_bucket.delicensing_cfn[0].self_link
-  source_archive_object = google_storage_bucket_object.delicensing_cfn[0].self_link
-  #checkov:skip=CKV2_GCP_10:When using event trigger, HTTP Trigger is invalid and not used
-  event_trigger {
-    event_type = "google.pubsub.topic.publish"
-    resource   = google_pubsub_topic.delicensing_cfn[0].id
-  }
-  available_memory_mb = 256
-  timeout             = 60
-  max_instances       = 20
-  environment_variables = {
-    "PANORAMA_IP" = var.panorama_ip
-    "SECRET_NAME" = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
-  }
-  service_account_email         = google_service_account.delicensing_cfn[0].email
-  depends_on                    = [google_storage_bucket_object.delicensing_cfn]
-  vpc_connector                 = google_vpc_access_connector.delicensing_cfn[0].self_link
-  vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
-}
-
-# CFN bucket
+# Cloud Function code storage bucket
 resource "google_storage_bucket" "delicensing_cfn" {
-  count         = var.enable_delicensing ? 1 : 0
-  name          = local.delicensing_cfn.bucket_name
-  location      = var.delicensing_cfn_bucket_location
-  force_destroy = true
-
-  public_access_prevention = "enforced"
+  count                       = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  name                        = local.delicensing_cfn.bucket_name
+  location                    = var.delicensing_cloud_function_config.bucket_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  versioning {
+    enabled = true
+  }
 }
 
 data "archive_file" "delicensing_cfn" {
-  count       = var.enable_delicensing ? 1 : 0
+  count       = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   type        = "zip"
   source_dir  = local.delicensing_cfn.source_dir
   output_path = "/tmp/${local.delicensing_cfn.zip_file_name}.zip"
 }
 
 resource "google_storage_bucket_object" "delicensing_cfn" {
-  count  = var.enable_delicensing ? 1 : 0
+  count  = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   name   = "${local.delicensing_cfn.zip_file_name}.${lower(replace(data.archive_file.delicensing_cfn[0].output_base64sha256, "=", ""))}.zip"
   bucket = local.delicensing_cfn.bucket_name
   source = "/tmp/${local.delicensing_cfn.zip_file_name}.zip"
+
+  depends_on = [
+    google_storage_bucket.delicensing_cfn
+  ]
 }
 
-# CFN Service Account
+# Cloud Function Service Account
 resource "google_service_account" "delicensing_cfn" {
-  count        = var.enable_delicensing ? 1 : 0
+  count        = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   account_id   = local.delicensing_cfn.runtime_sa_account_id
   display_name = local.delicensing_cfn.runtime_sa_display_name
 }
 
-
-data "google_project" "this" { }
-
+# Granting required roles to Cloud Function SA
 resource "google_project_iam_member" "delicensing_cfn" {
-  for_each = var.enable_delicensing ? toset(local.delicensing_cfn.runtime_sa_roles) : []
-  project = data.google_project.this.project_id
+  for_each = try(var.delicensing_cloud_function_config, null) != null ? toset(local.delicensing_cfn.runtime_sa_roles) : []
+  project  = data.google_project.this.project_id
   role     = each.key
   member   = "serviceAccount:${google_service_account.delicensing_cfn[0].email}"
 }
 
-# Allow log router writer to write to pub/sub
-resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
-  count  = var.enable_delicensing ? 1 : 0
+resource "google_cloudfunctions2_function" "delicensing_cfn" {
+  count       = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  name        = local.delicensing_cfn.function_name
+  description = local.delicensing_cfn.description
+  location    = var.delicensing_cloud_function_config.region
+  build_config {
+    runtime     = "python310"
+    entry_point = local.delicensing_cfn.entry_point
+    source {
+      storage_source {
+        bucket = google_storage_bucket.delicensing_cfn[0].name
+        object = google_storage_bucket_object.delicensing_cfn[0].name
+      }
+    }
+  }
+  service_config {
+    available_memory   = "256M"
+    timeout_seconds    = 60
+    max_instance_count = 5
+    environment_variables = {
+      "PANORAMA_ADDRESS" = var.delicensing_cloud_function_config.panorama_address
+      "PROJECT_ID"       = data.google_project.this.project_id
+      "SECRET_NAME"      = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
+    }
+    service_account_email          = google_service_account.delicensing_cfn[0].email
+    vpc_connector                  = google_vpc_access_connector.delicensing_cfn[0].self_link
+    vpc_connector_egress_settings  = "PRIVATE_RANGES_ONLY"
+    all_traffic_on_latest_revision = true
+  }
+  event_trigger {
+    event_type     = "google.cloud.pubsub.topic.v1.messagePublished"
+    pubsub_topic   = google_pubsub_topic.delicensing_cfn[0].id
+    retry_policy   = "RETRY_POLICY_DO_NOT_RETRY"
+    trigger_region = var.delicensing_cloud_function_config.region
+  }
+  depends_on = [google_storage_bucket_object.delicensing_cfn]
+}
+
+# Allow Cloud Function invocation from pub/sub
+resource "google_project_iam_member" "delicensing_cfn_invoker" {
+  count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
   project = data.google_project.this.project_id
-  topic  = local.delicensing_cfn.topic_name
-  role   = "roles/pubsub.publisher"
-  member = google_logging_project_sink.delicensing_cfn[0].writer_identity
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${data.google_compute_default_service_account.main.email}"
 }

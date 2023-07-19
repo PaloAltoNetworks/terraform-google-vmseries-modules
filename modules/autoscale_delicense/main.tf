@@ -72,8 +72,8 @@ resource "google_cloudfunctions_function" "this" {
 }
 
 locals {
-  source_dir    = "${path.module}/src"
-  zip_file_name = "source_code.zip"
+  source_dir        = "${path.module}/src"
+  zip_file_name     = "source_code.zip"
   zip_file_name_sha = "source_code.${lower(replace(data.archive_file.this.output_base64sha256, "=", ""))}.zip"
 }
 

@@ -94,6 +94,14 @@ module "vpc_trust" {
       ]
     }
   ]
+
+  routes = [
+    {
+      name              = "default-trust"
+      destination_range = "0.0.0.0/0"
+      next_hop_ilb      = module.intlb.forwarding_rule
+    }
+  ]
 }
 
 # IAM service account for running GCP instances of Palo Alto Networks VM-Series and their GCP plugin access.
@@ -120,6 +128,8 @@ module "autoscale" {
   service_account_email = module.iam_service_account.email
   target_pools          = [module.extlb.target_pool]
 
+  delicensing_cloud_function_config = try(var.delicensing_cloud_function_config, {})
+
   network_interfaces = [
     {
       subnetwork       = module.vpc_untrust.subnets_self_links[0]
@@ -135,10 +145,9 @@ module "autoscale" {
     }
   ]
 
-  metadata = {
+  metadata = merge({
     type                        = "dhcp-client"
     op-command-modes            = "mgmt-interface-swap"
-    vm-auth-key                 = var.panorama_vm_auth_key
     panorama-server             = var.panorama_address
     dgname                      = var.panorama_device_group
     tplname                     = var.panorama_template_stack
@@ -148,7 +157,15 @@ module "autoscale" {
     dhcp-accept-server-domain   = "yes"
     dns-primary                 = "169.254.169.254" # Google DNS required to deliver PAN-OS metrics to Cloud Monitoring
     ssh-keys                    = var.ssh_keys
-  }
+    },
+    can(var.panorama_vm_auth_key) ?
+    { vm-auth-key = var.panorama_vm_auth_key } : {},
+    can(var.panorama_auth_key) ?
+    {
+      auth-key           = var.panorama_auth_key
+      plugin-op-commands = "panorama-licensing-mode-on"
+    } : {}
+  )
 
   depends_on = [
     module.mgmt_cloud_nat
@@ -193,4 +210,47 @@ module "mgmt_cloud_nat" {
   create_router = true
   router        = "${var.name_prefix}mgmt-router"
   network       = module.vpc_mgmt.network_id
+}
+
+
+#---------------------------------------------------------------------------------
+# The following VM(s) emulate clients
+
+data "google_compute_image" "ubuntu" {
+  family  = "ubuntu-pro-2204-lts"
+  project = "ubuntu-os-pro-cloud"
+}
+
+resource "google_service_account" "test_vm" {
+  count        = length(var.test_vms) > 0 ? 1 : 0
+  account_id   = "${var.name_prefix}test-vm-sa"
+  display_name = "Test VM Service Account"
+}
+
+resource "google_compute_instance" "test_vm" {
+  for_each = var.test_vms
+
+  name         = "${var.name_prefix}${each.key}"
+  machine_type = "e2-micro"
+  zone         = each.value.zone
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu.id
+      size  = "10"
+    }
+  }
+
+  network_interface {
+    subnetwork = module.vpc_trust.subnets_self_links[0]
+  }
+
+  metadata = {
+    enable-oslogin = true
+  }
+
+  service_account {
+    email  = google_service_account.test_vm[0].email
+    scopes = ["cloud-platform"]
+  }
 }

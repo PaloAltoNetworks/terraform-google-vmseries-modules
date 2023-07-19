@@ -201,52 +201,35 @@ variable "create_pubsub_topic" {
 }
 
 #---------------------------------------------------------------------------------
-# The following resources are used for delicensing
+# The following variables are used for delicensing Cloud Function
 
-variable "enable_delicensing" {
-  type        = bool
-  default     = false
+variable "delicensing_cloud_function_config" {
   description = <<-EOF
-  (Optional) Create resources for instant VM Series delicensing when VM is destroyed.
-  When set to `false` delicensing is performed as defined in "SW Firewall License" plugin configuration
+  Defining `delicensing_cloud_function_config` enables creation of delicesing cloud function and related resources.
+  The variable contains the following configuration parameters that are related to Cloud Function:
+  - name_prefix - Resource name prefix
+  - function_name - Cloud Function base name
+  - region - Cloud Function region
+  - bucket_location - Cloud Function source code bucket location 
+  - panorama_address - Panorama IP address/FQDN
+  - vpc_connector_network - Panorama VPC network Name
+  - vpc_connector_cidr - VPC connector /28 CIDR.
+    VPC connector will be user for delicensing CFN to access Panorama VPC network.
+ 
+
+  Example:
+
+  ```
+  {
+    name_prefix           = "abc-"
+    function_name         = "delicensing-cfn"
+    region                = "europe-central1"
+    bucket_location       = "EU"
+    panorama_address      = "1.1.1.1"
+    vpc_connector_network = "panorama-vpc"
+    vpc_connector_cidr    = "10.10.190.0/28"
+  }
+  ```
   EOF
-}
-
-variable "prefix" {
-  type        = string
-  default     = ""
-  description = "Resource prefix string"
-}
-
-variable "delicensing_cfn_name" {
-  type        = string
-  default     = "delicensing-cfn"
-  description = "Delicensing Cloud Function name"
-}
-
-variable "delicensing_cfn_bucket_location" {
-  type        = string
-  default     = "EU"
-  description = "Delicesing Cloud Function source code bucket location"
-}
-
-variable "panorama_ip" {
-  type        = string
   default     = null
-  description = "Panorama IP address"
-}
-
-variable "vpc_connector_network" {
-  type        = string
-  default     = null
-  description = "Panorama VPC network Name"
-}
-
-variable "vpc_connector_cidr" {
-  type        = string
-  default     = null
-  description = <<-EOF
-  VPC connector /28 CIDR.
-  VPC connector will be user for delicensing CFN to access Panorama VPC network.
-  EOF
 }
