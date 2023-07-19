@@ -153,6 +153,10 @@ No resources.
 | <a name="input_cidr_mgmt"></a> [cidr\_mgmt](#input\_cidr\_mgmt) | The CIDR range of the management subnetwork. | `string` | `"10.0.0.0/28"` | no |
 | <a name="input_cidr_trust"></a> [cidr\_trust](#input\_cidr\_trust) | The CIDR range of the trust subnetwork. | `string` | `"10.0.2.0/28"` | no |
 | <a name="input_cidr_untrust"></a> [cidr\_untrust](#input\_cidr\_untrust) | The CIDR range of the untrust subnetwork. | `string` | `"10.0.1.0/28"` | no |
+<<<<<<< HEAD
+=======
+| <a name="input_delicensing_cloud_function_config"></a> [delicensing\_cloud\_function\_config](#input\_delicensing\_cloud\_function\_config) | Defining `delicensing_cloud_function_config` enables creation of delicesing cloud function and related resources.<br>The variable contains the following configuration parameters that are related to Cloud Function:<br>- name\_prefix - Resource name prefix<br>- function\_name - Cloud Function base name<br>- region - Cloud Function region<br>- bucket\_location - Cloud Function source code bucket location <br>- panorama\_address - Panorama IP address or host name<br>- vpc\_connector\_network - Panorama VPC network Name<br>- vpc\_connector\_cidr - VPC connector /28 CIDR.<br>  VPC connector will be user for delicensing CFN to access Panorama VPC network.<br> <br>Example:<pre>{<br>  name_prefix           = "abc-"<br>  function_name         = "delicensing-cfn"<br>  region                = "us-central1"<br>  bucket_location       = "US"<br>  panorama_address      = "1.1.1.1"<br>  vpc_connector_network = "panorama-vpc"<br>  vpc_connector_cidr    = "10.10.190.0/28"<br>}</pre> | `any` | `null` | no |
+>>>>>>> 078b8ca (Use US regions for the example)
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to prepend the resource names. This is useful for identifing the created resources. | `string` | `""` | no |
 | <a name="input_panorama_address"></a> [panorama\_address](#input\_panorama\_address) | The Panorama IP/Domain address.  The Panorama address must be reachable from the management VPC. This build assumes Panorama is reachable via the internet. The management VPC network uses a NAT gateway to communicate to Panorama's external IP addresses. | `string` | n/a | yes |
 | <a name="input_panorama_device_group"></a> [panorama\_device\_group](#input\_panorama\_device\_group) | The name of the Panorama device group that will bootstrap the VM-Series firewalls. | `string` | n/a | yes |
@@ -160,6 +164,11 @@ No resources.
 | <a name="input_panorama_vm_auth_key"></a> [panorama\_vm\_auth\_key](#input\_panorama\_vm\_auth\_key) | Panorama VM authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID to contain the created cloud resources. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | GCP region | `string` | n/a | yes |
+<<<<<<< HEAD
+=======
+| <a name="input_ssh_keys"></a> [ssh\_keys](#input\_ssh\_keys) | VM-Series SSH keys. Format: 'admin:<ssh-rsa AAAA...>' | `string` | `""` | no |
+| <a name="input_test_vms"></a> [test\_vms](#input\_test\_vms) | Test VMs<br><br>Example:<pre>{<br>  "vm1" = {<br>    "zone" : "us-central1-a"<br>  }<br>}</pre> | `map` | `{}` | no |
+>>>>>>> 078b8ca (Use US regions for the example)
 | <a name="input_vmseries_image_name"></a> [vmseries\_image\_name](#input\_vmseries\_image\_name) | Link to VM-Series PAN-OS image. Can be either a full self\_link, or one of the shortened forms per the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#image). | `string` | n/a | yes |
 | <a name="input_vmseries_instances_max"></a> [vmseries\_instances\_max](#input\_vmseries\_instances\_max) | The maximum number of VM-Series that the autoscaler can scale up to. This is required when creating or updating an autoscaler. The maximum number of VM-Series should not be lower than minimal number of VM-Series. | `number` | `5` | no |
 | <a name="input_vmseries_instances_min"></a> [vmseries\_instances\_min](#input\_vmseries\_instances\_min) | The minimum number of VM-Series that the autoscaler can scale down to. This cannot be less than 0. | `number` | `2` | no |

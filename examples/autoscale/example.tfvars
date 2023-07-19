@@ -15,3 +15,31 @@ panorama_address        = "1.1.1.1"
 panorama_device_group   = "autoscale-device-group"
 panorama_template_stack = "autoscale-template-stack"
 panorama_vm_auth_key    = "01234567890123456789"
+
+#---------------------------------------------------------------------------------
+# (Optional) Panorama Software Firewall License Plugin
+
+# panorama_auth_key = "_XX__0qweryQWERTYqwertyQWERTGrp"
+
+#---------------------------------------------------------------------------------
+# (Optional) Delicensing Cloud Function
+
+# delicensing_cloud_function_config =   {
+#   name_prefix           = "abc-"
+#   function_name         = "delicensing-cfn"
+#   region                = "us-central1"
+#   bucket_location       = "US"
+#   panorama_address      = "1.1.1.1"
+#   vpc_connector_network = "panorama-vpc"
+#   vpc_connector_cidr    = "10.10.190.0/28"
+# }
+
+#---------------------------------------------------------------------------------
+# (Optional) Test VMs
+
+# test_vms = {
+#   "vm1" = {
+#     "zone" : "us-central1-a"
+#   }
+# }
+

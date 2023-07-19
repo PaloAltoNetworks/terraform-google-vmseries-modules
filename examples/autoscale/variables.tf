@@ -105,3 +105,56 @@ variable "cidr_trust" {
   type        = string
   default     = "10.0.2.0/28"
 }
+
+#---------------------------------------------------------------------------------
+# The following variables are used for delicensing Cloud Function
+
+variable "delicensing_cloud_function_config" {
+  description = <<-EOF
+  Defining `delicensing_cloud_function_config` enables creation of delicesing cloud function and related resources.
+  The variable contains the following configuration parameters that are related to Cloud Function:
+  - name_prefix - Resource name prefix
+  - function_name - Cloud Function base name
+  - region - Cloud Function region
+  - bucket_location - Cloud Function source code bucket location 
+  - panorama_address - Panorama IP address or host name
+  - vpc_connector_network - Panorama VPC network Name
+  - vpc_connector_cidr - VPC connector /28 CIDR.
+    VPC connector will be user for delicensing CFN to access Panorama VPC network.
+ 
+  Example:
+
+  ```
+  {
+    name_prefix           = "abc-"
+    function_name         = "delicensing-cfn"
+    region                = "us-central1"
+    bucket_location       = "US"
+    panorama_address      = "1.1.1.1"
+    vpc_connector_network = "panorama-vpc"
+    vpc_connector_cidr    = "10.10.190.0/28"
+  }
+  ```
+  EOF
+  default     = null
+}
+
+#---------------------------------------------------------------------------------
+# The following variables are used for test VMs
+
+variable "test_vms" {
+  description = <<-EOF
+  Test VMs
+
+  Example:
+
+  ```
+  {
+    "vm1" = {
+      "zone" : "us-central1-a"
+    }
+  }
+  ```
+  EOF
+  default     = {}
+}
