@@ -1,5 +1,7 @@
 ---
-show_in_hub: false
+short_title: Standalone Panorama Deployment
+type: example
+show_in_hub: true
 ---
 # Palo Alto Panorama deployment example
 
