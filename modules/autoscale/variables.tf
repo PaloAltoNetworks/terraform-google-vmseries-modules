@@ -111,7 +111,7 @@ variable "metadata" {
     metadata = {
       mgmt-interface-swap                  = "enable"
       vmseries-bootstrap-gce-storagebucket = "your-bootstrap-bucket"
-      ssh-keys                             = "admin:<your-public-key>"
+      ssh-keys                             = "admin:your-public-key"
     }
   ```
   EOF
