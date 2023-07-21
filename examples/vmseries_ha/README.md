@@ -1,6 +1,6 @@
 ---
 short_title: Common Firewall Option with High Availability
-type: refarch
+type: example
 show_in_hub: true
 ---
 # Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Common NGFW Option
