@@ -1,16 +1,22 @@
+
+from dataclasses import dataclass
+import functions_framework
+
+from google.cloud import secretmanager
 import googleapiclient.discovery
 from cloudevents.http import CloudEvent
-import functions_framework
-from google.cloud import secretmanager
+
+from panos.panorama import Panorama
+
 from logging import getLogger, basicConfig, INFO, error, warning, info
 from xml.etree import ElementTree as et
 from xml.etree.ElementTree import Element
 from os import getenv
-from panos.panorama import Panorama
 import base64
 import json
 
-class init_parameters:
+@dataclass
+class InitParameters:
     """
     This Class is used for create data structure with values used in further function.
     """
@@ -37,7 +43,7 @@ def autoscale_delete_event(cloud_event: CloudEvent) -> None:
 
     # get credentials from Secret Manager and login to Panorama
     credentials = get_secret()
-    panorama = Panorama(init_parameters().panorama_address, credentials.get('user'), credentials.get('pass'))
+    panorama = Panorama(InitParameters().panorama_address, credentials.get('user'), credentials.get('pass'))
 
     # list all devices under the configured license manager
     cmd = f'show plugins sw_fw_license devices license-manager \"{igm_name}\"'
@@ -132,7 +138,7 @@ def get_secret() -> dict:
     :return: dict
     """
     client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{init_parameters().project_id}/secrets/{init_parameters().secret_name}/versions/latest"
+    name = f"projects/{InitParameters().project_id}/secrets/{InitParameters().secret_name}/versions/latest"
     response = client.access_secret_version(name=name)
     resp_str = response.payload.data.decode('UTF-8')
     resp_list = resp_str.split("|", 1)
