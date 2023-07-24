@@ -137,7 +137,7 @@ module "autoscale" {
     },
     {
       subnetwork       = module.vpc_mgmt.subnets_self_links[0]
-      create_public_ip = false
+      create_public_ip = true
     },
     {
       subnetwork       = module.vpc_trust.subnets_self_links[0]
@@ -145,7 +145,7 @@ module "autoscale" {
     }
   ]
 
-  metadata = merge({
+  metadata = {
     type                        = "dhcp-client"
     op-command-modes            = "mgmt-interface-swap"
     panorama-server             = var.panorama_address
@@ -157,15 +157,11 @@ module "autoscale" {
     dhcp-accept-server-domain   = "yes"
     dns-primary                 = "169.254.169.254" # Google DNS required to deliver PAN-OS metrics to Cloud Monitoring
     ssh-keys                    = var.ssh_keys
-    },
-    can(var.panorama_vm_auth_key) ?
-    { vm-auth-key = var.panorama_vm_auth_key } : {},
-    can(var.panorama_auth_key) ?
-    {
-      auth-key           = var.panorama_auth_key
-      plugin-op-commands = "panorama-licensing-mode-on"
-    } : {}
-  )
+    vm-auth-key                 = var.panorama_vm_auth_key
+    authcodes                   = var.authcodes
+    auth-key                    = var.panorama_auth_key
+    plugin-op-commands          = var.panorama_auth_key != null ? "panorama-licensing-mode-on" : null
+  }
 
   depends_on = [
     module.mgmt_cloud_nat
@@ -231,7 +227,7 @@ resource "google_compute_instance" "test_vm" {
   for_each = var.test_vms
 
   name         = "${var.name_prefix}${each.key}"
-  machine_type = "e2-micro"
+  machine_type = each.value.machine_type
   zone         = each.value.zone
 
   boot_disk {

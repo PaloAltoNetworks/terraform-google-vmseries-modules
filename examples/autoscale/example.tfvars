@@ -40,6 +40,7 @@ panorama_vm_auth_key    = "01234567890123456789"
 # test_vms = {
 #   "vm1" = {
 #     "zone" : "us-central1-a"
+#     "machine_type": "e2-micro"
 #   }
 # }
 

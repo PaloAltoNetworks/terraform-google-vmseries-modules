@@ -64,6 +64,12 @@ variable "panorama_vm_auth_key" {
   default     = null
 }
 
+variable "authcodes" {
+  description = "VM-Series authcodes."
+  type        = string
+  default     = null
+}
+
 variable "panorama_auth_key" {
   description = "Panorama authorization key.  To generate, follow this guide https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/license-the-vm-series-firewall/use-panorama-based-software-firewall-license-management"
   type        = string
@@ -117,14 +123,14 @@ variable "delicensing_cloud_function_config" {
   description = <<-EOF
   Defining `delicensing_cloud_function_config` enables creation of delicesing cloud function and related resources.
   The variable contains the following configuration parameters that are related to Cloud Function:
-  - name_prefix - Resource name prefix
-  - function_name - Cloud Function base name
-  - region - Cloud Function region
-  - bucket_location - Cloud Function source code bucket location 
-  - panorama_address - Panorama IP address or host name
-  - vpc_connector_network - Panorama VPC network Name
-  - vpc_connector_cidr - VPC connector /28 CIDR.
-    VPC connector will be user for delicensing CFN to access Panorama VPC network.
+  - `name_prefix`           - Resource name prefix
+  - `function_name`         - Cloud Function base name
+  - `region`                - Cloud Function region
+  - `bucket_location`       - Cloud Function source code bucket location 
+  - `panorama_address`      - Panorama IP address/FQDN
+  - `vpc_connector_network` - Panorama VPC network Name
+  - `vpc_connector_cidr`    - VPC connector /28 CIDR.
+                              VPC connector will be user for delicensing CFN to access Panorama VPC network.
  
   Example:
 
@@ -140,7 +146,16 @@ variable "delicensing_cloud_function_config" {
   }
   ```
   EOF
-  default     = null
+  type = object({
+    name_prefix           = optional(string)
+    function_name         = optional(string)
+    region                = string
+    bucket_location       = string
+    panorama_address      = string
+    vpc_connector_network = string
+    vpc_connector_cidr    = string
+  })
+  default = null
 }
 
 #---------------------------------------------------------------------------------
@@ -156,9 +171,14 @@ variable "test_vms" {
   {
     "vm1" = {
       "zone" : "us-central1-a"
+      "machine_type": "e2-micro"
     }
   }
   ```
   EOF
-  default     = {}
+  type = map(object({
+    zone         = string
+    machine_type = string
+  }))
+  default = {}
 }
