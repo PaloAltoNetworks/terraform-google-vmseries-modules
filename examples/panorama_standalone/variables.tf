@@ -55,7 +55,7 @@ variable "panoramas" {
         panorama_vpc      = "panorama-vpc"
         panorama_subnet   = "panorama-subnet"
         panorama_version  = "panorama-byol-1000"
-        ssh_keys          = "admin:<PUBLIC-KEY>"
+        ssh_keys          = "admin:PUBLIC-KEY"
         attach_public_ip  = true
         private_static_ip = "172.21.21.2"
       }
