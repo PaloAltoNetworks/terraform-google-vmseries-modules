@@ -233,12 +233,12 @@ variable "delicensing_cloud_function_config" {
   ```
   EOF
   type = object({
-    name_prefix           = optional(string, "")
-    function_name         = optional(string, "delicensing-cfn")
+    name_prefix           = optional(string)
+    function_name         = optional(string)
     region                = string
     bucket_location       = string
     panorama_address      = string
-    panorama2_address     = optional(string, "")
+    panorama2_address     = optional(string)
     vpc_connector_network = string
     vpc_connector_cidr    = string
   })

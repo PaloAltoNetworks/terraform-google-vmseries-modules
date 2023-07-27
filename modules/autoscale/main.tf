@@ -200,26 +200,28 @@ resource "random_id" "postfix" {
 }
 
 locals {
+  name_prefix = try(var.delicensing_cloud_function_config.name_prefix) == null ? "" : try(var.delicensing_cloud_function_config.name_prefix)
+  function_name = coalesce(try(var.delicensing_cloud_function_config.function_name, "delicensing-cfn"), "delicensing-cfn")
   delicensing_cfn = {
     panorama_address        = var.delicensing_cloud_function_config.panorama_address
     panorama2_address       = try(var.delicensing_cloud_function_config.panorama2_address, "")
-    function_name           = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-${random_id.postfix.hex}"
-    bucket_name             = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-${random_id.postfix.hex}"
+    function_name           = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}", 
+    bucket_name             = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}"
     source_dir              = "${path.module}/src"
-    zip_file_name           = var.delicensing_cloud_function_config.function_name
-    runtime_sa_account_id   = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-sa-${random_id.postfix.hex}"
+    zip_file_name           = local.function_name
+    runtime_sa_account_id   = "${local.name_prefix}${local.function_name}-sa-${random_id.postfix.hex}"
     runtime_sa_display_name = "Delicensing Cloud Function runtime SA"
     runtime_sa_roles = [
       "roles/secretmanager.secretAccessor",
       "roles/compute.viewer",
     ]
-    topic_name         = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}_topic-${random_id.postfix.hex}"
-    log_sink_name      = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}_logsink-${random_id.postfix.hex}"
+    topic_name         = "${local.name_prefix}${local.function_name}_topic-${random_id.postfix.hex}"
+    log_sink_name      = "${local.name_prefix}${local.function_name}_logsink-${random_id.postfix.hex}"
     entry_point        = "autoscale_delete_event"
     description        = "Cloud Function to delicense firewalls in Panorama on scale-in events"
-    subscription_name  = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}_subscription"
-    secret_name        = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}_pano_creds-${random_id.postfix.hex}"
-    vpc_connector_name = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-${random_id.postfix.hex}"
+    subscription_name  = "${local.name_prefix}${local.function_name}_subscription"
+    secret_name        = "${local.name_prefix}${local.function_name}_pano_creds-${random_id.postfix.hex}"
+    vpc_connector_name = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}"
   }
 }
 
