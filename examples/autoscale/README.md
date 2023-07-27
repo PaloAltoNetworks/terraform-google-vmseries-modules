@@ -6,7 +6,7 @@ show_in_hub: false
 # Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
 
 ## Overview
-This example deploys VM-Series firewalls through a Managed Instance Group (MIG). The MIG enables the VM-Series to horizontally scale (i.e. do autoscaling) based on custom PAN-OS metrics delivered to Google Cloud Monitoring by Panorama. There are 10 custom metric that are delivered:
+This example deploys VM-Series firewalls withing a Managed Instance Group (MIG). The MIG enables the VM-Series to horizontally scale (i.e. do autoscaling) based on custom PAN-OS metrics that Panorama delivers to Google Cloud Monitoring. There are 10 custom metric that are delivered:
 - VMSeries/DataPlaneCPUUtilizationPct
 - VMSeries/panSessionConnectionsPerSecond
 - VMSeries/panSessionThroughputKbps
@@ -18,7 +18,7 @@ This example deploys VM-Series firewalls through a Managed Instance Group (MIG).
 - VMSeries/panSessionSslProxyUtilization
 - VMSeries/panSessionUtilization
 
-GCP Autoscaler adds or deletes VM instances from a managed instance group based on the group's autoscaling policy that is set in `autoscale` module.
+GCP Autoscaler adds or deletes VM instances from a managed instance group based on the group's autoscaling policy that is applied in `autoscale` module
 
 ```
 resource "google_compute_autoscaler" "zonal" {
@@ -50,15 +50,15 @@ resource "google_compute_autoscaler" "zonal" {
 ```
 
 ### VM-Series licensing
-There are at least 2 options for VM-Series licensing for autoscaling. These options are different in the way how you can free up licenses (delicense) when MIG scales in.
+When doing autoscaling there are at least 2 options for VM-Series licensing. These options are different in the way how you can free up licenses (delicense) when MIG scales in.
 1. An authcode is set in VM-Series bootstrap parameters. [Delicesing can be done manually](https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/license-the-vm-series-firewall/vm-series-models/deactivate-the-licenses/deactivate-vm)
-2. An authcode is assigned to Device Group through [Panorama Software Firewall License Plugin](https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/license-the-vm-series-firewall/use-panorama-based-software-firewall-license-management). Delicensing can happen automatically according to Software Firewall License Plugin settings. However due to how Software Firewall License Plugin works after scale-in event there is at least 1h delay before delicensing is actually heppanening.
+2. An authcode is assigned to Device Group through [Panorama Software Firewall License Plugin](https://docs.paloaltonetworks.com/vm-series/10-1/vm-series-deployment/license-the-vm-series-firewall/use-panorama-based-software-firewall-license-management). Delicensing can happen automatically according to Software Firewall License Plugin settings. However due to how Software Firewall License Plugin works after scale-in event there is at least 1h delay before delicensing is actually happening.
 
-To speed up delicensing, `autoscale` module and this example introduce optional delicensing Cloud Function that works in conjunction with Software Firewall License Plugin. The Cloud Function is triggered on MIG scale-in event, connects to Panorama and requests the plugin to delicense deleted VM-Series instance without any delay.
+To speed up delicensing, `autoscale` module and this example introduce optional delicensing Cloud Function that works in conjunction with Software Firewall License Plugin. The Cloud Function is triggered on MIG scale-in event via pub/sub event, connects to Panorama and requests the plugin to delicense deleted VM-Series instance without any delay.
 
 To enable the Cloud Function use instructions below to set `delicensing_cloud_function_config`.
 
-### Created resources
+### Resources created in this example
 
 Created resources include:
 * 3 x VPC Networks (`mgmt`, `untrust/public`, and `trust/hub` VPC networks).
@@ -192,13 +192,15 @@ panorama_auth_key      = "_XX__0qweryQWERTYqwertyQWERTGrp"
 ```
 delicensing_cloud_function_config = {
   name_prefix           = "abc-"
-  panorama_ip           = "1.1.1.1"
+  panorama_address      = "1.1.1.1"
   vpc_connector_network = "panorama-vpc"
   vpc_connector_cidr    = "10.254.190.64/28"
   region                = "us-central1"
   bucket_location       = "US"
 }
 ```
+
+> If Panorama in HA mode is used set 2nd Panorama address in `panorama2_address` parameter.
 
 8. (Optional) If you would like to have VMs to test autoscaling add `test_vms` to `terraform.tfvars`.
 
