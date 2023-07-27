@@ -1,4 +1,6 @@
 ---
+short_title: Common Firewall Option with Autoscaling
+type: refarch
 show_in_hub: false
 ---
 # Deployment of Palo Alto Networks VM-Series Firewalls with Autoscaling
