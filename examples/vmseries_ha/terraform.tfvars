@@ -155,7 +155,7 @@ routes = {
 # VM-Series
 
 vmseries_common = {
-  ssh_keys            = "admin:<YOUR_SSH_KEY>"
+  ssh_keys            = "admin:AAAAB3NzaC1yc2EAAAADAQABAAABAQC4fg1FGiviuH4hvIuFJjuWr9d0uZ87p+g7f3JiMFSJZf6mOpyQR3K8W8vgEDcmWDfjVq5vaZiTyniZYjNMeMeWD7bMZ8kfvhA4W78/ZkUHzj/ttmz19L4W/lm2b1KlcAUUwz4RIpJZKCpDtoMQiIb9MMcW0JXZ0E1ICQQz57LBAcuJdrebXFoI68LpLV5lQptx5N0ttyaDoLbF+vHku8zrgoKQW0J+1753tXWT/M6aKYvyfxzncbyT1jby6B9Yed/YaIh2kh1xc3n6mDWd5n9grknkWgtdS+CWdGL58h+/ETNx58Nm9EYelMJtNdNclW/Khivi7fCvPLGftPqLD5Zn"
   vmseries_image      = "vmseries-flex-byol-1022h2"
   machine_type        = "n2-standard-4"
   min_cpu_platform    = "Intel Cascade Lake"
