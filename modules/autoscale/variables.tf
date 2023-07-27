@@ -212,6 +212,7 @@ variable "delicensing_cloud_function_config" {
   - `region`                - Cloud Function region
   - `bucket_location`       - Cloud Function source code bucket location 
   - `panorama_address`      - Panorama IP address/FQDN
+  - `panorama2_address`     - Panorama 2 IP address/FQDN. Set if Panorama is in HA mode
   - `vpc_connector_network` - Panorama VPC network Name
   - `vpc_connector_cidr`    - VPC connector /28 CIDR.
                               VPC connector will be user for delicensing CFN to access Panorama VPC network.
@@ -237,8 +238,9 @@ variable "delicensing_cloud_function_config" {
     region                = string
     bucket_location       = string
     panorama_address      = string
+    panorama2_address     = optional(string, "")
     vpc_connector_network = string
     vpc_connector_cidr    = string
   })
-  default     = null
+  default = null
 }

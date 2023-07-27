@@ -201,7 +201,8 @@ resource "random_id" "postfix" {
 
 locals {
   delicensing_cfn = {
-    panorama_address        = try(var.delicensing_cloud_function_config.panorama_address, "")
+    panorama_address        = var.delicensing_cloud_function_config.panorama_address
+    panorama2_address       = try(var.delicensing_cloud_function_config.panorama2_address, "")
     function_name           = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-${random_id.postfix.hex}"
     bucket_name             = "${var.delicensing_cloud_function_config.name_prefix}${var.delicensing_cloud_function_config.function_name}-${random_id.postfix.hex}"
     source_dir              = "${path.module}/src"
@@ -330,9 +331,10 @@ resource "google_cloudfunctions2_function" "delicensing_cfn" {
     timeout_seconds    = 60
     max_instance_count = 5
     environment_variables = {
-      "PANORAMA_ADDRESS" = var.delicensing_cloud_function_config.panorama_address
-      "PROJECT_ID"       = data.google_project.this.project_id
-      "SECRET_NAME"      = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
+      "PANORAMA_ADDRESS"  = local.delicensing_cfn.panorama_address
+      "PANORAMA2_ADDRESS" = local.delicensing_cfn.panorama2_address
+      "PROJECT_ID"        = data.google_project.this.project_id
+      "SECRET_NAME"       = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
     }
     service_account_email          = google_service_account.delicensing_cfn[0].email
     vpc_connector                  = google_vpc_access_connector.delicensing_cfn[0].self_link
