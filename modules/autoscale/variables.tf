@@ -227,18 +227,19 @@ variable "delicensing_cloud_function_config" {
     region                = "europe-central1"
     bucket_location       = "EU"
     panorama_address      = "1.1.1.1"
+    panorama2_address     = ""
     vpc_connector_network = "panorama-vpc"
     vpc_connector_cidr    = "10.10.190.0/28"
   }
   ```
   EOF
   type = object({
-    name_prefix           = optional(string)
-    function_name         = optional(string)
+    name_prefix           = string
+    function_name         = string
     region                = string
     bucket_location       = string
     panorama_address      = string
-    panorama2_address     = optional(string)
+    panorama2_address     = string
     vpc_connector_network = string
     vpc_connector_cidr    = string
   })
