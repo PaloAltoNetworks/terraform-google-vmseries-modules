@@ -25,4 +25,5 @@ jobs:
           workflow: run.yml
           repo: PaloAltoNetworks/automation-metadata-collector
           ref: main
+          token: ${{ steps.generate-token.outputs.token }}
           inputs: '{"cloud-id": "gcp"}'
