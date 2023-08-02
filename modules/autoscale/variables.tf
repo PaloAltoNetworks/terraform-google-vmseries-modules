@@ -199,3 +199,49 @@ variable "create_pubsub_topic" {
   type        = bool
   default     = true
 }
+
+#---------------------------------------------------------------------------------
+# The following variables are used for delicensing Cloud Function
+
+variable "delicensing_cloud_function_config" {
+  description = <<-EOF
+  Defining `delicensing_cloud_function_config` enables creation of delicesing cloud function and related resources.
+  The variable contains the following configuration parameters that are related to Cloud Function:
+  - `name_prefix`           - Resource name prefix
+  - `function_name`         - Cloud Function base name
+  - `region`                - Cloud Function region
+  - `bucket_location`       - Cloud Function source code bucket location 
+  - `panorama_address`      - Panorama IP address/FQDN
+  - `panorama2_address`     - Panorama 2 IP address/FQDN. Set if Panorama is in HA mode
+  - `vpc_connector_network` - Panorama VPC network Name
+  - `vpc_connector_cidr`    - VPC connector /28 CIDR.
+                              VPC connector will be user for delicensing CFN to access Panorama VPC network.
+ 
+
+  Example:
+
+  ```
+  {
+    name_prefix           = "abc-"
+    function_name         = "delicensing-cfn"
+    region                = "europe-central1"
+    bucket_location       = "EU"
+    panorama_address      = "1.1.1.1"
+    panorama2_address     = ""
+    vpc_connector_network = "panorama-vpc"
+    vpc_connector_cidr    = "10.10.190.0/28"
+  }
+  ```
+  EOF
+  type = object({
+    name_prefix           = string
+    function_name         = string
+    region                = string
+    bucket_location       = string
+    panorama_address      = string
+    panorama2_address     = string
+    vpc_connector_network = string
+    vpc_connector_cidr    = string
+  })
+  default = null
+}
