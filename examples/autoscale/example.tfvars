@@ -30,6 +30,7 @@ panorama_vm_auth_key    = "01234567890123456789"
 #   region                = "us-central1"
 #   bucket_location       = "US"
 #   panorama_address      = "1.1.1.1"
+#   panorama2_address     = "2.2.2.2"
 #   vpc_connector_network = "panorama-vpc"
 #   vpc_connector_cidr    = "10.10.190.0/28"
 # }

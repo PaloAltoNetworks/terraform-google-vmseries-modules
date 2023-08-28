@@ -193,7 +193,9 @@ resource "google_pubsub_subscription_iam_member" "main" {
 #---------------------------------------------------------------------------------
 # The following resources are used for delicensing
 
-data "google_project" "this" {}
+data "google_project" "this" {
+  project_id = var.project_id
+}
 
 resource "random_id" "postfix" {
   byte_length = 2
