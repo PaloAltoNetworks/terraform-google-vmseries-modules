@@ -12,6 +12,7 @@ variable "region" {
 variable "project_id" {
   description = "GCP Project ID to contain the created cloud resources."
   type        = string
+  default     = null
 }
 
 variable "regional_mig" {

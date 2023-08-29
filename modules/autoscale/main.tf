@@ -193,10 +193,6 @@ resource "google_pubsub_subscription_iam_member" "main" {
 #---------------------------------------------------------------------------------
 # The following resources are used for delicensing
 
-data "google_project" "this" {
-  project_id = var.project_id
-}
-
 resource "random_id" "postfix" {
   byte_length = 2
 }
@@ -255,7 +251,7 @@ resource "google_pubsub_topic" "delicensing_cfn" {
 # Allow log router writer identity to publish to pub/sub
 resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
   count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
-  project = data.google_project.this.project_id
+  project = var.project_id
   topic   = local.delicensing_cfn.topic_name
   role    = "roles/pubsub.publisher"
   member  = google_logging_project_sink.delicensing_cfn[0].writer_identity
@@ -310,7 +306,7 @@ resource "google_service_account" "delicensing_cfn" {
 # Granting required roles to Cloud Function SA
 resource "google_project_iam_member" "delicensing_cfn" {
   for_each = try(var.delicensing_cloud_function_config, null) != null ? toset(local.delicensing_cfn.runtime_sa_roles) : []
-  project  = data.google_project.this.project_id
+  project  = var.project_id
   role     = each.key
   member   = "serviceAccount:${google_service_account.delicensing_cfn[0].email}"
 }
@@ -337,7 +333,7 @@ resource "google_cloudfunctions2_function" "delicensing_cfn" {
     environment_variables = {
       "PANORAMA_ADDRESS"  = local.delicensing_cfn.panorama_address
       "PANORAMA2_ADDRESS" = local.delicensing_cfn.panorama2_address
-      "PROJECT_ID"        = data.google_project.this.project_id
+      "PROJECT_ID"        = var.project_id
       "SECRET_NAME"       = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
     }
     service_account_email          = google_service_account.delicensing_cfn[0].email
@@ -357,7 +353,7 @@ resource "google_cloudfunctions2_function" "delicensing_cfn" {
 # Allow Cloud Function invocation from pub/sub
 resource "google_project_iam_member" "delicensing_cfn_invoker" {
   count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
-  project = data.google_project.this.project_id
+  project = var.project_id
   role    = "roles/run.invoker"
   member  = "serviceAccount:${data.google_compute_default_service_account.main.email}"
 }

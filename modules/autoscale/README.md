@@ -48,7 +48,6 @@ No modules.
 | [archive_file.delicensing_cfn](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
 | [google_compute_default_service_account.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_default_service_account) | data source |
 | [google_compute_zones.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
-| [google_project.this](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project) | data source |
 
 ### Inputs
 
@@ -68,7 +67,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | The name of the VM-Series deployed. This value will be used as the `base_instance_name` and will be used as a prepended prefix for other created resources. | `string` | n/a | yes |
 | <a name="input_named_ports"></a> [named\_ports](#input\_named\_ports) | A list of named port configurations. The name identifies the backend port to receive the traffic <br>from the global load balancers.<pre>named_ports = [<br>  {<br>    name = "http"<br>    port = "80"<br>  },<br>  {<br>    name = "app42"<br>    port = "4242"<br>  },<br>]</pre> | `list` | `[]` | no |
 | <a name="input_network_interfaces"></a> [network\_interfaces](#input\_network\_interfaces) | List of the network interface specifications.<br><br>Available options:<br>- `subnetwork`       - (Required\|string) Self-link of a subnetwork to create interface in.<br>- `create_public_ip` - (Optional\|boolean) Whether to reserve public IP for the interface. | `list(any)` | n/a | yes |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID to contain the created cloud resources. | `string` | n/a | yes |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | GCP Project ID to contain the created cloud resources. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | The Google Cloud region for the resources. If null, provider region will be used. | `string` | `null` | no |
 | <a name="input_regional_mig"></a> [regional\_mig](#input\_regional\_mig) | Sets the managed instance group type to either a regional (if `true`) or a zonal (if `false`).<br>For more information please see [About regional MIGs](https://cloud.google.com/compute/docs/instance-groups/regional-migs#why_choose_regional_managed_instance_groups). | `bool` | n/a | yes |
 | <a name="input_scale_in_control_replicas_fixed"></a> [scale\_in\_control\_replicas\_fixed](#input\_scale\_in\_control\_replicas\_fixed) | Fixed number of VM-Series instances that can be killed within the scale-in time window. See `scale_in_control` in the [provider doc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_autoscaler). | `number` | `1` | no |
