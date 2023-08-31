@@ -1,7 +1,5 @@
-data "google_client_config" "this" {}
-
 resource "google_compute_health_check" "this" {
-  name    = "${var.name}-${data.google_client_config.this.region}-check-tcp${var.health_check_port}"
+  name    = "${var.name}-${var.region}-check-tcp${var.health_check_port}"
   project = var.project
 
   tcp_health_check {
