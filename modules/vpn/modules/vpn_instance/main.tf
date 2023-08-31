@@ -46,7 +46,7 @@ resource "google_compute_router" "router" {
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
   count           = var.peer_external_gateway != null ? 1 : 0
-  name            = var.peer_external_gateway.name != null ? var.peer_external_gateway.name : "external-${var.name}"
+  name            = try(var.peer_external_gateway.name, null) != null ? var.peer_external_gateway.name : "external-${var.name}"
   project         = var.project
   redundancy_type = var.peer_external_gateway.redundancy_type
   description     = var.external_vpn_gateway_description
@@ -64,7 +64,7 @@ resource "google_compute_router_peer" "bgp_peer" {
   for_each        = var.tunnels
   region          = var.region
   project         = var.project
-  name            = each.value.bgp_session_name != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
+  name            = try(each.value.bgp_session_name, null) != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
   router          = google_compute_router.router.name
   peer_ip_address = each.value.bgp_peer.address
   peer_asn        = each.value.bgp_peer.asn
@@ -107,7 +107,7 @@ resource "google_compute_router_interface" "router_interface" {
   for_each   = var.tunnels
   project    = var.project
   region     = var.region
-  name       = each.value.bgp_session_name != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
+  name       = try(each.value.bgp_session_name, null) != null ? each.value.bgp_session_name : "${var.name}-${each.key}"
   router     = google_compute_router.router.name
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.tunnels[each.key].name

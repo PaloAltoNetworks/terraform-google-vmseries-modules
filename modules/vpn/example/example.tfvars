@@ -49,7 +49,7 @@ vpn_config = {
           bgp_session_range               = "169.254.1.5/30"
           ike_version                     = 2
           vpn_gateway_interface           = 1
-          peer_external_gateway_interface = 0
+          peer_external_gateway_interface = null
           shared_secret                   = "secret"
         }
       }
@@ -86,6 +86,38 @@ vpn_config = {
           }
           bgp_peer_options                = null
           bgp_session_range               = "169.254.2.5/30"
+          ike_version                     = 2
+          vpn_gateway_interface           = 1
+          peer_external_gateway_interface = 1
+          shared_secret                   = "secret"
+        }
+      }
+    }
+    vpn-to-gcp = {
+      name = "vpn-to-gcp",
+
+      peer_gcp_gateway = "https://www.googleapis.com/compute/v1/projects/<remote_project_id>/regions/<region>/vpnGateways/<remote_vpn_gw_name>"
+
+      tunnels = {
+        remote00 = {
+          bgp_peer = {
+            address = "169.254.3.2"
+            asn     = 65003
+          }
+          bgp_peer_options                = null
+          bgp_session_range               = "169.254.3.1/30"
+          ike_version                     = 2
+          vpn_gateway_interface           = 0
+          peer_external_gateway_interface = null
+          shared_secret                   = "secret"
+        }
+        remote01 = {
+          bgp_peer = {
+            address = "169.254.3.6"
+            asn     = 65003
+          }
+          bgp_peer_options                = null
+          bgp_session_range               = "169.254.3.5/30"
           ike_version                     = 2
           vpn_gateway_interface           = 1
           peer_external_gateway_interface = 1

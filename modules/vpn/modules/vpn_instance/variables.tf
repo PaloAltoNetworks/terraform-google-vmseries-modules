@@ -19,7 +19,9 @@ variable "region" {
 }
 
 variable "peer_external_gateway" {
-  description = "Configuration of an external VPN gateway to which this VPN is connected."
+  description = <<-EOF
+  Configuration of an external VPN gateway to which this VPN is connected.
+
   type = object({
     name            = optional(string)
     redundancy_type = optional(string)
@@ -28,6 +30,7 @@ variable "peer_external_gateway" {
       ip_address = string
     }))
   })
+  EOF
   default = null
 }
 
@@ -44,12 +47,15 @@ variable "route_priority" {
 }
 
 variable "router_advertise_config" {
-  description = "Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions."
+  description = <<-EOF
+  Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions
+
   type = object({
     groups    = list(string)
     ip_ranges = map(string)
     mode      = optional(string)
   })
+  EOF
   default = null
 }
 
@@ -77,7 +83,9 @@ variable "vpn_gateway_self_link" {
 }
 
 variable "tunnels" {
-  description = "VPN tunnel configurations, bgp_peer_options is usually null."
+  description = <<-EOF
+  VPN tunnel configurations, bgp_peer_options is usually null.
+
   type = map(object({
     bgp_peer = object({
       address = string
@@ -95,8 +103,10 @@ variable "tunnels" {
     ike_version                     = optional(number)
     vpn_gateway_interface           = optional(number)
     peer_external_gateway_interface = optional(number)
-    shared_secret                   = optional(string, "")
+    shared_secret                   = optional(string)
   }))
+  EOF
+  type = map(any)
   default = {}
 }
 
@@ -111,8 +121,3 @@ variable "external_vpn_gateway_description" {
   type        = string
   default     = "Terraform managed external VPN gateway"
 }
-
-# variable "dependencies" {
-#   default = []
-#   type    = list(string)
-# }

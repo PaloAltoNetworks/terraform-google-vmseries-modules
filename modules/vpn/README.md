@@ -1,8 +1,12 @@
 # VPN
 
-This module deploys HA VPN gateway with 2 or more VPN tunnels.
+This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem VPN using [Cloud HA VPN](https://cloud.google.com/vpn/docs/concepts/overview#ha-vpn) including HA VPN Gateway itself. VPN includes one or more VPN instances (connections).
 
-The module relies on Google's `terraform-google-vpn` Terraform module and might be considered as a wrapper around it.
+Each created VPN instance is represented by 1..4 VPN tunnels that taget remote VPN gateway(s) located in a single remote location. Remote VPN gateway(s) might have singe IP address (`redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"`) or 2 IP addresses (`redundancy_type = "TWO_IPS_REDUNDANCY"`).
+
+## Examples
+
+See `example/` folder for example usage. 
 
 ## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
