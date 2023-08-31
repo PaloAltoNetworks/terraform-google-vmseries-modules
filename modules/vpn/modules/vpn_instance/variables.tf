@@ -31,7 +31,7 @@ variable "peer_external_gateway" {
     }))
   })
   EOF
-  default = null
+  default     = null
 }
 
 variable "peer_gcp_gateway" {
@@ -56,7 +56,7 @@ variable "router_advertise_config" {
     mode      = optional(string)
   })
   EOF
-  default = null
+  default     = null
 }
 
 variable "router_asn" {
@@ -106,8 +106,8 @@ variable "tunnels" {
     shared_secret                   = optional(string)
   }))
   EOF
-  type = map(any)
-  default = {}
+  type        = map(any)
+  default     = {}
 }
 
 variable "labels" {
