@@ -1,4 +1,4 @@
- variable "name" {
+variable "name" {
   description = "VPN gateway name, and prefix used for dependent resources."
   type        = string
 }

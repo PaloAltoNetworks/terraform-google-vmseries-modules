@@ -8,10 +8,10 @@ locals {
 }
 
 resource "google_compute_router" "router" {
-  name     = coalesce(var.router_name, "rtr-${var.name}")
-  project  = var.project
-  region   = var.region
-  network  = var.network
+  name    = coalesce(var.router_name, "rtr-${var.name}")
+  project = var.project
+  region  = var.region
+  network = var.network
   bgp {
     advertise_mode = (
       var.router_advertise_config == null
@@ -45,7 +45,6 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
-  provider        = google-beta
   count           = var.peer_external_gateway != null ? 1 : 0
   name            = var.peer_external_gateway.name != null ? var.peer_external_gateway.name : "external-${var.name}"
   project         = var.project
@@ -105,7 +104,6 @@ resource "google_compute_router_peer" "bgp_peer" {
 }
 
 resource "google_compute_router_interface" "router_interface" {
-  provider   = google-beta
   for_each   = var.tunnels
   project    = var.project
   region     = var.region
