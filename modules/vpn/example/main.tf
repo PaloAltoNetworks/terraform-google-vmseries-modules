@@ -4,7 +4,7 @@ data "google_compute_network" "test" {
 }
 
 module "vpn" {
-  source = "../../modules/vpn"
+  source = "../"
 
   project = "gcp-gcs-pso"
   region  = "us-central1"
