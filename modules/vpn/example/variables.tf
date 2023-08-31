@@ -1,6 +1,12 @@
 variable "project" {
-  default = null
-  type    = string
+  default     = null
+  type        = string
+  description = "Project ID"
+}
+
+variable "network_name" {
+  description = "The name of existing VPC network"
+  type        = string
 }
 
 variable "region" {
@@ -16,17 +22,6 @@ variable "vpn_gateway_name" {
 variable "router_name" {
   description = "Cloud router name. The router is created by the module"
   type        = string
-}
-
-variable "network" {
-  description = "VPC network ID that should be used for deployment"
-  type        = string
-}
-
-variable "labels" {
-  description = "Labels for VPN components"
-  type        = map(string)
-  default     = {}
 }
 
 variable "vpn_config" {
@@ -93,5 +88,6 @@ variable "vpn_config" {
     }
   }
   ```
+
   EOF
 }

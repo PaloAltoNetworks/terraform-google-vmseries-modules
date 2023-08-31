@@ -20,7 +20,7 @@ output "vpn_gw_local_address_2" {
 
 output "random_secrets_map" {
   value = {
-    for k, v in module.vpn_ha :
+    for k, v in module.vpn_instances :
     k => v.random_secret
   }
   sensitive   = true
