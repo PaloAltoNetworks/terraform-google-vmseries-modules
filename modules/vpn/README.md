@@ -35,8 +35,8 @@ module "vpn" {
     }
 
     instances = {
-      vpn-to-onprem = {
-        name = "vpn-to-onprem",
+      vpn-to-onprem1 = {
+        name = "vpn-to-onprem1",
         peer_external_gateway = {
           redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
           interfaces = [{

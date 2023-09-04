@@ -16,6 +16,7 @@ variable "vpn_gateway_name" {
 variable "router_name" {
   description = "Cloud router name. The router is created by the module"
   type        = string
+  default     = null
 }
 
 variable "network" {
