@@ -4,9 +4,148 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem VPN usin
 
 Each created VPN instance is represented by 1..4 VPN tunnels that taget remote VPN gateway(s) located in a single remote location. Remote VPN gateway(s) might have singe IP address (`redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"`) or 2 IP addresses (`redundancy_type = "TWO_IPS_REDUNDANCY"`).
 
-## Examples
+## Example
 
-See `example/` folder for example usage. 
+```hcl
+data "google_compute_network" "test" {
+  name    = "<network_name>"
+  project = "<project_id>"
+}
+
+module "vpn" {
+  source = "../../../modules/vpn"
+
+  project = "<project_id>"
+  region  = "us-central1"
+
+  vpn_gateway_name = "my-test-gateway"
+  router_name      = "my-test-router"
+  network          = data.google_compute_network.test.self_link
+
+  vpn_config = {
+    router_asn    = 65000
+    local_network = "vpc-vpn"
+
+    router_advertise_config = {
+      ip_ranges = {
+        "10.10.0.0/16" : "GCP range 1"
+      }
+      mode   = "CUSTOM"
+      groups = null
+    }
+
+    instances = {
+      vpn-to-onprem = {
+        name = "vpn-to-onprem",
+        peer_external_gateway = {
+          redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+          interfaces = [{
+            id         = 0
+            ip_address = "1.1.1.1"
+          }]
+        },
+        tunnels = {
+          remote0 = {
+            bgp_peer = {
+              address = "169.254.1.2"
+              asn     = 65001
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.1.1/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 0
+            peer_external_gateway_interface = 0
+            shared_secret                   = "secret"
+          }
+          remote1 = {
+            bgp_peer = {
+              address = "169.254.1.6"
+              asn     = 65001
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.1.5/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 1
+            peer_external_gateway_interface = null
+            shared_secret                   = "secret"
+          }
+        }
+      }
+      vpn-to-onprem2 = {
+        name = "vpn-to-onprem2",
+        peer_external_gateway = {
+          redundancy_type = "TWO_IPS_REDUNDANCY"
+          interfaces = [{
+            id         = 0
+            ip_address = "3.3.3.3"
+            }, {
+            id         = 1
+            ip_address = "4.4.4.4"
+          }]
+        },
+        tunnels = {
+          remote0 = {
+            bgp_peer = {
+              address = "169.254.2.2"
+              asn     = 65002
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.2.1/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 0
+            peer_external_gateway_interface = 0
+            shared_secret                   = "secret"
+          }
+          remote1 = {
+            bgp_peer = {
+              address = "169.254.2.6"
+              asn     = 65002
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.2.5/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 1
+            peer_external_gateway_interface = 1
+            shared_secret                   = "secret"
+          }
+        }
+      }
+      vpn-to-gcp = {
+        name = "vpn-to-gcp",
+
+        peer_gcp_gateway = "https://www.googleapis.com/compute/v1/projects/<remote_project_id>/regions/<region>/vpnGateways/<remote_vpn_gw_name>"
+
+        tunnels = {
+          remote0 = {
+            bgp_peer = {
+              address = "169.254.3.2"
+              asn     = 65003
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.3.1/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 0
+            peer_external_gateway_interface = null
+            shared_secret                   = "secret"
+          }
+          remote1 = {
+            bgp_peer = {
+              address = "169.254.3.6"
+              asn     = 65003
+            }
+            bgp_peer_options                = null
+            bgp_session_range               = "169.254.3.5/30"
+            ike_version                     = 2
+            vpn_gateway_interface           = 1
+            peer_external_gateway_interface = 1
+            shared_secret                   = "secret"
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -22,18 +161,24 @@ See `example/` folder for example usage.
 | Name | Version |
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | >= 4.58 |
+| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ### Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_vpn_instances"></a> [vpn\_instances](#module\_vpn\_instances) | ./modules/vpn_instance | n/a |
+No modules.
 
 ### Resources
 
 | Name | Type |
 |------|------|
+| [google-beta_google_compute_vpn_tunnel.tunnels](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_vpn_tunnel) | resource |
+| [google_compute_external_vpn_gateway.external_gateway](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_external_vpn_gateway) | resource |
 | [google_compute_ha_vpn_gateway.ha_gateway](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ha_vpn_gateway) | resource |
+| [google_compute_router.router](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_router) | resource |
+| [google_compute_router_interface.router_interface](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_router_interface) | resource |
+| [google_compute_router_peer.bgp_peer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_router_peer) | resource |
+| [random_id.secret](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 
 ### Inputs
 
@@ -51,7 +196,7 @@ See `example/` folder for example usage.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_random_secrets_map"></a> [random\_secrets\_map](#output\_random\_secrets\_map) | HA VPN IPsec tunnels secrets that were randomly generated |
+| <a name="output_random_secret"></a> [random\_secret](#output\_random\_secret) | HA VPN IPsec tunnels secret that has been randomly generated |
 | <a name="output_vpn_gw_local_address_1"></a> [vpn\_gw\_local\_address\_1](#output\_vpn\_gw\_local\_address\_1) | HA VPN gateway IP address 1 |
 | <a name="output_vpn_gw_local_address_2"></a> [vpn\_gw\_local\_address\_2](#output\_vpn\_gw\_local\_address\_2) | HA VPN gateway IP address 2 |
 | <a name="output_vpn_gw_name"></a> [vpn\_gw\_name](#output\_vpn\_gw\_name) | HA VPN gateway name |

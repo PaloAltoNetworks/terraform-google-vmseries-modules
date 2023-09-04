@@ -18,11 +18,8 @@ output "vpn_gw_local_address_2" {
   description = "HA VPN gateway IP address 2"
 }
 
-output "random_secrets_map" {
-  value = {
-    for k, v in module.vpn_instances :
-    k => v.random_secret
-  }
+output "random_secret" {
+  value       = local.secret
   sensitive   = true
-  description = "HA VPN IPsec tunnels secrets that were randomly generated"
+  description = "HA VPN IPsec tunnels secret that has been randomly generated"
 }
