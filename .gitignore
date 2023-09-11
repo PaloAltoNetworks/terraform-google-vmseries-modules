@@ -59,4 +59,4 @@ terraform.tfvars.json
 # password, private keys, and other secrets. But allow example files.
 *.tfvars
 *.tfvars.json
-!*/example.tfvars
+!**/example.tfvars
