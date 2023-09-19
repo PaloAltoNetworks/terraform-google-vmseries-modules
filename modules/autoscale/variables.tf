@@ -9,6 +9,12 @@ variable "region" {
   default     = null
 }
 
+variable "project_id" {
+  description = "GCP Project ID to contain the created cloud resources."
+  type        = string
+  default     = null
+}
+
 variable "regional_mig" {
   description = <<-EOF
   Sets the managed instance group type to either a regional (if `true`) or a zonal (if `false`).

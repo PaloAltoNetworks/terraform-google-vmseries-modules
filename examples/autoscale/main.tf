@@ -116,6 +116,7 @@ module "iam_service_account" {
 module "autoscale" {
   source = "../../modules/autoscale/"
 
+  project_id            = var.project_id
   name                  = "${var.name_prefix}vmseries"
   region                = var.region
   regional_mig          = true

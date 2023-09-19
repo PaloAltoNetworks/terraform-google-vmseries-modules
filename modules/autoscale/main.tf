@@ -1,7 +1,10 @@
-data "google_compute_default_service_account" "main" {}
+data "google_compute_default_service_account" "main" {
+  project = var.project_id
+}
 
 # Instance template
 resource "google_compute_instance_template" "main" {
+  project          = var.project_id
   name_prefix      = var.name
   machine_type     = var.machine_type
   min_cpu_platform = var.min_cpu_platform
@@ -43,6 +46,7 @@ resource "google_compute_instance_template" "main" {
 resource "google_compute_instance_group_manager" "zonal" {
   for_each = var.regional_mig ? {} : var.zones
 
+  project            = var.project_id
   name               = "${var.name}-${each.value}"
   base_instance_name = var.name
   target_pools       = var.target_pools
@@ -77,9 +81,10 @@ resource "google_compute_instance_group_manager" "zonal" {
 resource "google_compute_autoscaler" "zonal" {
   for_each = var.regional_mig ? {} : var.zones
 
-  name   = "${var.name}-${each.value}"
-  target = google_compute_instance_group_manager.zonal[each.key].id
-  zone   = each.value
+  project = var.project_id
+  name    = "${var.name}-${each.value}"
+  target  = google_compute_instance_group_manager.zonal[each.key].id
+  zone    = each.value
 
   autoscaling_policy {
     min_replicas    = var.min_vmseries_replicas
@@ -108,12 +113,14 @@ resource "google_compute_autoscaler" "zonal" {
 data "google_compute_zones" "main" {
   count = var.regional_mig ? 1 : 0
 
-  region = var.region
+  project = var.project_id
+  region  = var.region
 }
 
 resource "google_compute_region_instance_group_manager" "regional" {
   count = var.regional_mig ? 1 : 0
 
+  project            = var.project_id
   name               = var.name
   base_instance_name = var.name
   target_pools       = var.target_pools
@@ -141,9 +148,10 @@ resource "google_compute_region_instance_group_manager" "regional" {
 resource "google_compute_region_autoscaler" "regional" {
   count = var.regional_mig ? 1 : 0
 
-  name   = var.name
-  target = google_compute_region_instance_group_manager.regional[0].id
-  region = var.region
+  project = var.project_id
+  name    = var.name
+  target  = google_compute_region_instance_group_manager.regional[0].id
+  region  = var.region
 
   autoscaling_policy {
     min_replicas    = var.min_vmseries_replicas
@@ -172,19 +180,22 @@ resource "google_compute_region_autoscaler" "regional" {
 resource "google_pubsub_topic" "main" {
   count = var.create_pubsub_topic ? 1 : 0
 
-  name = "${var.name}-mig"
+  project = var.project_id
+  name    = "${var.name}-mig"
 }
 
 resource "google_pubsub_subscription" "main" {
   count = var.create_pubsub_topic ? 1 : 0
 
-  name  = "${var.name}-mig"
-  topic = google_pubsub_topic.main[0].id
+  project = var.project_id
+  name    = "${var.name}-mig"
+  topic   = google_pubsub_topic.main[0].id
 }
 
 resource "google_pubsub_subscription_iam_member" "main" {
   count = var.create_pubsub_topic ? 1 : 0
 
+  project      = var.project_id
   subscription = google_pubsub_subscription.main[0].id
   role         = "roles/pubsub.subscriber"
   member       = "serviceAccount:${coalesce(var.service_account_email, data.google_compute_default_service_account.main.email)}"
@@ -192,8 +203,6 @@ resource "google_pubsub_subscription_iam_member" "main" {
 
 #---------------------------------------------------------------------------------
 # The following resources are used for delicensing
-
-data "google_project" "this" {}
 
 resource "random_id" "postfix" {
   byte_length = 2
@@ -229,6 +238,7 @@ locals {
 # Credentials itself are set manually after secret store is created by Terraform.
 resource "google_secret_manager_secret" "delicensing_cfn_pano_creds" {
   count     = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project   = var.project_id
   secret_id = local.delicensing_cfn.secret_name
   replication {
     automatic = true
@@ -238,6 +248,7 @@ resource "google_secret_manager_secret" "delicensing_cfn_pano_creds" {
 # Create a log sink to match the delete of a VM from a Managed Instance group during the initial phase
 resource "google_logging_project_sink" "delicensing_cfn" {
   count                  = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project                = var.project_id
   destination            = "pubsub.googleapis.com/${google_pubsub_topic.delicensing_cfn[0].id}"
   name                   = local.delicensing_cfn.log_sink_name
   filter                 = "protoPayload.requestMetadata.callerSuppliedUserAgent=\"GCE Managed Instance Group\" AND protoPayload.methodName=\"v1.compute.instances.delete\" AND protoPayload.response.progress=\"0\""
@@ -246,14 +257,15 @@ resource "google_logging_project_sink" "delicensing_cfn" {
 
 # Create a pub/sub topic for messaging log sink events
 resource "google_pubsub_topic" "delicensing_cfn" {
-  count = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
-  name  = local.delicensing_cfn.topic_name
+  count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project = var.project_id
+  name    = local.delicensing_cfn.topic_name
 }
 
 # Allow log router writer identity to publish to pub/sub
 resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
   count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
-  project = data.google_project.this.project_id
+  project = var.project_id
   topic   = local.delicensing_cfn.topic_name
   role    = "roles/pubsub.publisher"
   member  = google_logging_project_sink.delicensing_cfn[0].writer_identity
@@ -262,6 +274,7 @@ resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
 # VPC Connector required for Cloud Function to access local Panorama instance
 resource "google_vpc_access_connector" "delicensing_cfn" {
   count         = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project       = var.project_id
   name          = local.delicensing_cfn.vpc_connector_name
   region        = var.delicensing_cloud_function_config.region
   ip_cidr_range = var.delicensing_cloud_function_config.vpc_connector_cidr
@@ -271,6 +284,7 @@ resource "google_vpc_access_connector" "delicensing_cfn" {
 # Cloud Function code storage bucket
 resource "google_storage_bucket" "delicensing_cfn" {
   count                       = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project                     = var.project_id
   name                        = local.delicensing_cfn.bucket_name
   location                    = var.delicensing_cloud_function_config.bucket_location
   force_destroy               = true
@@ -301,6 +315,7 @@ resource "google_storage_bucket_object" "delicensing_cfn" {
 # Cloud Function Service Account
 resource "google_service_account" "delicensing_cfn" {
   count        = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project      = var.project_id
   account_id   = local.delicensing_cfn.runtime_sa_account_id
   display_name = local.delicensing_cfn.runtime_sa_display_name
 }
@@ -308,13 +323,14 @@ resource "google_service_account" "delicensing_cfn" {
 # Granting required roles to Cloud Function SA
 resource "google_project_iam_member" "delicensing_cfn" {
   for_each = try(var.delicensing_cloud_function_config, null) != null ? toset(local.delicensing_cfn.runtime_sa_roles) : []
-  project  = data.google_project.this.project_id
+  project  = var.project_id
   role     = each.key
   member   = "serviceAccount:${google_service_account.delicensing_cfn[0].email}"
 }
 
 resource "google_cloudfunctions2_function" "delicensing_cfn" {
   count       = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
+  project     = var.project_id
   name        = local.delicensing_cfn.function_name
   description = local.delicensing_cfn.description
   location    = var.delicensing_cloud_function_config.region
@@ -335,7 +351,7 @@ resource "google_cloudfunctions2_function" "delicensing_cfn" {
     environment_variables = {
       "PANORAMA_ADDRESS"  = local.delicensing_cfn.panorama_address
       "PANORAMA2_ADDRESS" = local.delicensing_cfn.panorama2_address
-      "PROJECT_ID"        = data.google_project.this.project_id
+      "PROJECT_ID"        = var.project_id
       "SECRET_NAME"       = google_secret_manager_secret.delicensing_cfn_pano_creds[0].secret_id
     }
     service_account_email          = google_service_account.delicensing_cfn[0].email
@@ -355,7 +371,7 @@ resource "google_cloudfunctions2_function" "delicensing_cfn" {
 # Allow Cloud Function invocation from pub/sub
 resource "google_project_iam_member" "delicensing_cfn_invoker" {
   count   = try(var.delicensing_cloud_function_config, null) != null ? 1 : 0
-  project = data.google_project.this.project_id
+  project = var.project_id
   role    = "roles/run.invoker"
   member  = "serviceAccount:${data.google_compute_default_service_account.main.email}"
 }
