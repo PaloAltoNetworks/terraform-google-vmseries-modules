@@ -174,6 +174,7 @@ module "intlb" {
   source = "../../modules/lb_internal/"
 
   name              = "${var.name_prefix}internal-lb"
+  region            = var.region
   network           = module.vpc_trust.network_id
   subnetwork        = module.vpc_trust.subnets_self_links[0]
   all_ports         = true
