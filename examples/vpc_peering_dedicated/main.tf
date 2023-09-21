@@ -176,6 +176,7 @@ module "lb_internal" {
   for_each = var.lbs_internal
 
   name              = "${var.name_prefix}${each.value.name}"
+  region            = var.region
   health_check_port = try(each.value.health_check_port, "80")
   backends          = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
   ip_address        = each.value.ip_address
