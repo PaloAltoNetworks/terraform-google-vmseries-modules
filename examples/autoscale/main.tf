@@ -129,7 +129,7 @@ module "autoscale" {
   service_account_email = module.iam_service_account.email
   target_pools          = [module.extlb.target_pool]
 
-  delicensing_cloud_function_config = try(var.delicensing_cloud_function_config, {})
+  delicensing_cloud_function_config = try(var.delicensing_cloud_function_config, null)
 
   network_interfaces = [
     {

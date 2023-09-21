@@ -209,12 +209,12 @@ resource "random_id" "postfix" {
 }
 
 locals {
-  name_prefix   = try(var.delicensing_cloud_function_config.name_prefix) == null ? "" : try(var.delicensing_cloud_function_config.name_prefix)
+  name_prefix   = try(var.delicensing_cloud_function_config.name_prefix, "")
   function_name = coalesce(try(var.delicensing_cloud_function_config.function_name, "delicensing-cfn"), "delicensing-cfn")
   delicensing_cfn = {
-    panorama_address        = var.delicensing_cloud_function_config.panorama_address
+    panorama_address        = try(var.delicensing_cloud_function_config.panorama_address, "")
     panorama2_address       = try(var.delicensing_cloud_function_config.panorama2_address, "")
-    function_name           = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}",
+    function_name           = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}"
     bucket_name             = "${local.name_prefix}${local.function_name}-${random_id.postfix.hex}"
     source_dir              = "${path.module}/src"
     zip_file_name           = local.function_name
