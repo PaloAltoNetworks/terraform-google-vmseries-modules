@@ -45,4 +45,5 @@ runs:
         PRID: ${{ inputs.pr-id }}
         PROJECT_ID: ${{ env.PROJECT_ID }}
       shell: bash
-      run: make $TPATH ACTION=$ACTION
+      # run: make $TPATH ACTION=$ACTION
+      run:  tree -a $TPATH
