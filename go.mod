@@ -3,7 +3,7 @@ module github.com/PaloAltoNetworks/terraform-google-vmseries-modules
 go 1.20
 
 require (
-	github.com/PaloAltoNetworks/terraform-modules-vmseries-tests-skeleton v1.0.7-0.20230921084834-413e7c888833
+	github.com/PaloAltoNetworks/terraform-modules-vmseries-tests-skeleton v1.1.0
 	github.com/gruntwork-io/terratest v0.43.6
 )
 
