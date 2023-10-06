@@ -1,4 +1,4 @@
-package vpc-peering
+package vpc_peering
 
 import (
 	"testing"
