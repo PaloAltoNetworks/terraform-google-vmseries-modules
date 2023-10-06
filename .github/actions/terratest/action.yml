@@ -1,0 +1,48 @@
+name: 'Terratest'
+description: 'Runs Terratest for a specified path.'
+inputs:
+  tf_version:
+    description: 'TF version used.'
+    required: true
+  path:
+    description: 'Path to Terraform module.'
+    required: true
+  terratest_action:
+    description: The action (name of a test in Terratest) that will be passed to the Makefile's ACTION parameter
+    type: string
+    required: true
+  pr-id:
+    description: A PR number. Optional value, you might want to use it to prefix resources created for a particular PR to identify them easily.
+    type: string
+    default: ""
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.tf_version }}
+        terraform_wrapper: false
+
+    - name: setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: login to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ env.GCP_SERVICE_ACCOUNT}}
+
+    - name: ${{ inputs.terratest_action }} infrastructure
+      env:
+        TPATH: ${{ inputs.path }}
+        ACTION: ${{ inputs.terratest_action }}
+        PRID: ${{ inputs.pr-id }}
+        PROJECT_ID: ${{ env.PROJECT_ID }}
+      shell: bash
+      run: make $TPATH ACTION=$ACTION
