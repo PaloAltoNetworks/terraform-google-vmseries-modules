@@ -10,12 +10,7 @@ import (
 )
 
 func CreateTerraformOptions(t *testing.T) *terraform.Options {
-	namePrefix, err := testskeleton.GenerateTerraformVarsInfo("gcp")
-	if err != nil {
-		// Handle the error
-		log.Fatalf("Error generating terraform vars info: %v", err)
-	}
-	projectId, err := testskeleton.GenerateTerraformVarsInfo("gcp")
+	varsInfo, err := testskeleton.GenerateTerraformVarsInfo("gcp")
 	if err != nil {
 		// Handle the error
 		log.Fatalf("Error generating terraform vars info: %v", err)
@@ -26,8 +21,8 @@ func CreateTerraformOptions(t *testing.T) *terraform.Options {
 		TerraformDir: ".",
 		VarFiles:     []string{"example.tfvars"},
 		Vars: map[string]interface{}{
-			"name_prefix": namePrefix.NamePrefix,
-			"project_id":  projectId.GoogleProjectId,
+			"name_prefix": varsInfo.NamePrefix,
+			"project_id":  varsInfo.GoogleProjectId,
 		},
 		Logger:               logger.Default,
 		Lock:                 true,
