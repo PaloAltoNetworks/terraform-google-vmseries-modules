@@ -12,7 +12,7 @@ inputs:
     type: string
     required: true
   pr-id:
-    description: A PR number. Optional value, you might want to use it to prefix resources created for a particular PR to identify them easly.
+    description: A PR number. Optional value, you might want to use it to prefix resources created for a particular PR to identify them easily.
     type: string
     default: ""
     required: false
