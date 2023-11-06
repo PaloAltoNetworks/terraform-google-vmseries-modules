@@ -1,84 +1,80 @@
-variable "networks" {
+variable "subnetworks" {
   description = <<-EOF
-  Map of networks, a minimal example:
-
+  A map containing subnetworks configuration. Subnets can be in different regions
+  Example:
   ```
-  {
-    "my-vpc" = {
-      name            = "my-vpc"
-      subnetwork_name = "my-subnet"
-      ip_cidr_range   = "192.168.1.0/24"
-    }
+  subnetworks = {
+    subnetwork_name = "my-sub"
+    create_subnetwork = true
+    ip_cidr_range = "192.168.0.0/24"
+    region = "us-east1"
   }
   ```
-
-  An advanced example:
-
-  ```
-  {
-    "my-vpc" = {
-      name            = "my-vpc"
-      subnetwork_name = "my-subnet"
-      ip_cidr_range   = "192.168.1.0/24"
-      allowed_sources = ["209.85.152.0/22"]
-      log_metadata    = "INCLUDE_ALL_METADATA"
-      mtu             = 1500
-      routing_mode    = "REGIONAL"
-    }
-  }
-  ```
-
-  Full example:
-
-  ```
-  {
-    "my-vpc" = {
-      name             = "my-vpc"
-      subnetwork_name  = "my-subnet"
-      ip_cidr_range    = "192.168.1.0/24"
-      allowed_sources  = ["10.0.0.0/8", "98.98.98.0/28"]
-      allowed_protocol = "UDP"
-      allowed_ports    = ["53", "123-125"]
-      log_metadata     = "EXCLUDE_ALL_METADATA"
-      routing_mode     = "GLOBAL"
-
-      delete_default_routes_on_create = true
-    }
-    "imported-from-hostproject" = {
-      name              = "existing-core-vpc"
-      subnetwork_name   = "existing-subnet"
-      create_network    = false
-      create_subnetwork = false
-      host_project_id   = "my-core-project-id"
-    }
-  }
-  ```
-
-  Terraform 0.12.x and 0.13.x limitation: the existing networks/subnetworks names should be static strings and not come from other `resource` objects.
-  It is allowed from Terraform 0.14 onwards.
-  EOF
-}
-
-variable "region" {
-  description = <<-EOF
-  GCP region for all the created subnetworks and for all the imported subnetworks. Set to null to use a default provider's region.
-  
-  To add subnetworks with another region use a separate instance of this module (and specify `create_network=false` to avoid creating a duplicate network).
   EOF
   default     = null
+  type        = any
+}
+
+variable "name" {
+  description = "The name of the created or already existing VPC Network."
   type        = string
 }
 
-variable "allowed_protocol" {
-  description = "A protocol (TCP or UDP) to pass for the `networks` entries that do not have their own `allowed_protocol` attribute."
-  default     = "all"
+variable "create_network" {
+  description = <<-EOF
+  A flag to indicate the creation or import of a VPC network.
+  Setting this to `true` will create a new network managed by terraform.
+  Setting this to `false` will try to read the existing network with those name and region settings.
+  EOF
+  default     = true
+  type        = bool
 }
 
-variable "allowed_ports" {
-  description = "A list of ports to pass for the `networks` entries that do not have their own `allowed_ports` attribute. For example [\"22\", \"443\"]. Can also include ranges, for example [\"80\", \"8080-8999\"]. Empty list means to allow all."
-  default     = []
-  type        = list(string)
+variable "delete_default_routes_on_create" {
+  description = <<-EOF
+  A flag to indicate the deletion of the default routes at VPC creation.
+  Setting this to `true` the default route `0.0.0.0/0` will be deleted upon network creation.
+  Setting this to `false` the default route `0.0.0.0/0` will be not be deleted upon network creation.
+  EOF
+  default     = false
+  type        = bool
 }
+
+variable "mtu" {
+  description = "MTU value for VPC Network"
+  default     = 1460
+  type        = number
+  validation {
+    condition     = var.mtu >= 1300 && var.mtu <= 8896
+    error_message = "MTU Range must be between 1300 and 8896 !"
+  }
+}
+
+variable "routing_mode" {
+  description = "Type of network-wide routing mode to use. Possible types are : REGIONAL and GLOBAL."
+  default     = "REGIONAL"
+  type        = string
+}
+
+variable "firewall_rules" {
+  description = <<-EOF
+  A map containing firewall rules configuration.
+  Example :
+  ```
+  firewall_rules = {
+    firewall-rule-1 = {
+      name = "first-rule"
+      source_ranges = ["10.10.10.0/24", "1.1.1.0/24"]
+      priority = "2000"
+      target_tags = ["vmseries-firewalls"]
+      allowed_protocol = "TCP"
+      allowed_ports = ["443", "22"]
+    }
+  }
+  ```
+  EOF
+}
+
 
 variable "project_id" {
   description = "Project in which to create or look for VPCs and subnets"

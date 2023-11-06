@@ -1,25 +1,6 @@
 locals {
-  // All the networks:
-  networks = { for v in var.networks : v.name => v } // tested on tf-0.12, when list elements shift indexes, this map prevents destroy
+  subnetworks = { for v in var.subnetworks : v.subnetwork_name => v }
 
-  // Some networks already exist:
-  networks_existing = {
-    for k, v in local.networks
-    : k => v
-    if try(v.create_network == false, false)
-  }
-
-  // Some networks need to be created:
-  networks_to_create = {
-    for k, v in local.networks
-    : k => v
-    if !(try(v.create_network == false, false))
-  }
-
-  // We have networks, now the same for subnetworks:
-  subnetworks = { for v in var.networks : v.subnetwork_name => v }
-
-  // Some subnetworks already exist:
   subnetworks_existing = {
     for k, v in local.subnetworks
     : k => v
@@ -35,29 +16,28 @@ locals {
 }
 
 data "google_compute_network" "this" {
-  for_each = local.networks_existing
+  count = var.create_network == true ? 1 : 0
 
-  name    = each.value.name
-  project = try(each.value.host_project_id, each.value.project, var.project_id, null)
+  name    = var.name
+  project = try(var.project_id, null)
 }
 
 resource "google_compute_network" "this" {
-  for_each = local.networks_to_create
 
-  name                            = each.value.name
-  project                         = try(each.value.host_project_id, each.value.project, var.project_id, null)
-  delete_default_routes_on_create = try(each.value.delete_default_routes_on_create, false)
-  mtu                             = try(each.value.mtu, null)
+  name                            = var.name
+  project                         = try(var.project_id, null)
+  delete_default_routes_on_create = try(var.delete_default_routes_on_create, false)
+  mtu                             = try(var.mtu, 1460)
   auto_create_subnetworks         = false
-  routing_mode                    = try(each.value.routing_mode, "REGIONAL")
+  routing_mode                    = try(var.routing_mode, "REGIONAL")
 }
 
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
 
   name    = each.value.subnetwork_name
-  project = try(each.value.host_project_id, each.value.project, var.project_id, null)
-  region  = try(each.value.region, var.region, null)
+  project = try(var.project_id, null)
+  region  = try(each.value.region, null)
 }
 
 resource "google_compute_subnetwork" "this" {
@@ -65,22 +45,29 @@ resource "google_compute_subnetwork" "this" {
 
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
-  network       = merge(google_compute_network.this, data.google_compute_network.this)[each.value.name].self_link
+  network       = merge(google_compute_network.this, data.google_compute_network.this).self_link
   region        = try(each.value.region, null)
-  project       = try(each.value.host_project_id, var.project_id)
+  project       = try(var.project_id, null)
 }
 
 resource "google_compute_firewall" "this" {
-  for_each      = { for k, v in local.networks : k => v if can(v.allowed_sources) }
-  name          = "${each.value.name}-ingress"
-  network       = merge(google_compute_network.this, data.google_compute_network.this)[each.key].self_link
-  direction     = "INGRESS"
-  source_ranges = try(each.value.allowed_sources, null)
-  project       = try(each.value.host_project_id, var.project_id)
+  for_each = var.firewall_rules
+
+  name                    = "${each.value.name}-ingress"
+  network                 = merge(google_compute_network.this, data.google_compute_network.this).self_link
+  direction               = "INGRESS"
+  source_ranges           = try(each.value.source_ranges, null)
+  source_tags             = try(each.value.source_tags, null)
+  source_service_accounts = try(each.value.source_service_accounts, null)
+  project                 = try(var.project_id, null)
+  priority                = try(each.value.priority, "1000")
+  target_service_accounts = try(each.value.target_service_accounts, null)
+  target_tags             = try(each.value.target_tags, null)
+
 
   allow {
-    protocol = try(each.value.allowed_protocol, var.allowed_protocol, null)
-    ports    = try(each.value.allowed_ports, var.allowed_ports, null)
+    protocol = try(each.value.allowed_protocol, null)
+    ports    = try(each.value.allowed_ports, null)
   }
 
   dynamic "log_config" {
@@ -88,6 +75,14 @@ resource "google_compute_firewall" "this" {
 
     content {
       metadata = log_config.value
+    }
+  }
+  lifecycle {
+    precondition {
+      condition = ((each.value.source_ranges != null && each.value.source_tags == null && each.value.source_service_accounts == null)
+        || (each.value.source_ranges == null && each.value.source_tags != null && each.value.source_service_accounts == null)
+      || (each.value.source_ranges == null && each.value.source_tags == null && each.value.source_service_accounts != null))
+      error_message = "Please select only one of the three options : source_servce_accounts , source_ranges , source_tags !"
     }
   }
 }
