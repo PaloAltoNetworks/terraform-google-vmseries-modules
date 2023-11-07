@@ -13,7 +13,7 @@ variable "subnetworks" {
   }
   ```
   EOF
-  default     = null
+  default     = {}
   type        = any
 }
 
@@ -75,6 +75,7 @@ variable "firewall_rules" {
   }
   ```
   EOF
+  default     = {}
 }
 
 

@@ -23,6 +23,7 @@ data "google_compute_network" "this" {
 }
 
 resource "google_compute_network" "this" {
+  count = var.create_network == true ? 1 : 0
 
   name                            = var.name
   project                         = try(var.project_id, null)
@@ -45,7 +46,7 @@ resource "google_compute_subnetwork" "this" {
 
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
-  network       = try(data.google_compute_network.this[0].self_link, google_compute_network.this.self_link)
+  network       = try(data.google_compute_network.this[0].self_link, google_compute_network.this[0].self_link)
   region        = try(each.value.region, null)
   project       = try(var.project_id, null)
 }
@@ -54,7 +55,7 @@ resource "google_compute_firewall" "this" {
   for_each = var.firewall_rules
 
   name                    = "${each.value.name}-ingress"
-  network                 = try(data.google_compute_network.this[0].self_link, google_compute_network.this.self_link)
+  network                 = try(data.google_compute_network.this[0].self_link, google_compute_network.this[0].self_link)
   direction               = "INGRESS"
   source_ranges           = try(each.value.source_ranges, null)
   source_tags             = try(each.value.source_tags, null)
