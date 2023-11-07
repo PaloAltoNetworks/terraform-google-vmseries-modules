@@ -16,7 +16,7 @@ locals {
 }
 
 data "google_compute_network" "this" {
-  count = var.create_network == true ? 1 : 0
+  count = var.create_network == true ? 0 : 1
 
   name    = var.name
   project = try(var.project_id, null)
@@ -45,7 +45,7 @@ resource "google_compute_subnetwork" "this" {
 
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
-  network       = merge(google_compute_network.this, data.google_compute_network.this).self_link
+  network       = try(data.google_compute_network.this[0].self_link, google_compute_network.this.self_link)
   region        = try(each.value.region, null)
   project       = try(var.project_id, null)
 }
@@ -54,7 +54,7 @@ resource "google_compute_firewall" "this" {
   for_each = var.firewall_rules
 
   name                    = "${each.value.name}-ingress"
-  network                 = merge(google_compute_network.this, data.google_compute_network.this).self_link
+  network                 = try(data.google_compute_network.this[0].self_link, google_compute_network.this.self_link)
   direction               = "INGRESS"
   source_ranges           = try(each.value.source_ranges, null)
   source_tags             = try(each.value.source_tags, null)
@@ -79,10 +79,13 @@ resource "google_compute_firewall" "this" {
   }
   lifecycle {
     precondition {
-      condition = ((each.value.source_ranges != null && each.value.source_tags == null && each.value.source_service_accounts == null)
-        || (each.value.source_ranges == null && each.value.source_tags != null && each.value.source_service_accounts == null)
-      || (each.value.source_ranges == null && each.value.source_tags == null && each.value.source_service_accounts != null))
-      error_message = "Please select only one of the three options : source_servce_accounts , source_ranges , source_tags !"
+      condition = (
+        (can(each.value.source_ranges) && !can(each.value.source_tags) && !can(each.value.source_service_accounts)) ||
+        (!can(each.value.source_ranges) && can(each.value.source_tags) && !can(each.value.source_service_accounts)) ||
+        (!can(each.value.source_ranges) && !can(each.value.source_tags) && can(each.value.source_service_accounts)) ||
+        (!can(each.value.source_ranges) && !can(each.value.source_tags) && !can(each.value.source_service_accounts))
+      )
+      error_message = "Please select only one of the three options: source_service_accounts, source_ranges, source_tags!"
     }
   }
 }

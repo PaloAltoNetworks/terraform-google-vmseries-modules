@@ -51,7 +51,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | The name of the created or already existing VPC Network. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Project in which to create or look for VPCs and subnets | `string` | `null` | no |
 | <a name="input_routing_mode"></a> [routing\_mode](#input\_routing\_mode) | Type of network-wide routing mode to use. Possible types are : REGIONAL and GLOBAL. | `string` | `"REGIONAL"` | no |
-| <a name="input_subnetworks"></a> [subnetworks](#input\_subnetworks) | A map containing subnetworks configuration. Subnets can be in different regions<br>Example:<pre>subnetworks = {<br>  subnetwork_name = "my-sub"<br>  create_subnetwork = true<br>  ip_cidr_range = "192.168.0.0/24"<br>  region = "us-east1"<br>}</pre> | `any` | `null` | no |
+| <a name="input_subnetworks"></a> [subnetworks](#input\_subnetworks) | A map containing subnetworks configuration. Subnets can be in different regions<br>Example:<pre>subnetworks = {<br>  my-sub = {<br>    subnetwork_name = "my-sub"<br>    create_subnetwork = true<br>    ip_cidr_range = "192.168.0.0/24"<br>    region = "us-east1"<br>  }<br>}</pre> | `any` | `null` | no |
 
 ### Outputs
 
