@@ -21,7 +21,7 @@ func CreateTerraformOptions(t *testing.T) *terraform.Options {
 		TerraformDir: ".",
 		VarFiles:     []string{"example.tfvars"},
 		Vars: map[string]interface{}{
-			"name":    varsInfo.NamePrefix,
+			"name_prefix":    varsInfo.NamePrefix,
 			"project": varsInfo.GoogleProjectId,
 		},
 		Logger:               logger.Default,
