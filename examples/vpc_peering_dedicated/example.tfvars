@@ -41,60 +41,125 @@ bootstrap_buckets = {
 # VPC
 
 networks = {
-  mgmt = {
+  fw-mgmt-vpc = {
+    vpc_name                        = "fw-mgmt-vpc"
     create_network                  = true
-    create_subnetwork               = true
-    name                            = "fw-mgmt-vpc"
-    subnetwork_name                 = "fw-mgmt-sub"
-    ip_cidr_range                   = "10.10.10.0/28"
-    allowed_sources                 = ["1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
     delete_default_routes_on_create = false
-    allowed_protocol                = "all"
-    allowed_ports                   = []
+    mtu                             = "1460"
+    routing_mode                    = "REGIONAL"
+    subnetworks = {
+      fw-mgmt-sub = {
+        subnetwork_name   = "fw-mgmt-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "10.10.10.0/28"
+        region            = "us-east1"
+      }
+    }
+    firewall_rules = {
+      allow-mgmt-ingress = {
+        name             = "allow-mgmt-vpc"
+        source_ranges    = ["1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
+        priority         = "1000"
+        allowed_protocol = "all"
+        allowed_ports    = []
+      }
+    }
   },
-  untrust = {
+  fw-untrust-vpc = {
+    vpc_name                        = "fw-untrust-vpc"
     create_network                  = true
-    create_subnetwork               = true
-    name                            = "fw-untrust-vpc"
-    subnetwork_name                 = "fw-untrust-sub"
-    ip_cidr_range                   = "10.10.11.0/28"
-    allowed_sources                 = ["35.191.0.0/16", "130.211.0.0/22"]
     delete_default_routes_on_create = false
-    allowed_protocol                = "all"
-    allowed_ports                   = []
+    mtu                             = "1460"
+    routing_mode                    = "REGIONAL"
+    subnetworks = {
+      fw-untrust-sub = {
+        subnetwork_name   = "fw-untrust-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "10.10.11.0/28"
+        region            = "us-east1"
+      }
+    }
+    firewall_rules = {
+      allow-untrust-ingress = {
+        name             = "allow-untrust-vpc"
+        source_ranges    = ["35.191.0.0/16", "209.85.152.0/22", "209.85.204.0/22", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
+        priority         = "1000"
+        allowed_protocol = "all"
+        allowed_ports    = []
+      }
+    }
   },
-  trust = {
+  fw-trust-vpc = {
+    vpc_name                        = "fw-trust-vpc"
     create_network                  = true
-    create_subnetwork               = true
-    name                            = "fw-trust-vpc"
-    subnetwork_name                 = "fw-trust-sub"
-    ip_cidr_range                   = "10.10.12.0/28"
-    allowed_sources                 = ["192.168.0.0/16", "35.191.0.0/16", "130.211.0.0/22"]
     delete_default_routes_on_create = true
-    allowed_protocol                = "all"
-    allowed_ports                   = []
+    mtu                             = "1460"
+    routing_mode                    = "REGIONAL"
+    subnetworks = {
+      fw-trust-sub = {
+        subnetwork_name   = "fw-trust-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "10.10.12.0/28"
+        region            = "us-east1"
+      }
+    }
+    firewall_rules = {
+      allow-trust-ingress = {
+        name             = "allow-trust-vpc"
+        source_ranges    = ["192.168.0.0/16", "35.191.0.0/16", "130.211.0.0/22"]
+        priority         = "1000"
+        allowed_protocol = "all"
+        allowed_ports    = []
+      }
+    }
   },
-  spoke1 = {
+  fw-spoke1-vpc = {
+    vpc_name                        = "fw-spoke1-vpc"
     create_network                  = true
-    create_subnetwork               = true
-    name                            = "spoke1-vpc"
-    subnetwork_name                 = "spoke1-sub"
-    ip_cidr_range                   = "192.168.1.0/28"
-    allowed_sources                 = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
     delete_default_routes_on_create = true
-    allowed_protocol                = "all"
-    allowed_ports                   = []
+    mtu                             = "1460"
+    routing_mode                    = "REGIONAL"
+    subnetworks = {
+      fw-spoke1-sub = {
+        subnetwork_name   = "fw-spoke1-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "192.168.1.0/28"
+        region            = "us-east1"
+      }
+    }
+    firewall_rules = {
+      allow-spoke1-ingress = {
+        name             = "allow-spoke1-vpc"
+        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
+        priority         = "1000"
+        allowed_protocol = "all"
+        allowed_ports    = []
+      }
+    }
   },
-  spoke2 = {
+  fw-spoke2-vpc = {
+    vpc_name                        = "fw-spoke2-vpc"
     create_network                  = true
-    create_subnetwork               = true
-    name                            = "spoke2-vpc"
-    subnetwork_name                 = "spoke2-sub"
-    ip_cidr_range                   = "192.168.2.0/28"
-    allowed_sources                 = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
     delete_default_routes_on_create = true
-    allowed_protocol                = "all"
-    allowed_ports                   = []
+    mtu                             = "1460"
+    routing_mode                    = "REGIONAL"
+    subnetworks = {
+      fw-spoke2-sub = {
+        subnetwork_name   = "fw-spoke2-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "192.168.2.0/28"
+        region            = "us-east1"
+      }
+    }
+    firewall_rules = {
+      allow-spoke2-ingress = {
+        name             = "allow-spoke2-vpc"
+        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
+        priority         = "1000"
+        allowed_protocol = "all"
+        allowed_ports    = []
+      }
+    }
   }
 }
 
@@ -102,8 +167,8 @@ networks = {
 
 vpc_peerings = {
   trust-to-spoke1 = {
-    local_network = "fw-trust-vpc"
-    peer_network  = "spoke1-vpc"
+    local_network_key = "fw-trust-vpc"
+    peer_network_key  = "fw-spoke1-vpc"
 
     local_export_custom_routes                = true
     local_import_custom_routes                = true
@@ -116,8 +181,8 @@ vpc_peerings = {
     peer_import_subnet_routes_with_public_ip = true
   },
   trust-to-spoke2 = {
-    local_network = "fw-trust-vpc"
-    peer_network  = "spoke2-vpc"
+    local_network_key = "fw-trust-vpc"
+    peer_network_key  = "fw-spoke2-vpc"
 
     local_export_custom_routes                = true
     local_import_custom_routes                = true
@@ -137,7 +202,7 @@ routes = {
   fw-default-trust = {
     name              = "fw-default-trust"
     destination_range = "0.0.0.0/0"
-    network           = "fw-trust-vpc"
+    vpc_network_key   = "fw-trust-vpc"
     lb_internal_key   = "internal-lb"
   }
 }
@@ -190,18 +255,21 @@ vmseries = {
     ]
     network_interfaces = [
       {
-        subnetwork       = "fw-untrust-sub"
+        vpc_network_key  = "fw-untrust-vpc"
+        subnetwork_key   = "fw-untrust-sub"
         private_ip       = "10.10.11.2"
         create_public_ip = true
       },
       {
-        subnetwork       = "fw-mgmt-sub"
+        vpc_network_key  = "fw-mgmt-vpc"
+        subnetwork_key   = "fw-mgmt-sub"
         private_ip       = "10.10.10.2"
         create_public_ip = true
       },
       {
-        subnetwork = "fw-trust-sub"
-        private_ip = "10.10.12.2"
+        vpc_network_key = "fw-trust-vpc"
+        subnetwork_key  = "fw-trust-sub"
+        private_ip      = "10.10.12.2"
       }
     ]
   },
@@ -239,18 +307,21 @@ vmseries = {
     ]
     network_interfaces = [
       {
-        subnetwork       = "fw-untrust-sub"
+        vpc_network_key  = "fw-untrust-vpc"
+        subnetwork_key   = "fw-untrust-sub"
         private_ip       = "10.10.11.3"
         create_public_ip = true
       },
       {
-        subnetwork       = "fw-mgmt-sub"
+        vpc_network_key  = "fw-mgmt-vpc"
+        subnetwork_key   = "fw-mgmt-sub"
         private_ip       = "10.10.10.3"
         create_public_ip = true
       },
       {
-        subnetwork = "fw-trust-sub"
-        private_ip = "10.10.12.3"
+        vpc_network_key = "fw-trust-vpc"
+        subnetwork_key  = "fw-trust-sub"
+        private_ip      = "10.10.12.3"
       }
     ]
   },
@@ -289,18 +360,21 @@ vmseries = {
     ]
     network_interfaces = [
       {
-        subnetwork       = "fw-untrust-sub"
+        vpc_network_key  = "fw-untrust-vpc"
+        subnetwork_key   = "fw-untrust-sub"
         private_ip       = "10.10.11.6"
         create_public_ip = true
       },
       {
-        subnetwork       = "fw-mgmt-sub"
+        vpc_network_key  = "fw-mgmt-vpc"
+        subnetwork_key   = "fw-mgmt-sub"
         private_ip       = "10.10.10.6"
         create_public_ip = true
       },
       {
-        subnetwork = "fw-trust-sub"
-        private_ip = "10.10.12.6"
+        vpc_network_key = "fw-trust-vpc"
+        subnetwork_key  = "fw-trust-sub"
+        private_ip      = "10.10.12.6"
       }
     ]
   },
@@ -339,18 +413,21 @@ vmseries = {
     ]
     network_interfaces = [
       {
-        subnetwork       = "fw-untrust-sub"
+        vpc_network_key  = "fw-untrust-vpc"
+        subnetwork_key   = "fw-untrust-sub"
         private_ip       = "10.10.11.7"
         create_public_ip = true
       },
       {
-        subnetwork       = "fw-mgmt-sub"
+        vpc_network_key  = "fw-mgmt-vpc"
+        subnetwork_key   = "fw-mgmt-sub"
         private_ip       = "10.10.10.7"
         create_public_ip = true
       },
       {
-        subnetwork = "fw-trust-sub"
-        private_ip = "10.10.12.7"
+        vpc_network_key = "fw-trust-vpc"
+        subnetwork_key  = "fw-trust-sub"
+        private_ip      = "10.10.12.7"
       }
     ]
   }
@@ -363,7 +440,8 @@ linux_vms = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
     linux_disk_size    = "50" # Modify this value as per deployment requirements
-    subnetwork         = "spoke1-sub"
+    vpc_network_key    = "fw-spoke1-vpc"
+    subnetwork_key     = "fw-spoke1-sub"
     private_ip         = "192.168.1.2"
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
@@ -378,7 +456,8 @@ linux_vms = {
     linux_machine_type = "n2-standard-4"
     zone               = "us-east1-b"
     linux_disk_size    = "50" # Modify this value as per deployment requirements
-    subnetwork         = "spoke2-sub"
+    vpc_network_key    = "fw-spoke2-vpc"
+    subnetwork_key     = "fw-spoke2-sub"
     private_ip         = "192.168.2.2"
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
@@ -399,8 +478,8 @@ lbs_internal = {
     health_check_port = "80"
     backends          = ["fw-vmseries-03", "fw-vmseries-04"]
     ip_address        = "10.10.12.5"
-    subnetwork        = "fw-trust-sub"
-    network           = "fw-trust-vpc"
+    subnetwork_key    = "fw-trust-sub"
+    vpc_network_key   = "fw-trust-vpc"
   }
 }
 
