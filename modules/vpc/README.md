@@ -57,6 +57,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_network"></a> [network](#output\_network) | n/a |
 | <a name="output_subnetworks"></a> [subnetworks](#output\_subnetworks) | n/a |
-| <a name="output_subnetworks_by_key"></a> [subnetworks\_by\_key](#output\_subnetworks\_by\_key) | Map with subnetwork objects corresponding to input key (or index if list was provided) of `networks` variable. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
