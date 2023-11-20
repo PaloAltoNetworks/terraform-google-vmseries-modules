@@ -28,7 +28,7 @@ resource "google_compute_network" "this" {
   delete_default_routes_on_create = try(var.delete_default_routes_on_create, false)
   mtu                             = try(var.mtu, null)
   auto_create_subnetworks         = false
-  routing_mode                    = try(var.routing_mode, "REGIONAL")
+  routing_mode                    = try(var.routing_mode, null)
 }
 
 data "google_compute_subnetwork" "this" {

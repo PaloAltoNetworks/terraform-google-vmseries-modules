@@ -1,6 +1,12 @@
 variable "subnetworks" {
   description = <<-EOF
-  A map containing subnetworks configuration. Subnets can be in different regions
+  A map containing subnetworks configuration. Subnets can belong to different regions.
+  List of available attributes of each subnetwork entry:
+  - `subnetwork_name` : Name of the subnetwork.
+  - `create_subnetwork` : Boolean value to control the creation or reading of the subnetwork. If set to `true` - this will create the subnetwork. If set to `false` - this will read a subnet with provided information.
+  - `ip_cidr_range` : A string that contains the subnetwork to create. Only IPv4 format is supported.
+  - `region` : Region where to configure or import the subnet.
+
   Example:
   ```
   subnetworks = {
@@ -43,7 +49,9 @@ variable "delete_default_routes_on_create" {
 }
 
 variable "mtu" {
-  description = "MTU value for VPC Network"
+  description = <<-EOF
+  MTU value for VPC Network. Acceptable values are between 1300 and 8896.
+  EOF
   default     = 1460
   type        = number
   validation {
@@ -53,14 +61,37 @@ variable "mtu" {
 }
 
 variable "routing_mode" {
-  description = "Type of network-wide routing mode to use. Possible types are : REGIONAL and GLOBAL."
+  description = <<-EOF
+  Type of network-wide routing mode to use. Possible types are: REGIONAL and GLOBAL.
+  REGIONAL routing mode will set the cloud routers to only advertise subnetworks within the same region as the router.
+  GLOBAL routing mode will set the cloud routers to advertise all the subnetworks that belong to this network.
+  EOF
   default     = "REGIONAL"
   type        = string
+  validation {
+    condition     = var.routing_mode == "REGIONAL" || var.routing_mode == "GLOBAL"
+    error_message = "Routing mode must be either 'REGIONAL' or 'GLOBAL'."
+  }
 }
 
 variable "firewall_rules" {
   description = <<-EOF
-  A map containing firewall rules configuration.
+  A map containing each firewall rule configuration.
+  Action of the firewall rule is always `allow`.
+  The only possible direction of the firewall rule is `INGRESS`.
+
+  List of available attributes of each firewall rule entry:
+  - `name` : Name of the firewall rule.
+  - `source_ranges` : (Optional) A list of strings containing the source IP ranges to be allowed on the firewall rule.
+  - `source_tags` : (Optional) A list of strings containing the source network tags to be allowed on the firewall rule.
+  - `source_service_accounts` : (Optional) A list of strings containg the source servce accounts to be allowed on the firewall rule.
+  - `target_service_accounts` : (Optional) A list of strings containing the service accounts for which the firewall rule applies to.
+  - `target_tags` : (Optional) A list of strings containing the network tags for which the firewall rule applies to. 
+  - `allowed_protocol` : The protocol type to match in the firewall rule. Possible values are : tcp, udp, icmp, esp, ah, sctp, ipip, all
+  - `ports` : A list of strings containing TCP or UDP port numbers to match in the firewall rule. This type of setting can be configured if allowing only TCP and UDP as protocols.
+  - `priority` : (Optional) A priority value for the firewall rule. The lower the number - the more preffered the rule is.
+  - `log_config` : (Optional) This field denotes whether to include or exclude metadata for firewall logs. Possible values are: `EXCLUDE_ALL_METADATA`, `INCLUDE_ALL_METADATA`.
+
   Example :
   ```
   firewall_rules = {
