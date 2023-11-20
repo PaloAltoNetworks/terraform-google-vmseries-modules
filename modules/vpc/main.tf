@@ -28,7 +28,7 @@ resource "google_compute_network" "this" {
   name                            = var.name
   project                         = try(var.project_id, null)
   delete_default_routes_on_create = try(var.delete_default_routes_on_create, false)
-  mtu                             = try(var.mtu, 1460)
+  mtu                             = try(var.mtu, null)
   auto_create_subnetworks         = false
   routing_mode                    = try(var.routing_mode, "REGIONAL")
 }
@@ -61,7 +61,7 @@ resource "google_compute_firewall" "this" {
   source_tags             = try(each.value.source_tags, null)
   source_service_accounts = try(each.value.source_service_accounts, null)
   project                 = try(var.project_id, null)
-  priority                = try(each.value.priority, "1000")
+  priority                = try(each.value.priority, null)
   target_service_accounts = try(each.value.target_service_accounts, null)
   target_tags             = try(each.value.target_tags, null)
 
