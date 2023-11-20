@@ -5,6 +5,6 @@ output "network" {
 output "subnetworks" {
   description = "Map containing key, value pairs of created or read subnetwork attributes."
   value = { for k, v in var.subnetworks :
-    k => try(data.google_compute_subnetwork.this[v.subnetwork_name], google_compute_subnetwork.this[v.subnetwork_name], null)
+    k => try(data.google_compute_subnetwork.this[k], google_compute_subnetwork.this[k], null)
   }
 }
