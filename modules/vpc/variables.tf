@@ -20,7 +20,12 @@ variable "subnetworks" {
   ```
   EOF
   default     = {}
-  type        = any
+  type = map(object({
+    subnetwork_name   = string
+    create_subnetwork = bool
+    ip_cidr_range     = string
+    region            = string
+  }))
 }
 
 variable "name" {
@@ -90,7 +95,7 @@ variable "firewall_rules" {
   - `allowed_protocol` : The protocol type to match in the firewall rule. Possible values are : tcp, udp, icmp, esp, ah, sctp, ipip, all
   - `ports` : A list of strings containing TCP or UDP port numbers to match in the firewall rule. This type of setting can be configured if allowing only TCP and UDP as protocols.
   - `priority` : (Optional) A priority value for the firewall rule. The lower the number - the more preffered the rule is.
-  - `log_config` : (Optional) This field denotes whether to include or exclude metadata for firewall logs. Possible values are: `EXCLUDE_ALL_METADATA`, `INCLUDE_ALL_METADATA`.
+  - `log_metadata` : (Optional) This field denotes whether to include or exclude metadata for firewall logs. Possible values are: `EXCLUDE_ALL_METADATA`, `INCLUDE_ALL_METADATA`.
 
   Example :
   ```
@@ -107,6 +112,38 @@ variable "firewall_rules" {
   ```
   EOF
   default     = {}
+  type = map(object({
+    name                    = string
+    source_ranges           = optional(list(string))
+    source_tags             = optional(list(string))
+    source_service_accounts = optional(list(string))
+    allowed_protocol        = string
+    allowed_ports           = list(string)
+    priority                = optional(string)
+    target_service_accounts = optional(list(string))
+    target_tags             = optional(list(string))
+    log_metadata            = optional(string)
+  }))
+  validation {
+    condition = length(var.firewall_rules) > 0 ? alltrue([
+      for rule in var.firewall_rules : (
+        (rule.source_ranges != null && rule.source_tags == null && rule.source_service_accounts == null) ||
+        (rule.source_ranges == null && rule.source_tags != null && rule.source_service_accounts == null) ||
+        (rule.source_ranges == null && rule.source_tags == null && rule.source_service_accounts != null)
+      )
+    ]) : true
+    error_message = "Please select only one of the three options (source_ranges, source_tags, source_service_accounts) for each firewall rule."
+  }
+  validation {
+    condition = length(var.firewall_rules) > 0 ? alltrue([
+      for rule in var.firewall_rules : (
+        (rule.target_tags != null && rule.target_service_accounts == null) ||
+        (rule.target_tags == null && rule.target_service_accounts != null) ||
+        (rule.target_tags == null && rule.target_service_accounts == null)
+      )
+    ]) : true
+    error_message = "Please select only target_tags or target_service_accounts or neighter (apply to all instances in the network)."
+  }
 }
 
 

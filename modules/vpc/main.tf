@@ -76,15 +76,4 @@ resource "google_compute_firewall" "this" {
       metadata = log_config.value
     }
   }
-  lifecycle {
-    precondition {
-      condition = (
-        (can(each.value.source_ranges) && !can(each.value.source_tags) && !can(each.value.source_service_accounts)) ||
-        (!can(each.value.source_ranges) && can(each.value.source_tags) && !can(each.value.source_service_accounts)) ||
-        (!can(each.value.source_ranges) && !can(each.value.source_tags) && can(each.value.source_service_accounts)) ||
-        (!can(each.value.source_ranges) && !can(each.value.source_tags) && !can(each.value.source_service_accounts))
-      )
-      error_message = "Please select only one of the three options: source_service_accounts, source_ranges, source_tags!"
-    }
-  }
 }
