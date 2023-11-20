@@ -1,15 +1,13 @@
 locals {
-  subnetworks = { for v in var.subnetworks : v.subnetwork_name => v }
-
   subnetworks_existing = {
-    for k, v in local.subnetworks
+    for k, v in var.subnetworks
     : k => v
     if try(v.create_subnetwork == false, false)
   }
 
   // Some subnetworks need to be created:
   subnetworks_to_create = {
-    for k, v in local.subnetworks
+    for k, v in var.subnetworks
     : k => v
     if !(try(v.create_subnetwork == false, false))
   }
