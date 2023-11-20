@@ -207,7 +207,7 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2, < 2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0 |
 
 ### Providers
 
