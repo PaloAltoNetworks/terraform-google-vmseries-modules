@@ -22,7 +22,7 @@ variable "subnetworks" {
   default     = {}
   type = map(object({
     subnetwork_name   = string
-    create_subnetwork = bool
+    create_subnetwork = optional(bool, true)
     ip_cidr_range     = string
     region            = string
   }))
