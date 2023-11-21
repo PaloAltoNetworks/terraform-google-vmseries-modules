@@ -47,7 +47,7 @@ git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
 cd terraform-google-vmseries-modules/examples/vpc-peering-common-with-network-tags
 ```
 
-3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. There is also a few variables that have some default values but which should also be changed as per deployment requirements :
+3. Fill out any modifications to `example.tfvars` file - at least `project`, `ssh_keys` and `source_ranges` should be modified for successful deployment and access to the instance. There is also a few variables that have some default values but which should also be changed as per deployment requirements :
  - vmseries
    - bootstrap_options
      - panorama-server

@@ -1,48 +1,25 @@
 ---
-short_title: Common Firewall Option
-type: refarch
-show_in_hub: true
+show_in_hub: false
 ---
-# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Common NGFW Option
-
-Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
-The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with common VM-Series for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
-
-## Reference Architecture Design
-
-![simple](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/942d7e0a-eafb-42fb-ba53-6fefedb4b69d)
-
-This code implements:
-- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
-- the _common option_, which routes all traffic flows onto a single set of VM-Series
-
-## Detailed Architecture and Design
-
-### Centralized Design
-
-This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
-This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
-
-### Common Option
+# Common Option
 
 The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls is low. However, the technical integration complexity is high.
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png)
+![VM-Series-Multi-NIC-Common-Firewall-Option](PLACEHOLDER_GH_LINK)
 
-The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
+The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) but with a slight modification in the architecture - the VM-Series is directly connected to the spoke VPCs. There are some advantages to this architecture from a routing perspective but there is also a limitation related to the [maximum number of NICs on the VM-Series](https://cloud.google.com/vpc/docs/create-use-multiple-interfaces#max-interfaces) within GCP.
 
 The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrize the initial Day 0 configuration.
 
 With default variable values the topology consists of :
- - 5 VPC networks :
+ - 4 VPC networks :
    - Management VPC
    - Untrust (outside) VPC
-   - Trust (inside/security) VPC
-   - Spoke-1 VPC
-   - Spoke-2 VPC
+   - Spoke-1 (Trust 1) VPC
+   - Spoke-2 (Trust 2) VPC
  - 2 VM-Series firewalls
  - 2 Linux Ubuntu VMs (inside Spoke VPCs - for testing purposes)
- - one internal network loadbalancer (for outbound/east-west traffic)
+ - two internal network loadbalancers (for outbound/east-west traffic) - one per spoke VPC
  - one external regional network loadbalancer (for inbound traffic)
 
 ## Prerequisites
@@ -60,12 +37,12 @@ The following steps should be followed before deploying the Terraform code prese
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/vpc-peering-common
+cd terraform-google-vmseries-modules/examples/multi_nic_common
 ```
 
 3. Copy the `example.tfvars` to `terraform.tfvars`.
 
-`project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. 
+`project`, `ssh_keys` and `source_ranges` should be modified for successful deployment and access to the instance. 
 
 There are also a few variables that have some default values but which should also be changed as per deployment requirements
 
@@ -85,15 +62,18 @@ terraform apply
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 96 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+Apply complete! Resources: 77 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
 
 Outputs:
 
-lbs_internal_ips = {
-  "external-lb" = "<EXTERNAL_LB_PUBLIC_IP>"
+lbs_external_ips = {
+  "external-lb" = {
+    "all-ports" = "<EXTERNAL_LB_PUBLIC_IP>"
+  }
 }
 lbs_internal_ips = {
-  "internal-lb" = "10.10.12.5"
+  "internal-lb-spoke1" = "10.10.12.5"
+  "internal-lb-spoke2" = "10.10.13.5"
 }
 linux_vm_ips = {
   "spoke1-vm" = "192.168.1.2"
@@ -104,11 +84,13 @@ vmseries_private_ips = {
     "0" = "10.10.11.2"
     "1" = "10.10.10.2"
     "2" = "10.10.12.2"
+    "3" = "10.10.13.2"
   }
   "fw-vmseries-02" = {
     "0" = "10.10.11.3"
     "1" = "10.10.10.3"
     "2" = "10.10.12.3"
+    "3" = "10.10.13.3"
   }
 }
 vmseries_public_ips = {
@@ -121,6 +103,7 @@ vmseries_public_ips = {
     "1" = "<MGMT_PUBLIC_IP>"
   }
 }
+
 ```
 
 

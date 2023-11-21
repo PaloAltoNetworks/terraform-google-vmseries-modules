@@ -62,7 +62,7 @@ cd terraform-google-vmseries-modules/examples/vpc-peering-dedicated
 
 3. Copy the `example.tfvars` to `terraform.tfvars`.
 
-`project`, `ssh_keys` and `allowed_sources` should be modified for successful deployment and access to the instance. 
+`project`, `ssh_keys` and `source_ranges` should be modified for successful deployment and access to the instance. 
 
 There are also a few variables that have some default values but which should also be changed as per deployment requirements
 

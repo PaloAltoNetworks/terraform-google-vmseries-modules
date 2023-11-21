@@ -200,13 +200,13 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      spoke1_gcp_router_ip   = "10.10.12.1"
-      spoke2_gcp_router_ip   = "10.10.13.1"
+      spoke1_gcp_router_ip  = "10.10.12.1"
+      spoke2_gcp_router_ip  = "10.10.13.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
       untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      spoke1_loopback_ip     = "10.10.12.5/32"
-      spoke2_loopback_ip     = "10.10.13.5/32"
+      spoke1_loopback_ip    = "10.10.12.5/32"
+      spoke2_loopback_ip    = "10.10.13.5/32"
     }
     named_ports = [
       {
@@ -261,13 +261,13 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      spoke1_gcp_router_ip   = "10.10.12.1"
-      spoke2_gcp_router_ip   = "10.10.13.1"
+      spoke1_gcp_router_ip  = "10.10.12.1"
+      spoke2_gcp_router_ip  = "10.10.13.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
       untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      spoke1_loopback_ip     = "10.10.12.5/32"
-      spoke2_loopback_ip     = "10.10.13.5/32"
+      spoke1_loopback_ip    = "10.10.12.5/32"
+      spoke2_loopback_ip    = "10.10.13.5/32"
     }
     named_ports = [
       {
