@@ -1,15 +1,8 @@
-# VPC Networks Module for GCP
+# VPC Network Module for GCP
 
-The module that creates networks and subnetworks on GCP.
+A Terraform module for deploying a VPC and associated subnetworks and firewall rules in GCP.
 
-It is primarily intended for **Terraform 0.12.x** users, because it offers possibility to conditionally handle either new or pre-existing
-networks/subnetworks without changing the source code. It is useful for 0.12 which doesn't allow conditional module instantiation.
-
-This module is not strictly required for constructing inputs to be passed to other modules (including to vmseries or to autoscale modules).
-Any existing networks/subnetworks can work equally well, independent on how they were created.
-
-For Terraform 0.13+, a viable alternative is to use [Goggle-authored Terraform modules](https://registry.terraform.io/modules/terraform-google-modules/network)
-and employ `for_each` or `count` parameters when needed.
+One advantage of this module over the [terraform-google-network](https://github.com/terraform-google-modules/terraform-google-network/tree/master) module is that it does allow you to bring already existing VPC networks and subnetworks into support brownfield deployments. 
 
 ## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
