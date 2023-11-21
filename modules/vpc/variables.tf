@@ -93,7 +93,7 @@ variable "firewall_rules" {
   - `target_service_accounts` : (Optional) A list of strings containing the service accounts for which the firewall rule applies to.
   - `target_tags` : (Optional) A list of strings containing the network tags for which the firewall rule applies to. 
   - `allowed_protocol` : The protocol type to match in the firewall rule. Possible values are: `tcp`, `udp`, `icmp`, `esp`, `ah`, `sctp`, `ipip`, `all`.
-  - `ports` : A list of strings containing TCP or UDP port numbers to match in the firewall rule. This type of setting can be configured if allowing only TCP and UDP as protocols.
+  - `ports` : A list of strings containing TCP or UDP port numbers to match in the firewall rule. This type of setting can only be configured if allowing TCP and UDP as protocols.
   - `priority` : (Optional) A priority value for the firewall rule. The lower the number - the more preffered the rule is.
   - `log_metadata` : (Optional) This field denotes whether to include or exclude metadata for firewall logs. Possible values are: `EXCLUDE_ALL_METADATA`, `INCLUDE_ALL_METADATA`.
 
