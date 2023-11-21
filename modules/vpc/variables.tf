@@ -61,7 +61,7 @@ variable "mtu" {
   type        = number
   validation {
     condition     = var.mtu >= 1300 && var.mtu <= 8896
-    error_message = "MTU Range must be between 1300 and 8896 !"
+    error_message = "MTU value must be between 1300 and 8896."
   }
 }
 
