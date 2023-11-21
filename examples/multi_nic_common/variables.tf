@@ -114,6 +114,8 @@ variable "networks" {
 
   Multiple keys can be added and will be deployed by the code.
   EOF
+  type        = any
+  default     = {}
 }
 
 variable "vpc_peerings" {
@@ -195,6 +197,8 @@ variable "vmseries_common" {
 
   Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`).
   EOF
+  type        = any
+  default     = {}
 }
 variable "vmseries" {
   description = <<-EOF
@@ -269,6 +273,8 @@ variable "vmseries" {
   Multiple keys can be added and will be deployed by the code.
 
   EOF
+  type        = any
+  default     = {}
 }
 
 #Load Balancers
