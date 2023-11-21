@@ -2,7 +2,7 @@
 
 A Terraform module for deploying a VPC and associated subnetworks and firewall rules in GCP.
 
-One advantage of this module over the [terraform-google-network](https://github.com/terraform-google-modules/terraform-google-network/tree/master) module is that it does allow you to bring already existing VPC networks and subnetworks into support brownfield deployments. 
+One advantage of this module over the [terraform-google-network](https://github.com/terraform-google-modules/terraform-google-network/tree/master) module is that this module lets you use existing VPC networks and subnetworks to support brownfield deployments. 
 
 ## Reference
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
