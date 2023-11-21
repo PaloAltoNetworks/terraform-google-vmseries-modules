@@ -1,3 +1,24 @@
+variable "project_id" {
+  description = "Project in which to create or look for VPCs and subnets"
+  default     = null
+  type        = string
+}
+
+variable "name" {
+  description = "The name of the created or already existing VPC Network."
+  type        = string
+}
+
+variable "create_network" {
+  description = <<-EOF
+  A flag to indicate the creation or import of a VPC network.
+  Setting this to `true` will create a new network managed by Terraform.
+  Setting this to `false` will try to read the existing network identified by `name` and `project` variables.
+  EOF
+  default     = true
+  type        = bool
+}
+
 variable "subnetworks" {
   description = <<-EOF
   A map containing subnetworks configuration. Subnets can belong to different regions.
@@ -26,57 +47,6 @@ variable "subnetworks" {
     ip_cidr_range     = string
     region            = string
   }))
-}
-
-variable "name" {
-  description = "The name of the created or already existing VPC Network."
-  type        = string
-}
-
-variable "create_network" {
-  description = <<-EOF
-  A flag to indicate the creation or import of a VPC network.
-  Setting this to `true` will create a new network managed by Terraform.
-  Setting this to `false` will try to read the existing network identified by `name` and `project` variables.
-  EOF
-  default     = true
-  type        = bool
-}
-
-variable "delete_default_routes_on_create" {
-  description = <<-EOF
-  A flag to indicate the deletion of the default routes at VPC creation.
-  Setting this to `true` the default route `0.0.0.0/0` will be deleted upon network creation.
-  Setting this to `false` the default route `0.0.0.0/0` will be not be deleted upon network creation.
-  EOF
-  default     = false
-  type        = bool
-}
-
-variable "mtu" {
-  description = <<-EOF
-  MTU value for VPC Network. Acceptable values are between 1300 and 8896.
-  EOF
-  default     = 1460
-  type        = number
-  validation {
-    condition     = var.mtu >= 1300 && var.mtu <= 8896
-    error_message = "MTU value must be between 1300 and 8896."
-  }
-}
-
-variable "routing_mode" {
-  description = <<-EOF
-  Type of network-wide routing mode to use. Possible types are: REGIONAL and GLOBAL.
-  REGIONAL routing mode will set the cloud routers to only advertise subnetworks within the same region as the router.
-  GLOBAL routing mode will set the cloud routers to advertise all the subnetworks that belong to this network.
-  EOF
-  default     = "REGIONAL"
-  type        = string
-  validation {
-    condition     = var.routing_mode == "REGIONAL" || var.routing_mode == "GLOBAL"
-    error_message = "Routing mode must be either 'REGIONAL' or 'GLOBAL'."
-  }
 }
 
 variable "firewall_rules" {
@@ -146,9 +116,38 @@ variable "firewall_rules" {
   }
 }
 
+variable "delete_default_routes_on_create" {
+  description = <<-EOF
+  A flag to indicate the deletion of the default routes at VPC creation.
+  Setting this to `true` the default route `0.0.0.0/0` will be deleted upon network creation.
+  Setting this to `false` the default route `0.0.0.0/0` will be not be deleted upon network creation.
+  EOF
+  default     = false
+  type        = bool
+}
 
-variable "project_id" {
-  description = "Project in which to create or look for VPCs and subnets"
-  default     = null
+variable "mtu" {
+  description = <<-EOF
+  MTU value for VPC Network. Acceptable values are between 1300 and 8896.
+  EOF
+  default     = 1460
+  type        = number
+  validation {
+    condition     = var.mtu >= 1300 && var.mtu <= 8896
+    error_message = "MTU value must be between 1300 and 8896."
+  }
+}
+
+variable "routing_mode" {
+  description = <<-EOF
+  Type of network-wide routing mode to use. Possible types are: REGIONAL and GLOBAL.
+  REGIONAL routing mode will set the cloud routers to only advertise subnetworks within the same region as the router.
+  GLOBAL routing mode will set the cloud routers to advertise all the subnetworks that belong to this network.
+  EOF
+  default     = "REGIONAL"
   type        = string
+  validation {
+    condition     = var.routing_mode == "REGIONAL" || var.routing_mode == "GLOBAL"
+    error_message = "Routing mode must be either 'REGIONAL' or 'GLOBAL'."
+  }
 }
