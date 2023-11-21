@@ -36,8 +36,8 @@ variable "name" {
 variable "create_network" {
   description = <<-EOF
   A flag to indicate the creation or import of a VPC network.
-  Setting this to `true` will create a new network managed by terraform.
-  Setting this to `false` will try to read the existing network with those name and region settings.
+  Setting this to `true` will create a new network managed by Terraform.
+  Setting this to `false` will try to read the existing network identified by `name` and `project` variables.
   EOF
   default     = true
   type        = bool
