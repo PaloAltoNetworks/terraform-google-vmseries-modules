@@ -23,7 +23,7 @@ variable "subnetworks" {
   description = <<-EOF
   A map containing subnetworks configuration. Subnets can belong to different regions.
   List of available attributes of each subnetwork entry:
-  - `subnetwork_name` : Name of the subnetwork.
+  - `name` : Name of the subnetwork.
   - `create_subnetwork` : Boolean value to control the creation or reading of the subnetwork. If set to `true` - this will create the subnetwork. If set to `false` - this will read a subnet with provided information.
   - `ip_cidr_range` : A string that contains the subnetwork to create. Only IPv4 format is supported.
   - `region` : Region where to configure or import the subnet.
@@ -32,7 +32,7 @@ variable "subnetworks" {
   ```
   subnetworks = {
     my-sub = {
-      subnetwork_name = "my-sub"
+      name = "my-sub"
       create_subnetwork = true
       ip_cidr_range = "192.168.0.0/24"
       region = "us-east1"
@@ -42,7 +42,7 @@ variable "subnetworks" {
   EOF
   default     = {}
   type = map(object({
-    subnetwork_name   = string
+    name              = string
     create_subnetwork = optional(bool, true)
     ip_cidr_range     = string
     region            = string

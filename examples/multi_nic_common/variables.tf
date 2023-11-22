@@ -91,19 +91,19 @@ variable "networks" {
       routing_mode = "REGIONAL"
       subnetworks = {
         fw-mgmt-sub = {
-          subnetwork_name = "fw-mgmt-sub"
+          name              = "fw-mgmt-sub"
           create_subnetwork = true
-          ip_cidr_range = "10.10.10.0/28"
-          region = "us-east1"
+          ip_cidr_range     = "10.10.10.0/28"
+          region            = "us-east1"
         }
       }
       firewall_rules = {
         allow-mgmt-ingress = {
-          name = "allow-mgmt-vpc"
-          source_ranges = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
-          priority = "1000"
+          name             = "allow-mgmt-vpc"
+          source_ranges    = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
+          priority         = "1000"
           allowed_protocol = "all"
-          allowed_ports = []
+          allowed_ports    = []
         }
       }
     }

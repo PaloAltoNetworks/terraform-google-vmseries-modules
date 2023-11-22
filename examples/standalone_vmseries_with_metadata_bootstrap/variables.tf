@@ -27,7 +27,7 @@ variable "networks" {
         routing_mode                    = "REGIONAL"
         subnetworks = {
           "vmseries-sub" = {
-            subnetwork_name   = "vmseries-subnet"
+            name              = "vmseries-subnet"
             create_subnetwork = true
             ip_cidr_range     = "172.21.21.0/24"
             region            = "us-central1"

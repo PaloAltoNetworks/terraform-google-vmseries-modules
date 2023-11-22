@@ -34,7 +34,7 @@ resource "google_compute_network" "this" {
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
 
-  name    = each.value.subnetwork_name
+  name    = each.value.name
   project = var.project_id
   region  = each.value.region
 }
@@ -42,7 +42,7 @@ data "google_compute_subnetwork" "this" {
 resource "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_to_create
 
-  name          = each.value.subnetwork_name
+  name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
   network       = try(data.google_compute_network.this[0].self_link, google_compute_network.this[0].self_link)
   region        = each.value.region

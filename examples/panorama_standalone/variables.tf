@@ -32,7 +32,7 @@ variable "networks" {
         routing_mode                    = "REGIONAL"
         subnetworks = {
           "panorama-sub" = {
-            subnetwork_name   = "panorama-subnet"
+            name              = "panorama-subnet"
             create_subnetwork = true
             ip_cidr_range     = "172.21.21.0/24"
             region            = "us-central1"

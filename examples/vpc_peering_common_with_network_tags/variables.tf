@@ -86,7 +86,7 @@ variable "networks" {
       routing_mode = "REGIONAL"
       subnetworks = {
         fw-mgmt-sub = {
-          subnetwork_name = "fw-mgmt-sub"
+          name = "fw-mgmt-sub"
           create_subnetwork = true
           ip_cidr_range = "10.10.10.0/28"
           region = "us-east1"

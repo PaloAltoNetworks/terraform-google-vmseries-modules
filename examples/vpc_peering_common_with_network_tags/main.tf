@@ -71,7 +71,7 @@ module "vpc" {
   mtu                             = each.value.mtu
   routing_mode                    = each.value.routing_mode
   subnetworks = { for k, v in each.value.subnetworks : k => merge(v, {
-    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}-${v.region}"
+    name = "${var.name_prefix}${v.name}-${v.region}"
     })
   }
   firewall_rules = try({ for k, v in each.value.firewall_rules : k => merge(v, {
