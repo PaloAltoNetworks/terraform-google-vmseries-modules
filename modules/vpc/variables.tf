@@ -102,7 +102,7 @@ variable "firewall_rules" {
         (rule.source_ranges == null && rule.source_tags == null && rule.source_service_accounts != null)
       )
     ]) : true
-    error_message = "Please select only one of the three options (source_ranges, source_tags, source_service_accounts) for each firewall rule."
+    error_message = "Only one of the following source types can be selected per firewall rule : source_ranges, source_tags or source_service_accounts ."
   }
   validation {
     condition = length(var.firewall_rules) > 0 ? alltrue([
@@ -112,7 +112,7 @@ variable "firewall_rules" {
         (rule.target_tags == null && rule.target_service_accounts == null)
       )
     ]) : true
-    error_message = "Please select only target_tags or target_service_accounts or neighter (apply to all instances in the network)."
+    error_message = "Only one of the following target types can be selected per firewall rule : target_tags, target_service_accounts or neither (not configuring either of them will apply the firewall rule to all instances in the network)."
   }
 }
 
