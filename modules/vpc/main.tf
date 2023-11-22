@@ -17,26 +17,26 @@ data "google_compute_network" "this" {
   count = var.create_network == true ? 0 : 1
 
   name    = var.name
-  project = try(var.project_id, null)
+  project = var.project_id
 }
 
 resource "google_compute_network" "this" {
   count = var.create_network == true ? 1 : 0
 
   name                            = var.name
-  project                         = try(var.project_id, null)
-  delete_default_routes_on_create = try(var.delete_default_routes_on_create, false)
-  mtu                             = try(var.mtu, null)
+  project                         = var.project_id
+  delete_default_routes_on_create = var.delete_default_routes_on_create
+  mtu                             = var.mtu
   auto_create_subnetworks         = false
-  routing_mode                    = try(var.routing_mode, null)
+  routing_mode                    = var.routing_mode
 }
 
 data "google_compute_subnetwork" "this" {
   for_each = local.subnetworks_existing
 
   name    = each.value.subnetwork_name
-  project = try(var.project_id, null)
-  region  = try(each.value.region, null)
+  project = var.project_id
+  region  = each.value.region
 }
 
 resource "google_compute_subnetwork" "this" {
@@ -45,8 +45,8 @@ resource "google_compute_subnetwork" "this" {
   name          = each.value.subnetwork_name
   ip_cidr_range = each.value.ip_cidr_range
   network       = try(data.google_compute_network.this[0].self_link, google_compute_network.this[0].self_link)
-  region        = try(each.value.region, null)
-  project       = try(var.project_id, null)
+  region        = each.value.region
+  project       = var.project_id
 }
 
 resource "google_compute_firewall" "this" {
@@ -55,18 +55,18 @@ resource "google_compute_firewall" "this" {
   name                    = "${each.value.name}-ingress"
   network                 = try(data.google_compute_network.this[0].self_link, google_compute_network.this[0].self_link)
   direction               = "INGRESS"
-  source_ranges           = try(each.value.source_ranges, null)
-  source_tags             = try(each.value.source_tags, null)
-  source_service_accounts = try(each.value.source_service_accounts, null)
-  project                 = try(var.project_id, null)
-  priority                = try(each.value.priority, null)
-  target_service_accounts = try(each.value.target_service_accounts, null)
-  target_tags             = try(each.value.target_tags, null)
+  source_ranges           = each.value.source_ranges
+  source_tags             = each.value.source_tags
+  source_service_accounts = each.value.source_service_accounts
+  project                 = var.project_id
+  priority                = each.value.priority
+  target_service_accounts = each.value.target_service_accounts
+  target_tags             = each.value.target_tags
 
 
   allow {
-    protocol = try(each.value.allowed_protocol, null)
-    ports    = try(each.value.allowed_ports, null)
+    protocol = each.value.allowed_protocol
+    ports    = each.value.allowed_ports
   }
 
   dynamic "log_config" {
