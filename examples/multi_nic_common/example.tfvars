@@ -89,30 +89,6 @@ networks = {
       }
     }
   },
-  fw-trust-vpc = {
-    vpc_name                        = "fw-trust-vpc"
-    create_network                  = true
-    delete_default_routes_on_create = true
-    mtu                             = "1460"
-    routing_mode                    = "REGIONAL"
-    subnetworks = {
-      fw-trust-sub = {
-        name              = "fw-trust-sub"
-        create_subnetwork = true
-        ip_cidr_range     = "10.10.12.0/28"
-        region            = "us-east1"
-      }
-    }
-    firewall_rules = {
-      allow-trust-ingress = {
-        name             = "allow-trust-vpc"
-        source_ranges    = ["192.168.0.0/16", "35.191.0.0/16", "130.211.0.0/22"]
-        priority         = "1000"
-        allowed_protocol = "all"
-        allowed_ports    = []
-      }
-    }
-  },
   fw-spoke1-vpc = {
     vpc_name                        = "fw-spoke1-vpc"
     create_network                  = true
@@ -120,6 +96,12 @@ networks = {
     mtu                             = "1460"
     routing_mode                    = "REGIONAL"
     subnetworks = {
+      fw-spoke1-inside-sub = {
+        name              = "fw-spoke1-inside-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "10.10.12.0/28"
+        region            = "us-east1"
+      },
       fw-spoke1-sub = {
         name              = "fw-spoke1-sub"
         create_subnetwork = true
@@ -130,7 +112,7 @@ networks = {
     firewall_rules = {
       allow-spoke1-ingress = {
         name             = "allow-spoke1-vpc"
-        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
+        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22", "10.10.12.0/28"]
         priority         = "1000"
         allowed_protocol = "all"
         allowed_ports    = []
@@ -144,6 +126,12 @@ networks = {
     mtu                             = "1460"
     routing_mode                    = "REGIONAL"
     subnetworks = {
+      fw-spoke2-inside-sub = {
+        name              = "fw-spoke2-inside-sub"
+        create_subnetwork = true
+        ip_cidr_range     = "10.10.13.0/28"
+        region            = "us-east1"
+      },
       fw-spoke2-sub = {
         name              = "fw-spoke2-sub"
         create_subnetwork = true
@@ -154,7 +142,7 @@ networks = {
     firewall_rules = {
       allow-spoke2-ingress = {
         name             = "allow-spoke2-vpc"
-        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "10.10.12.0/28"]
+        source_ranges    = ["192.168.0.0/16", "35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22", "10.10.12.0/28"]
         priority         = "1000"
         allowed_protocol = "all"
         allowed_ports    = []
@@ -163,46 +151,19 @@ networks = {
   }
 }
 
-# VPC Peerings
-
-vpc_peerings = {
-  trust-to-spoke1 = {
-    local_network_key = "fw-trust-vpc"
-    peer_network_key  = "fw-spoke1-vpc"
-
-    local_export_custom_routes                = true
-    local_import_custom_routes                = true
-    local_export_subnet_routes_with_public_ip = true
-    local_import_subnet_routes_with_public_ip = true
-
-    peer_export_custom_routes                = true
-    peer_import_custom_routes                = true
-    peer_export_subnet_routes_with_public_ip = true
-    peer_import_subnet_routes_with_public_ip = true
-  },
-  trust-to-spoke2 = {
-    local_network_key = "fw-trust-vpc"
-    peer_network_key  = "fw-spoke2-vpc"
-
-    local_export_custom_routes                = true
-    local_import_custom_routes                = true
-    local_export_subnet_routes_with_public_ip = true
-    local_import_subnet_routes_with_public_ip = true
-
-    peer_export_custom_routes                = true
-    peer_import_custom_routes                = true
-    peer_export_subnet_routes_with_public_ip = true
-    peer_import_subnet_routes_with_public_ip = true
-  }
-}
-
 # Static routes
 routes = {
-  fw-default-trust = {
-    name              = "fw-default-trust"
+  fw-default-spoke1 = {
+    name              = "fw-default-spoke1"
     destination_range = "0.0.0.0/0"
-    vpc_network_key   = "fw-trust-vpc"
-    lb_internal_key   = "internal-lb"
+    vpc_network_key   = "fw-spoke1-vpc"
+    lb_internal_key   = "internal-lb-spoke1"
+  },
+  fw-default-spoke2 = {
+    name              = "fw-default-spoke2"
+    destination_range = "0.0.0.0/0"
+    vpc_network_key   = "fw-spoke2-vpc"
+    lb_internal_key   = "internal-lb-spoke2"
   }
 }
 
@@ -239,11 +200,13 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      trust_gcp_router_ip   = "10.10.12.1"
+      spoke1_gcp_router_ip  = "10.10.12.1"
+      spoke2_gcp_router_ip  = "10.10.13.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
       untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
+      spoke1_loopback_ip    = "10.10.12.5/32"
+      spoke2_loopback_ip    = "10.10.13.5/32"
     }
     named_ports = [
       {
@@ -269,9 +232,14 @@ vmseries = {
         create_public_ip = true
       },
       {
-        vpc_network_key = "fw-trust-vpc"
-        subnetwork_key  = "fw-trust-sub"
+        vpc_network_key = "fw-spoke1-vpc"
+        subnetwork_key  = "fw-spoke1-inside-sub"
         private_ip      = "10.10.12.2"
+      },
+      {
+        vpc_network_key = "fw-spoke2-vpc"
+        subnetwork_key  = "fw-spoke2-inside-sub"
+        private_ip      = "10.10.13.2"
       }
     ]
   },
@@ -293,11 +261,13 @@ vmseries = {
       dns-secondary   = "8.8.4.4" # Modify this value as per deployment requirements
     }
     bootstrap_template_map = {
-      trust_gcp_router_ip   = "10.10.12.1"
+      spoke1_gcp_router_ip  = "10.10.12.1"
+      spoke2_gcp_router_ip  = "10.10.13.1"
       untrust_gcp_router_ip = "10.10.11.1"
       private_network_cidr  = "192.168.0.0/16"
       untrust_loopback_ip   = "1.1.1.1/32" # This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed
-      trust_loopback_ip     = "10.10.12.5/32"
+      spoke1_loopback_ip    = "10.10.12.5/32"
+      spoke2_loopback_ip    = "10.10.13.5/32"
     }
     named_ports = [
       {
@@ -323,9 +293,14 @@ vmseries = {
         create_public_ip = true
       },
       {
-        vpc_network_key = "fw-trust-vpc"
-        subnetwork_key  = "fw-trust-sub"
+        vpc_network_key = "fw-spoke1-vpc"
+        subnetwork_key  = "fw-spoke1-inside-sub"
         private_ip      = "10.10.12.3"
+      },
+      {
+        vpc_network_key = "fw-spoke2-vpc"
+        subnetwork_key  = "fw-spoke2-inside-sub"
+        private_ip      = "10.10.13.3"
       }
     ]
   }
@@ -369,14 +344,21 @@ linux_vms = {
 
 # Internal Network Loadbalancer
 lbs_internal = {
-  internal-lb = {
-    name              = "internal-lb"
+  internal-lb-spoke1 = {
+    name              = "internal-lb-spoke1"
     health_check_port = "80"
     backends          = ["fw-vmseries-01", "fw-vmseries-02"]
     ip_address        = "10.10.12.5"
-    subnetwork        = "fw-trust-sub"
-    vpc_network_key   = "fw-trust-vpc"
-    subnetwork_key    = "fw-trust-sub"
+    vpc_network_key   = "fw-spoke1-vpc"
+    subnetwork_key    = "fw-spoke1-inside-sub"
+  },
+  internal-lb-spoke2 = {
+    name              = "internal-lb-spoke2"
+    health_check_port = "80"
+    backends          = ["fw-vmseries-01", "fw-vmseries-02"]
+    ip_address        = "10.10.13.5"
+    vpc_network_key   = "fw-spoke2-vpc"
+    subnetwork_key    = "fw-spoke2-inside-sub"
   }
 }
 

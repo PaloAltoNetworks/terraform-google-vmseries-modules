@@ -62,12 +62,22 @@ module "bootstrap" {
 module "vpc" {
   source = "../../modules/vpc"
 
-  networks = { for k, v in var.networks : k => merge(v, {
-    name            = "${var.name_prefix}${v.name}"
-    subnetwork_name = "${var.name_prefix}${v.subnetwork_name}"
+  for_each = var.networks
+
+  project_id                      = var.project
+  name                            = "${var.name_prefix}${each.value.vpc_name}"
+  create_network                  = each.value.create_network
+  delete_default_routes_on_create = each.value.delete_default_routes_on_create
+  mtu                             = each.value.mtu
+  routing_mode                    = each.value.routing_mode
+  subnetworks = { for k, v in each.value.subnetworks : k => merge(v, {
+    name = "${var.name_prefix}${v.name}"
     })
   }
-
+  firewall_rules = try({ for k, v in each.value.firewall_rules : k => merge(v, {
+    name = "${var.name_prefix}${v.name}"
+    })
+  }, {})
 }
 
 resource "google_compute_route" "this" {
@@ -76,7 +86,7 @@ resource "google_compute_route" "this" {
 
   name         = "${var.name_prefix}${each.value.name}"
   dest_range   = each.value.destination_range
-  network      = module.vpc.networks["${var.name_prefix}${each.value.network}"].self_link
+  network      = module.vpc[each.value.vpc_network_key].network.self_link
   next_hop_ilb = module.lb_internal[each.value.lb_internal_key].forwarding_rule
   priority     = 100
 }
@@ -86,8 +96,8 @@ module "vpc_peering" {
 
   for_each = var.vpc_peerings
 
-  local_network = module.vpc.networks["${var.name_prefix}${each.value.local_network}"].id
-  peer_network  = module.vpc.networks["${var.name_prefix}${each.value.peer_network}"].id
+  local_network = module.vpc[each.value.local_network_key].network.id
+  peer_network  = module.vpc[each.value.peer_network_key].network.id
 
   local_export_custom_routes                = each.value.local_export_custom_routes
   local_import_custom_routes                = each.value.local_import_custom_routes
@@ -129,7 +139,7 @@ module "vmseries" {
 
   network_interfaces = [for v in each.value.network_interfaces :
     {
-      subnetwork       = module.vpc.subnetworks["${var.name_prefix}${v.subnetwork}"].self_link
+      subnetwork       = module.vpc[v.vpc_network_key].subnetworks[v.subnetwork_key].self_link
       private_ip       = v.private_ip
       create_public_ip = try(v.create_public_ip, false)
   }]
@@ -155,7 +165,7 @@ resource "google_compute_instance" "linux_vm" {
   }
 
   network_interface {
-    subnetwork = module.vpc.subnetworks["${var.name_prefix}${each.value.subnetwork}"].self_link
+    subnetwork = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
     network_ip = each.value.private_ip
   }
 
@@ -180,8 +190,8 @@ module "lb_internal" {
   health_check_port = try(each.value.health_check_port, "80")
   backends          = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
   ip_address        = each.value.ip_address
-  subnetwork        = module.vpc.subnetworks["${var.name_prefix}${each.value.subnetwork}"].self_link
-  network           = module.vpc.networks["${var.name_prefix}${each.value.network}"].self_link
+  subnetwork        = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
+  network           = module.vpc[each.value.vpc_network_key].network.self_link
   all_ports         = true
 }
 

@@ -1,4 +1,4 @@
-package standalone_vmseries_with_metadata_bootstrap
+package multi_nic_common
 
 import (
 	"testing"
@@ -21,8 +21,8 @@ func CreateTerraformOptions(t *testing.T) *terraform.Options {
 		TerraformDir: ".",
 		VarFiles:     []string{"example.tfvars"},
 		Vars: map[string]interface{}{
-			"name_prefix":    varsInfo.NamePrefix,
-			"project": varsInfo.GoogleProjectId,
+			"name_prefix": varsInfo.NamePrefix,
+			"project":     varsInfo.GoogleProjectId,
 		},
 		Logger:               logger.Default,
 		Lock:                 true,

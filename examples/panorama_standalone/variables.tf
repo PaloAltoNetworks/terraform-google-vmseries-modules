@@ -23,16 +23,31 @@ variable "networks" {
     Example of variable deployment :
 
     ```
-    vpcs = {
+    networks = {
       "panorama-vpc" = {
-        vpc_name          = "panorama-vpc"
-        subnet_name       = "panorama-subnet"
-        cidr              = "172.21.21.0/24"
-        allowed_sources   = ["1.1.1.1/32" , "2.2.2.2/32"]
-        create_network    = true
-        create_subnetwork = true
+        vpc_name                        = "firewall-vpc"
+        create_network                  = true
+        delete_default_routes_on_create = "false"
+        mtu                             = "1460"
+        routing_mode                    = "REGIONAL"
+        subnetworks = {
+          "panorama-sub" = {
+            name              = "panorama-subnet"
+            create_subnetwork = true
+            ip_cidr_range     = "172.21.21.0/24"
+            region            = "us-central1"
+          }
+        }
+        firewall_rules = {
+          "allow-panorama-ingress" = {
+            name             = "panorama-mgmt"
+            source_ranges    = ["1.1.1.1/32", "2.2.2.2/32"]
+            priority         = "1000"
+            allowed_protocol = "all"
+            allowed_ports    = []
+          }
+        }
       }
-    }
     ```
 
     For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)

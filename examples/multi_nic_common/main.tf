@@ -18,11 +18,13 @@ resource "local_file" "bootstrap_xml" {
   filename = "files/${each.key}/config/bootstrap.xml"
   content = templatefile("templates/bootstrap_common.tmpl",
     {
-      trust_gcp_router_ip   = each.value.bootstrap_template_map.trust_gcp_router_ip
+      spoke1_gcp_router_ip  = each.value.bootstrap_template_map.spoke1_gcp_router_ip
+      spoke2_gcp_router_ip  = each.value.bootstrap_template_map.spoke2_gcp_router_ip
       private_network_cidr  = each.value.bootstrap_template_map.private_network_cidr
       untrust_gcp_router_ip = each.value.bootstrap_template_map.untrust_gcp_router_ip
-      trust_loopback_ip     = try(each.value.bootstrap_template_map.trust_loopback_ip, "")
-      untrust_loopback_ip   = try(each.value.bootstrap_template_map.untrust_loopback_ip, "")
+      spoke1_loopback_ip    = each.value.bootstrap_template_map.spoke1_loopback_ip
+      spoke2_loopback_ip    = each.value.bootstrap_template_map.spoke2_loopback_ip
+      untrust_loopback_ip   = each.value.bootstrap_template_map.untrust_loopback_ip
     }
   )
 }
@@ -80,6 +82,17 @@ module "vpc" {
   }, {})
 }
 
+resource "google_compute_route" "this" {
+
+  for_each = var.routes
+
+  name         = "${var.name_prefix}${each.value.name}"
+  dest_range   = each.value.destination_range
+  network      = module.vpc[each.value.vpc_network_key].network.self_link
+  next_hop_ilb = module.lb_internal[each.value.lb_internal_key].forwarding_rule
+  priority     = 100
+}
+
 module "vpc_peering" {
   source = "../../modules/vpc-peering"
 
@@ -97,17 +110,6 @@ module "vpc_peering" {
   peer_import_custom_routes                = each.value.peer_import_custom_routes
   peer_export_subnet_routes_with_public_ip = each.value.peer_export_subnet_routes_with_public_ip
   peer_import_subnet_routes_with_public_ip = each.value.peer_import_subnet_routes_with_public_ip
-}
-
-resource "google_compute_route" "this" {
-
-  for_each = var.routes
-
-  name         = "${var.name_prefix}${each.value.name}"
-  dest_range   = each.value.destination_range
-  network      = module.vpc[each.value.vpc_network_key].network.self_link
-  next_hop_ilb = module.lb_internal[each.value.lb_internal_key].forwarding_rule
-  priority     = 100
 }
 
 module "vmseries" {
@@ -195,15 +197,17 @@ module "lb_internal" {
   all_ports         = true
 }
 
-module "glb" {
-  source = "../../modules/lb_http_ext_global"
+module "lb_external" {
+  source = "../../modules/lb_external"
 
-  for_each = var.lbs_global_http
+  for_each = var.lbs_external
 
-  name                  = "${var.name_prefix}${each.value.name}"
-  backend_groups        = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
-  max_rate_per_instance = each.value.max_rate_per_instance
-  backend_port_name     = each.value.backend_port_name
-  backend_protocol      = each.value.backend_protocol
-  health_check_port     = each.value.health_check_port
+  project = var.project
+
+  name                    = "${var.name_prefix}${each.value.name}"
+  backend_instance_groups = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
+  rules                   = each.value.rules
+
+  health_check_http_port         = each.value.http_health_check_port
+  health_check_http_request_path = try(each.value.http_health_check_request_path, "/php/login.php")
 }

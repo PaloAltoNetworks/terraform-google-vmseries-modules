@@ -93,17 +93,17 @@ variable "networks" {
         fw-mgmt-sub = {
           name              = "fw-mgmt-sub"
           create_subnetwork = true
-          ip_cidr_range = "10.10.10.0/28"
-          region = "us-east1"
+          ip_cidr_range     = "10.10.10.0/28"
+          region            = "us-east1"
         }
       }
       firewall_rules = {
         allow-mgmt-ingress = {
-          name = "allow-mgmt-vpc"
-          source_ranges = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
-          priority = "1000"
+          name             = "allow-mgmt-vpc"
+          source_ranges    = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
+          priority         = "1000"
           allowed_protocol = "all"
-          allowed_ports = []
+          allowed_ports    = []
         }
       }
     }
@@ -114,6 +114,8 @@ variable "networks" {
 
   Multiple keys can be added and will be deployed by the code.
   EOF
+  type        = any
+  default     = {}
 }
 
 variable "vpc_peerings" {
@@ -195,6 +197,8 @@ variable "vmseries_common" {
 
   Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`).
   EOF
+  type        = any
+  default     = {}
 }
 variable "vmseries" {
   description = <<-EOF
@@ -269,6 +273,8 @@ variable "vmseries" {
   Multiple keys can be added and will be deployed by the code.
 
   EOF
+  type        = any
+  default     = {}
 }
 
 #Load Balancers
@@ -356,6 +362,6 @@ variable "linux_vms" {
   }
   ```
   EOF
-  type        = any
+  type        = map(any)
   default     = {}
 }

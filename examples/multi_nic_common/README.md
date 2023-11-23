@@ -1,48 +1,25 @@
 ---
-short_title: Common Firewall Option
-type: refarch
-show_in_hub: true
+show_in_hub: false
 ---
-# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Common NGFW Option
-
-Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
-The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with common VM-Series for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
-
-## Reference Architecture Design
-
-![simple](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/6574404/942d7e0a-eafb-42fb-ba53-6fefedb4b69d)
-
-This code implements:
-- a _centralized design_, a hub-and-spoke topology with a shared VPC containing VM-Series to inspect all inbound, outbound, east-west, and enterprise traffic
-- the _common option_, which routes all traffic flows onto a single set of VM-Series
-
-## Detailed Architecture and Design
-
-### Centralized Design
-
-This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
-This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
-
-### Common Option
+# Common Option
 
 The common firewall option leverages a single set of VM-Series firewalls. The sole set of firewalls operates as a shared resource and may present scale limitations with all traffic flowing through a single set of firewalls due to the performance degradation that occurs when traffic crosses virtual routers. This option is suitable for proof-of-concepts and smaller scale deployments because the number of firewalls is low. However, the technical integration complexity is high.
 
-![VM-Series-Common-Firewall-Option](https://user-images.githubusercontent.com/43091730/232486760-a8f6f1f2-6c46-44ed-9842-3afa2fb2309f.png)
+![VM-Series-Multi-NIC-Common-Firewall-Option](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/43091730/ff652bc1-977c-4f83-aeb0-641b46f38c4c)
 
-The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project.
+The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) but with a slight modification in the architecture - the VM-Series is directly connected to the spoke VPCs. There are some advantages to this architecture from a routing perspective but there is also a limitation related to the [maximum number of NICs on the VM-Series](https://cloud.google.com/vpc/docs/create-use-multiple-interfaces#max-interfaces) within GCP.
 
 The example makes use of VM-Series full [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using XML templates to properly parametrize the initial Day 0 configuration.
 
 With default variable values the topology consists of :
- - 5 VPC networks :
+ - 4 VPC networks :
    - Management VPC
    - Untrust (outside) VPC
-   - Trust (inside/security) VPC
-   - Spoke-1 VPC
-   - Spoke-2 VPC
+   - Spoke-1 (Trust 1) VPC
+   - Spoke-2 (Trust 2) VPC
  - 2 VM-Series firewalls
  - 2 Linux Ubuntu VMs (inside Spoke VPCs - for testing purposes)
- - one internal network loadbalancer (for outbound/east-west traffic)
+ - two internal network loadbalancers (for outbound/east-west traffic) - one per spoke VPC
  - one external regional network loadbalancer (for inbound traffic)
 
 ## Prerequisites
@@ -60,7 +37,7 @@ The following steps should be followed before deploying the Terraform code prese
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/vpc-peering-common
+cd terraform-google-vmseries-modules/examples/multi_nic_common
 ```
 
 3. Copy the `example.tfvars` to `terraform.tfvars`.
@@ -85,15 +62,18 @@ terraform apply
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 96 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
+Apply complete! Resources: 77 added, 0 changed, 0 destroyed. (Number of resources can vary based on how many instances you push through tfvars)
 
 Outputs:
 
-lbs_internal_ips = {
-  "external-lb" = "<EXTERNAL_LB_PUBLIC_IP>"
+lbs_external_ips = {
+  "external-lb" = {
+    "all-ports" = "<EXTERNAL_LB_PUBLIC_IP>"
+  }
 }
 lbs_internal_ips = {
-  "internal-lb" = "10.10.12.5"
+  "internal-lb-spoke1" = "10.10.12.5"
+  "internal-lb-spoke2" = "10.10.13.5"
 }
 linux_vm_ips = {
   "spoke1-vm" = "192.168.1.2"
@@ -104,11 +84,13 @@ vmseries_private_ips = {
     "0" = "10.10.11.2"
     "1" = "10.10.10.2"
     "2" = "10.10.12.2"
+    "3" = "10.10.13.2"
   }
   "fw-vmseries-02" = {
     "0" = "10.10.11.3"
     "1" = "10.10.10.3"
     "2" = "10.10.12.3"
+    "3" = "10.10.13.3"
   }
 }
 vmseries_public_ips = {
@@ -121,6 +103,7 @@ vmseries_public_ips = {
     "1" = "<MGMT_PUBLIC_IP>"
   }
 }
+
 ```
 
 
@@ -228,13 +211,13 @@ please see https://cloud.google.com/iap/docs/using-tcp-forwarding#increasing_the
 | <a name="input_lbs_internal"></a> [lbs\_internal](#input\_lbs\_internal) | A map containing each internal loadbalancer setting.<br><br>Example of variable deployment :<pre>lbs_internal = {<br>  "internal-lb" = {<br>    name              = "internal-lb"<br>    health_check_port = "80"<br>    backends          = ["fw-vmseries-01", "fw-vmseries-02"]<br>    ip_address        = "10.10.12.5"<br>    subnetwork_key    = "fw-trust-sub"<br>    vpc_network_key   = "fw-trust-vpc"<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/lb_internal#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 | <a name="input_linux_vms"></a> [linux\_vms](#input\_linux\_vms) | A map containing each Linux VM configuration that will be placed in SPOKE VPCs for testing purposes.<br><br>Example of varaible deployment:<pre>linux_vms = {<br>  spoke1-vm = {<br>    linux_machine_type = "n2-standard-4"<br>    zone               = "us-east1-b"<br>    linux_disk_size    = "50" # Modify this value as per deployment requirements<br>    vpc_network_key    = "fw-spoke1-vpc"<br>    subnetwork_key     = "fw-spoke1-sub"<br>    private_ip         = "192.168.1.2"<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    service_account_key = "sa-linux-01"<br>  }<br>}</pre> | `map(any)` | `{}` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | A string to prefix resource namings. | `string` | `"example-"` | no |
-| <a name="input_networks"></a> [networks](#input\_networks) | A map containing each network setting.<br><br>Example of variable deployment :<pre>networks = {<br>  fw-mgmt-vpc = {<br>    vpc_name = "fw-mgmt-vpc"<br>    create_network = true<br>    delete_default_routes_on_create = false<br>    mtu = "1460"<br>    routing_mode = "REGIONAL"<br>    subnetworks = {<br>      fw-mgmt-sub = {<br>        name = "fw-mgmt-sub"<br>        create_subnetwork = true<br>        ip_cidr_range = "10.10.10.0/28"<br>        region = "us-east1"<br>      }<br>    }<br>    firewall_rules = {<br>      allow-mgmt-ingress = {<br>        name = "allow-mgmt-vpc"<br>        source_ranges = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.<br>        priority = "1000"<br>        allowed_protocol = "all"<br>        allowed_ports = []<br>      }<br>    }<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)<br><br>Multiple keys can be added and will be deployed by the code. | `any` | n/a | yes |
+| <a name="input_networks"></a> [networks](#input\_networks) | A map containing each network setting.<br><br>Example of variable deployment :<pre>networks = {<br>  fw-mgmt-vpc = {<br>    vpc_name = "fw-mgmt-vpc"<br>    create_network = true<br>    delete_default_routes_on_create = false<br>    mtu = "1460"<br>    routing_mode = "REGIONAL"<br>    subnetworks = {<br>      fw-mgmt-sub = {<br>        name              = "fw-mgmt-sub"<br>        create_subnetwork = true<br>        ip_cidr_range     = "10.10.10.0/28"<br>        region            = "us-east1"<br>      }<br>    }<br>    firewall_rules = {<br>      allow-mgmt-ingress = {<br>        name             = "allow-mgmt-vpc"<br>        source_ranges    = ["10.10.10.0/24", "1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.<br>        priority         = "1000"<br>        allowed_protocol = "all"<br>        allowed_ports    = []<br>      }<br>    }<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc#input_networks)<br><br>Multiple keys can be added and will be deployed by the code. | `any` | `{}` | no |
 | <a name="input_project"></a> [project](#input\_project) | The project name to deploy the infrastructure in to. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region into which to deploy the infrastructure in to. | `string` | `"us-central1"` | no |
 | <a name="input_routes"></a> [routes](#input\_routes) | A map containing each route setting. Note that you can only add routes using a next-hop type of internal load-balance rule.<br><br>Example of variable deployment :<pre>routes = {<br>  "default-route-trust" = {<br>    name = "fw-default-trust"<br>    destination_range = "0.0.0.0/0"<br>    vpc_network_key = "fw-trust-vpc"<br>    lb_internal_name = "internal-lb"<br>  }<br>}</pre>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 | <a name="input_service_accounts"></a> [service\_accounts](#input\_service\_accounts) | A map containing each service account setting.<br><br>Example of variable deployment :<pre>service_accounts = {<br>  "sa-vmseries-01" = {<br>    service_account_id = "sa-vmseries-01"<br>    display_name       = "VM-Series SA"<br>    roles = [<br>      "roles/compute.networkViewer",<br>      "roles/logging.logWriter",<br>      "roles/monitoring.metricWriter",<br>      "roles/monitoring.viewer",<br>      "roles/viewer"<br>    ]<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/iam_service_account#Inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
-| <a name="input_vmseries"></a> [vmseries](#input\_vmseries) | A map containing each individual vmseries setting.<br><br>Example of variable deployment :<pre>vmseries = {<br>  "fw-vmseries-01" = {<br>    name             = "fw-vmseries-01"<br>    zone             = "us-east1-b"<br>    machine_type     = "n2-standard-4"<br>    min_cpu_platform = "Intel Cascade Lake"<br>    tags                 = ["vmseries"]<br>    service_account_key  = "sa-vmseries-01"<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"<br>    bootstrap_options = {<br>      panorama-server = "1.1.1.1"<br>      dns-primary     = "8.8.8.8"<br>      dns-secondary   = "8.8.4.4"<br>    }<br>    bootstrap_template_map = {<br>      trust_gcp_router_ip   = "10.10.12.1"<br>      untrust_gcp_router_ip = "10.10.11.1"<br>      private_network_cidr  = "192.168.0.0/16"<br>      untrust_loopback_ip   = "1.1.1.1/32" #This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed<br>      trust_loopback_ip     = "10.10.12.5/32"<br>    }<br>    named_ports = [<br>      {<br>        name = "http"<br>        port = 80<br>      },<br>      {<br>        name = "https"<br>        port = 443<br>      }<br>    ]<br>    network_interfaces = [<br>      {<br>        vpc_network_key  = "fw-untrust-vpc"<br>        subnetwork_key       = "fw-untrust-sub"<br>        private_ip       = "10.10.11.2"<br>        create_public_ip = true<br>      },<br>      {<br>        vpc_network_key  = "fw-mgmt-vpc"<br>        subnetwork_key       = "fw-mgmt-sub"<br>        private_ip       = "10.10.10.2"<br>        create_public_ip = true<br>      },<br>      {<br>        vpc_network_key = "fw-trust-vpc"<br>        subnetwork_key = "fw-trust-sub"<br>        private_ip = "10.10.12.2"<br>      },<br>    ]<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vmseries#inputs)<br><br>The bootstrap\_template\_map contains variables that will be applied to the bootstrap template. Each firewall Day 0 bootstrap will be parametrised based on these inputs.<br>Multiple keys can be added and will be deployed by the code. | `any` | n/a | yes |
-| <a name="input_vmseries_common"></a> [vmseries\_common](#input\_vmseries\_common) | A map containing common vmseries setting.<br><br>Example of variable deployment :<pre>vmseries_common = {<br>  ssh_keys            = "admin:AAAABBBB..."<br>  vmseries_image      = "vmseries-flex-byol-1022h2"<br>  machine_type        = "n2-standard-4"<br>  min_cpu_platform    = "Intel Cascade Lake"<br>  service_account_key = "sa-vmseries-01"<br>  bootstrap_options = {<br>    type                = "dhcp-client"<br>    mgmt-interface-swap = "enable"<br>  }<br>}</pre>Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`). | `any` | n/a | yes |
+| <a name="input_vmseries"></a> [vmseries](#input\_vmseries) | A map containing each individual vmseries setting.<br><br>Example of variable deployment :<pre>vmseries = {<br>  "fw-vmseries-01" = {<br>    name             = "fw-vmseries-01"<br>    zone             = "us-east1-b"<br>    machine_type     = "n2-standard-4"<br>    min_cpu_platform = "Intel Cascade Lake"<br>    tags                 = ["vmseries"]<br>    service_account_key  = "sa-vmseries-01"<br>    scopes = [<br>      "https://www.googleapis.com/auth/compute.readonly",<br>      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",<br>      "https://www.googleapis.com/auth/devstorage.read_only",<br>      "https://www.googleapis.com/auth/logging.write",<br>      "https://www.googleapis.com/auth/monitoring.write",<br>    ]<br>    bootstrap_bucket_key = "vmseries-bootstrap-bucket-01"<br>    bootstrap_options = {<br>      panorama-server = "1.1.1.1"<br>      dns-primary     = "8.8.8.8"<br>      dns-secondary   = "8.8.4.4"<br>    }<br>    bootstrap_template_map = {<br>      trust_gcp_router_ip   = "10.10.12.1"<br>      untrust_gcp_router_ip = "10.10.11.1"<br>      private_network_cidr  = "192.168.0.0/16"<br>      untrust_loopback_ip   = "1.1.1.1/32" #This is placeholder IP - you must replace it on the vmseries config with the LB public IP address after the infrastructure is deployed<br>      trust_loopback_ip     = "10.10.12.5/32"<br>    }<br>    named_ports = [<br>      {<br>        name = "http"<br>        port = 80<br>      },<br>      {<br>        name = "https"<br>        port = 443<br>      }<br>    ]<br>    network_interfaces = [<br>      {<br>        vpc_network_key  = "fw-untrust-vpc"<br>        subnetwork_key       = "fw-untrust-sub"<br>        private_ip       = "10.10.11.2"<br>        create_public_ip = true<br>      },<br>      {<br>        vpc_network_key  = "fw-mgmt-vpc"<br>        subnetwork_key       = "fw-mgmt-sub"<br>        private_ip       = "10.10.10.2"<br>        create_public_ip = true<br>      },<br>      {<br>        vpc_network_key = "fw-trust-vpc"<br>        subnetwork_key = "fw-trust-sub"<br>        private_ip = "10.10.12.2"<br>      },<br>    ]<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vmseries#inputs)<br><br>The bootstrap\_template\_map contains variables that will be applied to the bootstrap template. Each firewall Day 0 bootstrap will be parametrised based on these inputs.<br>Multiple keys can be added and will be deployed by the code. | `any` | `{}` | no |
+| <a name="input_vmseries_common"></a> [vmseries\_common](#input\_vmseries\_common) | A map containing common vmseries setting.<br><br>Example of variable deployment :<pre>vmseries_common = {<br>  ssh_keys            = "admin:AAAABBBB..."<br>  vmseries_image      = "vmseries-flex-byol-1022h2"<br>  machine_type        = "n2-standard-4"<br>  min_cpu_platform    = "Intel Cascade Lake"<br>  service_account_key = "sa-vmseries-01"<br>  bootstrap_options = {<br>    type                = "dhcp-client"<br>    mgmt-interface-swap = "enable"<br>  }<br>}</pre>Bootstrap options can be moved between vmseries individual instance variable (`vmseries`) and this common vmserie variable (`vmseries_common`). | `any` | `{}` | no |
 | <a name="input_vpc_peerings"></a> [vpc\_peerings](#input\_vpc\_peerings) | A map containing each VPC peering setting.<br><br>Example of variable deployment :<pre>vpc_peerings = {<br>  "trust-to-spoke1" = {<br>    local_network_key = "fw-trust-vpc"<br>    peer_network_key  = "fw-spoke1-vpc"<br><br>    local_export_custom_routes                = true<br>    local_import_custom_routes                = true<br>    local_export_subnet_routes_with_public_ip = true<br>    local_import_subnet_routes_with_public_ip = true<br><br>    peer_export_custom_routes                = true<br>    peer_import_custom_routes                = true<br>    peer_export_subnet_routes_with_public_ip = true<br>    peer_import_subnet_routes_with_public_ip = true<br>  }<br>}</pre>For a full list of available configuration items - please refer to [module documentation](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/tree/main/modules/vpc-peering#inputs)<br><br>Multiple keys can be added and will be deployed by the code. | `map(any)` | `{}` | no |
 
 ### Outputs
