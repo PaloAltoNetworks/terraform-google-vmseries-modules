@@ -9,56 +9,6 @@ module "iam_service_account" {
   project_id         = var.project
 }
 
-resource "local_file" "bootstrap_xml" {
-
-  for_each = { for k, v in var.vmseries : k => v
-    if can(v.bootstrap_template_map)
-  }
-
-  filename = "files/${each.key}/config/bootstrap.xml"
-  content = templatefile("templates/bootstrap_common.tmpl",
-    {
-      trust_gcp_router_ip   = each.value.bootstrap_template_map.trust_gcp_router_ip
-      private_network_cidr  = each.value.bootstrap_template_map.private_network_cidr
-      untrust_gcp_router_ip = each.value.bootstrap_template_map.untrust_gcp_router_ip
-      trust_loopback_ip     = each.value.bootstrap_template_map.trust_loopback_ip
-      untrust_loopback_ip   = each.value.bootstrap_template_map.untrust_loopback_ip
-    }
-  )
-}
-
-resource "local_file" "init_cfg" {
-
-  for_each = { for k, v in var.vmseries : k => v
-    if can(v.bootstrap_template_map)
-  }
-
-  filename = "files/${each.key}/config/init-cfg.txt"
-  content = templatefile("templates/init-cfg.tmpl",
-    {
-      panorama-server = try(each.value.bootstrap_options.panorama-server, var.vmseries_common.bootstrap_options.panorama-server, "")
-      type            = try(each.value.bootstrap_options.type, var.vmseries_common.bootstrap_options.type, "")
-      dns-primary     = try(each.value.bootstrap_options.dns-primary, var.vmseries_common.bootstrap_options.dns-primary, "")
-      dns-secondary   = try(each.value.bootstrap_options.dns-secondary, var.vmseries_common.bootstrap_options.dns-secondary, "")
-  })
-}
-
-module "bootstrap" {
-  source = "../../modules/bootstrap"
-
-  for_each = var.bootstrap_buckets
-
-  folders = keys(var.vmseries)
-
-  name_prefix     = "${var.name_prefix}${each.value.bucket_name_prefix}"
-  service_account = module.iam_service_account[each.value.service_account_key].email
-  location        = each.value.location
-  files = merge(
-    { for k, v in var.vmseries : "files/${k}/config/bootstrap.xml" => "${k}/config/bootstrap.xml" },
-    { for k, v in var.vmseries : "files/${k}/config/init-cfg.txt" => "${k}/config/init-cfg.txt" },
-  )
-}
-
 module "vpc" {
   source = "../../modules/vpc"
 
@@ -110,9 +60,51 @@ module "vpc_peering" {
   peer_import_subnet_routes_with_public_ip = each.value.peer_import_subnet_routes_with_public_ip
 }
 
-####
-# Placeholder config for autoscale
-####
+module "autoscale" {
+  source = "../../modules/autoscale/"
+
+  for_each = var.autoscale
+
+  name                             = "${var.name_prefix}${each.value.name}"
+  region                           = var.region
+  project_id                       = var.project
+  regional_mig                     = try(each.value.regional_mig, var.autoscale_common.regional_mig, true)
+  zones                            = try(each.value.zones, {})
+  image                            = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/${try(each.value.image, var.autoscale_common.image)}"
+  named_ports                      = try(each.value.named_ports, var.autoscale_common.named_ports)
+  machine_type                     = try(each.value.machine_type, var.autoscale_common.machine_type)
+  min_cpu_platform                 = try(each.value.min_cpu_platform, var.autoscale_common.min_cpu_platform, "Intel Cascade Lake")
+  disk_type                        = try(each.value.disk_type, var.autoscale_common.disk_type, "pd-ssd")
+  service_account_email            = try(module.iam_service_account[each.value.service_account_key].email, module.iam_service_account[var.autoscale_common.service_account_key].email)
+  scopes                           = try(each.value.scopes, var.autoscale_common.scopes, [])
+  tags                             = try(each.value.tags, var.autoscale_common.tags, [])
+  update_policy_type               = try(each.value.update_policy_type, var.autoscale_common.update_policy_type, "OPPORTUNISTIC")
+  min_vmseries_replicas            = try(each.value.min_vmseries_replicas, var.autoscale_common.min_vmseries_replicas)
+  max_vmseries_replicas            = try(each.value.max_vmseries_replicas, var.autoscale_common.max_vmseries_replicas)
+  cooldown_period                  = try(each.value.cooldown_period, var.autoscale_common.cooldown_period, 480)
+  scale_in_control_time_window_sec = try(each.value.scale_in_control_time_window_sec, var.autoscale_common.scale_in_control_time_window_sec, 1800)
+  scale_in_control_replicas_fixed  = try(each.value.scale_in_control_replicas_fixed, var.autoscale_common.scale_in_control_replicas_fixed, 1)
+  create_pubsub_topic              = try(each.value.create_pubsub_topic, var.autoscale_common.create_pubsub_topic)
+  autoscaler_metrics = try(each.value.autoscaler_metrics, var.autoscale_common.autoscaler_metrics,
+    {
+      "custom.googleapis.com/VMSeries/panSessionUtilization" = {
+        target = 70
+      }
+      "custom.googleapis.com/VMSeries/panSessionThroughputKbps" = {
+        target = 700000
+      }
+  })
+
+  network_interfaces = [for v in each.value.network_interfaces :
+    {
+      subnetwork       = module.vpc[v.vpc_network_key].subnetworks[v.subnetwork_key].self_link
+      create_public_ip = try(v.create_public_ip, false)
+  }]
+  metadata = merge(
+    try(each.value.bootstrap_options, {}),
+    try(var.autoscale_common.bootstrap_options, {})
+  )
+}
 
 data "google_compute_image" "my_image" {
   family  = "ubuntu-pro-2204-lts"
@@ -157,7 +149,9 @@ module "lb_internal" {
   name              = "${var.name_prefix}${each.value.name}"
   region            = var.region
   health_check_port = try(each.value.health_check_port, "80")
-  backends          = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
+  backends          = try({ for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id},
+   { for v in each.value.backends : v => module.autoscale[v].zonal_instance_group_ids }
+  )
   ip_address        = each.value.ip_address
   subnetwork        = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
   network           = module.vpc[each.value.vpc_network_key].network.self_link
@@ -172,7 +166,9 @@ module "lb_external" {
   project = var.project
 
   name                    = "${var.name_prefix}${each.value.name}"
-  backend_instance_groups = { for v in each.value.backends : v => module.vmseries[v].instance_group_self_link }
+  backend_instance_groups = try({ for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id},
+   { for v in each.value.backends : v => module.autoscale[v].zonal_instance_group_ids }
+  )
   rules                   = each.value.rules
 
   health_check_http_port         = each.value.http_health_check_port
