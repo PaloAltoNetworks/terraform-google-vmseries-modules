@@ -1,7 +1,7 @@
 # General
-project     = "gcp-gcs-pso"
+project     = "<PROJECT_ID>"
 region      = "us-east4" # Modify this value as per deployment requirements
-name_prefix = "hgu-as-ref-"
+name_prefix = ""
 
 # Service accounts
 
@@ -50,7 +50,7 @@ networks = {
     firewall_rules = {
       allow-mgmt-ingress = {
         name             = "allow-mgmt-vpc"
-        source_ranges    = ["188.27.109.75/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
+        source_ranges    = ["1.1.1.1/32"] # Replace 1.1.1.1/32 with your own souurce IP address for management purposes.
         priority         = "1000"
         allowed_protocol = "all"
         allowed_ports    = []
@@ -198,7 +198,7 @@ routes = {
   }
 }
 # Autoscale
-autoscale_regional_mig = false
+autoscale_regional_mig = true
 
 autoscale_common = {
   image            = "vmseries-flex-byol-1110"
@@ -317,7 +317,6 @@ lbs_internal = {
     name              = "internal-lb"
     health_check_port = "80"
     backends          = ["fw-autoscale-common"]
-    ip_address        = "10.10.12.10"
     subnetwork        = "fw-trust-sub"
     vpc_network_key   = "fw-trust-vpc"
     subnetwork_key    = "fw-trust-sub"

@@ -156,7 +156,7 @@ module "lb_internal" {
       "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids["${z_k}"]
     }
   ]...)
-  ip_address = each.value.ip_address
+  # ip_address = each.value.ip_address // IP Address reservation was commented out due to autoscale dynamic allocation
   subnetwork = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
   network    = module.vpc[each.value.vpc_network_key].network.self_link
   all_ports  = true
