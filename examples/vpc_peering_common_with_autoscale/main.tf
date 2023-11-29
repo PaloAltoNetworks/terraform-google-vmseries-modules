@@ -68,7 +68,7 @@ module "autoscale" {
   name                             = "${var.name_prefix}${each.value.name}"
   region                           = var.region
   project_id                       = var.project
-  regional_mig                     = try(each.value.regional_mig, var.autoscale_common.regional_mig, true)
+  regional_mig                     = try(var.autoscale_regional_mig, true)
   zones                            = try(each.value.zones, {})
   image                            = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/${try(each.value.image, var.autoscale_common.image)}"
   named_ports                      = try(each.value.named_ports, var.autoscale_common.named_ports)
@@ -149,13 +149,17 @@ module "lb_internal" {
   name              = "${var.name_prefix}${each.value.name}"
   region            = var.region
   health_check_port = try(each.value.health_check_port, "80")
-  backends          = try({ for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id},
-   { for v in each.value.backends : v => module.autoscale[v].zonal_instance_group_ids }
-  )
-  ip_address        = each.value.ip_address
-  subnetwork        = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
-  network           = module.vpc[each.value.vpc_network_key].network.self_link
-  all_ports         = true
+  backends = var.autoscale_regional_mig ? { for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id } : merge([
+    for v in each.value.backends :
+    {
+      for z_k, z_v in var.autoscale[v].zones :
+      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids["${z_k}"]
+    }
+  ]...)
+  ip_address = each.value.ip_address
+  subnetwork = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
+  network    = module.vpc[each.value.vpc_network_key].network.self_link
+  all_ports  = true
 }
 
 module "lb_external" {
@@ -165,11 +169,15 @@ module "lb_external" {
 
   project = var.project
 
-  name                    = "${var.name_prefix}${each.value.name}"
-  backend_instance_groups = try({ for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id},
-   { for v in each.value.backends : v => module.autoscale[v].zonal_instance_group_ids }
-  )
-  rules                   = each.value.rules
+  name = "${var.name_prefix}${each.value.name}"
+  backend_instance_groups = var.autoscale_regional_mig ? { for v in each.value.backends : v => module.autoscale[v].regional_instance_group_id } : merge([
+    for v in each.value.backends :
+    {
+      for z_k, z_v in var.autoscale[v].zones :
+      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids["${z_k}"]
+    }
+  ]...)
+  rules = each.value.rules
 
   health_check_http_port         = each.value.http_health_check_port
   health_check_http_request_path = try(each.value.http_health_check_request_path, "/php/login.php")

@@ -145,6 +145,9 @@ variable "routes" {
 }
 
 #Autoscale
+variable "autoscale_regional_mig" {
+
+}
 variable "autoscale_common" {
 
 }
