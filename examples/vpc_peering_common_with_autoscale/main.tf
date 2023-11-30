@@ -153,10 +153,10 @@ module "lb_internal" {
     for v in each.value.backends :
     {
       for z_k, z_v in var.autoscale[v].zones :
-      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids["${z_k}"]
+      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids[z_k]
     }
   ]...)
-  # ip_address = each.value.ip_address // IP Address reservation was commented out due to autoscale dynamic allocation
+  # ip_address = each.value.ip_address // IP Address reservation was commented out due to autoscale dynamic IP allocation
   subnetwork = module.vpc[each.value.vpc_network_key].subnetworks[each.value.subnetwork_key].self_link
   network    = module.vpc[each.value.vpc_network_key].network.self_link
   all_ports  = true
@@ -174,7 +174,7 @@ module "lb_external" {
     for v in each.value.backends :
     {
       for z_k, z_v in var.autoscale[v].zones :
-      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids["${z_k}"]
+      "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids[z_k]
     }
   ]...)
   rules = each.value.rules

@@ -146,14 +146,115 @@ variable "routes" {
 
 #Autoscale
 variable "autoscale_regional_mig" {
-
+  description = <<-EOF
+  Sets the managed instance group type to either a regional (if `true`) or a zonal (if `false`).
+  For more information please see [About regional MIGs](https://cloud.google.com/compute/docs/instance-groups/regional-migs#why_choose_regional_managed_instance_groups).
+  EOF
+  type        = bool
+  default     = true
 }
 variable "autoscale_common" {
+  description = <<-EOF
+  A map containing common vmseries autoscale setting.
+  Bootstrap options can be moved between vmseries autoscale individual instances variable (`autoscale`) and this common vmseries autoscale variable (`autoscale_common`).
 
+  Example of variable deployment :
+
+  ```
+  autoscale_common = {
+    image            = "vmseries-flex-byol-1110"
+    machine_type     = "n2-standard-4"
+    min_cpu_platform = "Intel Cascade Lake"
+    disk_type        = "pd-ssd"
+    scopes = [
+      "https://www.googleapis.com/auth/compute.readonly",
+      "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+    ]
+    tags               = ["vmseries-autoscale"]
+    update_policy_type = "OPPORTUNISTIC"
+    cooldown_period    = 480
+    bootstrap_options  = [
+      panorama_server  = "1.1.1.1"
+    ]
+  }
+  ``` 
+  EOF
+  type        = map(any)
+  default     = {}
 }
 
 variable "autoscale" {
+  description = <<-EOF
+  A map containing each vmseries autoscale setting.
+  Zonal or regional managed instance group type is controolled from the `autoscale_regional_mig` variable for all autoscale instances.
 
+  Example of variable deployment :
+
+  ```
+  autoscale = {
+    fw-autoscale-common = {
+      name = "fw-autoscale-common"
+      zones = {
+        zone1 = "us-east4-b"
+        zone2 = "us-east4-c"
+      }
+      named_ports = [
+        {
+          name = "http"
+          port = 80
+        },
+        {
+          name = "https"
+          port = 443
+        }
+      ]
+      service_account_key   = "sa-vmseries-01"
+      min_vmseries_replicas = 2
+      max_vmseries_replicas = 4
+      create_pubsub_topic   = true
+      autoscaler_metrics = {
+        "custom.googleapis.com/VMSeries/panSessionUtilization" = {
+          target = 70
+        }
+        "custom.googleapis.com/VMSeries/panSessionThroughputKbps" = {
+          target = 700000
+        }
+      }
+      bootstrap_options = {
+        type                        = "dhcp-client"
+        dhcp-send-hostname          = "yes"
+        dhcp-send-client-id         = "yes"
+        dhcp-accept-server-hostname = "yes"
+        dhcp-accept-server-domain   = "yes"
+        mgmt-interface-swap         = "enable"
+        panorama-server             = "1.1.1.1"
+        ssh-keys                    = "admin:<your_ssh_key>" # Replace this value with client data
+      }
+      network_interfaces = [
+        {
+          vpc_network_key  = "fw-untrust-vpc"
+          subnetwork_key   = "fw-untrust-sub"
+          create_public_ip = true
+        },
+        {
+          vpc_network_key  = "fw-mgmt-vpc"
+          subnetwork_key   = "fw-mgmt-sub"
+          create_public_ip = true
+        },
+        {
+          vpc_network_key = "fw-trust-vpc"
+          subnetwork_key  = "fw-trust-sub"
+        }
+      ]
+    }
+  }
+  ``` 
+  EOF
+  type        = map(any)
+  default     = {}
 }
 
 #Load Balancers
@@ -161,6 +262,7 @@ variable "autoscale" {
 variable "lbs_internal" {
   description = <<-EOF
   A map containing each internal loadbalancer setting.
+  Note : private IP reservation is not by default within the example as it may overlap with autoscale IP allocation.
 
   Example of variable deployment :
 
@@ -170,7 +272,6 @@ variable "lbs_internal" {
       name              = "internal-lb"
       health_check_port = "80"
       backends          = ["fw-vmseries-01", "fw-vmseries-02"]
-      ip_address        = "10.10.12.5"
       subnetwork_key    = "fw-trust-sub"
       vpc_network_key   = "fw-trust-vpc"
     }
