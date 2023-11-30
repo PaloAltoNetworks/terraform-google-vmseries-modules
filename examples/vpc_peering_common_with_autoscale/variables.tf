@@ -87,6 +87,8 @@ variable "networks" {
 
   Multiple keys can be added and will be deployed by the code.
   EOF
+  type        = any
+  default     = {}
 }
 
 variable "vpc_peerings" {
@@ -182,7 +184,7 @@ variable "autoscale_common" {
   }
   ``` 
   EOF
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
@@ -253,7 +255,7 @@ variable "autoscale" {
   }
   ``` 
   EOF
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
