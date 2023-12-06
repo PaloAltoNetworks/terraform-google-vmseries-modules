@@ -76,13 +76,13 @@ terraform apply
 5. Check the successful application and outputs of the resulting infrastructure:
 
 ```
-Apply complete! Resources: 48 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 55 added, 0 changed, 0 destroyed.
 
 Outputs:
 
 lbs_external_ips = {
   "external-lb" = {
-    "all-ports" = "<EXTERNAL_LB_PUBLIC_IP>"
+    "all-portsss" = "<EXTERNAL_LB_PUBLIC_IP>"
   }
 }
 lbs_internal_ips = {
@@ -93,11 +93,14 @@ linux_vm_ips = {
   "spoke2-vm" = "192.168.2.2"
 }
 pubsub_subscription_id = {
-  "fw-autoscale-common" = "projects/<project_id>/subscriptions/fw-autoscale-common-mig"
+  "fw-autoscale-inbound" = "projects/gcp-gcs-pso/subscriptions/hgu-asi-ref-fw-autoscale-inbound-mig"
+  "fw-autoscale-obew" = "projects/gcp-gcs-pso/subscriptions/hgu-asi-ref-fw-autoscale-obew-mig"
 }
 pubsub_topic_id = {
-  "fw-autoscale-common" = "projects/<project_id>/topics/fw-autoscale-common-mig"
+  "fw-autoscale-inbound" = "projects/gcp-gcs-pso/topics/hgu-asi-ref-fw-autoscale-inbound-mig"
+  "fw-autoscale-obew" = "projects/gcp-gcs-pso/topics/hgu-asi-ref-fw-autoscale-obew-mig"
 }
+
 
 ```
 
@@ -126,7 +129,7 @@ Configuration committed successfully
 
 ## Check access via web UI
 
-Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and your previously configured password.
+Use a web browser to access `https://<MGMT_PUBLIC_IP>` (these can be obtained via the GCP console/API) and login with admin and your previously configured password.
 
 ## Change the public Loopback public IP Address
 

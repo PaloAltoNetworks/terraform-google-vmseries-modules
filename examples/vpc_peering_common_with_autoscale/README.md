@@ -126,11 +126,11 @@ Configuration committed successfully
 
 ## Check access via web UI
 
-Use a web browser to access `https://<MGMT_PUBLIC_IP>` and login with admin and your previously configured password.
+Use a web browser to access `https://<MGMT_PUBLIC_IP>` (these can be obtained via the GCP console/API) and login with admin and your previously configured password.
 
 ## Change the public Loopback public IP Address
 
-For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and change the value of `1.1.1.1` with the value from the `EXTERNAL_LB_PUBLIC_IP` from the terraform outputs.
+For the VM-Series that are backend instance group members of the public-facing loadbalancer - go to Network -> Interfaces -> Loopback and add the value of `1.1.1.1` with the value from the `EXTERNAL_LB_PUBLIC_IP` from the terraform outputs.
 
 ## Check traffic from spoke VMs
 
