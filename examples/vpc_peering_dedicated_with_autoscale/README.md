@@ -1,10 +1,10 @@
 ---
 show_in_hub: false
 ---
-# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Common NGFW with autoscale Option
+# Reference Architecture with Terraform: VM-Series in GCP, Centralized Architecture, Dedicated inbound NGFW with autoscale Option
 
 Palo Alto Networks produces several [validated reference architecture design and deployment documentation guides](https://www.paloaltonetworks.com/resources/reference-architectures), which describe well-architected and tested deployments. When deploying VM-Series in a public cloud, the reference architectures guide users toward the best security outcomes, whilst reducing rollout time and avoiding common integration efforts.
-The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with common VM-Series and autoscaling capabilities for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
+The Terraform code presented here will deploy Palo Alto Networks VM-Series firewalls in GCP based on a centralized design with dedicated inbound VM-Series and autoscaling capabilities for all traffic; for a discussion of other options, please see the design guide from [the reference architecture guides](https://www.paloaltonetworks.com/resources/reference-architectures).
 
 ## Detailed Architecture and Design
 
@@ -13,13 +13,13 @@ The Terraform code presented here will deploy Palo Alto Networks VM-Series firew
 This design uses a VPC Peering. Application functions are distributed across multiple projects that are connected in a logical hub-and-spoke topology. A security project acts as the hub, providing centralized connectivity and control for multiple application projects. You deploy all VM-Series firewalls within the security project. The spoke projects contain the workloads and necessary services to support the application deployment.
 This design model integrates multiple methods to interconnect and control your application project VPC networks with resources in the security project. VPC Peering enables the private VPC network in the security project to peer with, and share routing information to, each application project VPC network. Using Shared VPC, the security project administrators create and share VPC network resources from within the security project to the application projects. The application project administrators can select the network resources and deploy the application workloads.
 
-### Common Option with autoscaling
+### Dedicated inbound Option with autoscaling
 
-The common firewall option with autoscaling leverages a single set autoscale group of VM-Series firewalls. Compared to the standard common firewall option - the autoscaling solved the issue of resource bottleneck given by a single set of firewalls, being able to scale horizontally based on configurable metrics.
+The dedicated inbound firewall option with autoscaling leverages a single set autoscale group of VM-Series firewalls. Compared to the standard dedicated inbound firewall option - the autoscaling solved the issue of resource bottleneck given by a single set of firewalls, being able to scale horizontally based on configurable metrics.
 
-![VM-Series-Common-Firewall-Option-With-Autoscaling](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/43091730/ca675535-d8d9-44f1-af75-2558afa4621d)
+![VM-Series-Common-Firewall-Option-With-Autoscaling](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/43091730/ca675535-d8d9-44f1-af75-2558afa4621d) -- TO BE REPLACED
 
-The scope of this code is to deploy an example of the [VM-Series Common Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project, but using an autoscaling group of instances instead of a single pair of firewall.
+The scope of this code is to deploy an example of the [VM-Series Dedicated Inbound Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project, but using an autoscaling group of instances instead of a single pair of firewall.
 
 The example makes use of VM-Series basic [bootstrap process](https://docs.paloaltonetworks.com/vm-series/10-2/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-on-google) using metadata information to pass bootstrap parameters to the autoscale instances.
 
@@ -30,7 +30,7 @@ With default variable values the topology consists of :
    - Trust (inside/security) VPC
    - Spoke-1 VPC
    - Spoke-2 VPC
- - 1 Autoscaling Group
+ - 2 Autoscaling Group
  - 2 Linux Ubuntu VMs (inside Spoke VPCs - for testing purposes)
  - one internal network loadbalancer (for outbound/east-west traffic)
  - one external regional network loadbalancer (for inbound traffic)
@@ -50,7 +50,7 @@ The following steps should be followed before deploying the Terraform code prese
 
 ```
 git clone https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules
-cd terraform-google-vmseries-modules/examples/vpc_peering_common_with_autoscale
+cd terraform-google-vmseries-modules/examples/vpc_peering_dedicated_with_autoscale
 ```
 
 3. Copy the `example.tfvars` to `terraform.tfvars`.
