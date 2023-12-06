@@ -1,6 +1,6 @@
 # General
 project     = "<PROJECT_ID>"
-region      = "us-east4" # Modify this value as per deployment requirements
+region      = "us-east4"
 name_prefix = ""
 
 # Service accounts
