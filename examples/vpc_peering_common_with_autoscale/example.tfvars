@@ -197,6 +197,7 @@ routes = {
     lb_internal_key   = "internal-lb"
   }
 }
+
 # Autoscale
 autoscale_regional_mig = true
 
