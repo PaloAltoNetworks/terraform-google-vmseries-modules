@@ -17,7 +17,8 @@ This design model integrates multiple methods to interconnect and control your a
 
 The dedicated inbound firewall option with autoscaling leverages a single set autoscale group of VM-Series firewalls. Compared to the standard dedicated inbound firewall option - the autoscaling solved the issue of resource bottleneck given by a single set of firewalls, being able to scale horizontally based on configurable metrics.
 
-![VM-Series-Common-Firewall-Option-With-Autoscaling](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/43091730/ca675535-d8d9-44f1-af75-2558afa4621d) -- TO BE REPLACED
+![VM-Series-Dedicated-Firewall-Option-With-Autoscaling](https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/assets/43091730/41e95242-eaf1-4850-b563-df17d138bef9)
+
 
 The scope of this code is to deploy an example of the [VM-Series Dedicated Inbound Firewall Option](https://www.paloaltonetworks.com/apps/pan/public/downloadResource?pagePath=/content/pan/en_US/resources/guides/gcp-architecture-guide#Design%20Model) architecture within a GCP project, but using an autoscaling group of instances instead of a single pair of firewall.
 
