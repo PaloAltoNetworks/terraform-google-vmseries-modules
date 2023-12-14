@@ -1,4 +1,4 @@
-package autoscale
+package vpc_peering_dedicated_with_autoscale
 
 import (
 	"testing"
@@ -22,7 +22,7 @@ func CreateTerraformOptions(t *testing.T) *terraform.Options {
 		VarFiles:     []string{"example.tfvars"},
 		Vars: map[string]interface{}{
 			"name_prefix": varsInfo.NamePrefix,
-			"project_id":  varsInfo.GoogleProjectId,
+			"project":     varsInfo.GoogleProjectId,
 		},
 		Logger:               logger.Default,
 		Lock:                 true,
