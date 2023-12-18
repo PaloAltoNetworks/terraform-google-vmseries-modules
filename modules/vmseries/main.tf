@@ -7,7 +7,7 @@ locals {
       nat_ip                 = try(v.public_ip, google_compute_address.public[k].address, null)
       public_ptr_domain_name = try(v.public_ptr_domain_name, google_compute_address.public[k].public_ptr_domain_name, null)
     }
-    if can(v.public_ip) || local.create_public_ip[k]
+    if try(v.public_ip, null) != null || local.create_public_ip[k]
   }
 }
 
