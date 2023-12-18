@@ -148,6 +148,7 @@ module "vmseries" {
       subnetwork       = module.vpc[v.vpc_network_key].subnetworks[v.subnetwork_key].self_link
       private_ip       = v.private_ip
       create_public_ip = try(v.create_public_ip, false)
+      public_ip        = try(v.public_ip, null)
   }]
 }
 
