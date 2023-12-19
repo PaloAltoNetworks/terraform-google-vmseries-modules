@@ -99,6 +99,7 @@ module "autoscale" {
     {
       subnetwork       = module.vpc[v.vpc_network_key].subnetworks[v.subnetwork_key].self_link
       create_public_ip = try(v.create_public_ip, false)
+      public_ip        = try(v.public_ip, null)
   }]
   metadata = merge(
     try(each.value.bootstrap_options, {}),
