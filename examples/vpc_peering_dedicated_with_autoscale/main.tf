@@ -177,7 +177,7 @@ module "lb_external" {
       "${v}_${z_k}" => module.autoscale[v].zonal_instance_group_ids[z_k]
     }
   ]...)
-  rules = each.value.rules
+  rules = { for k, v in each.value.rules : "${var.name_prefix}${k}" => v }
 
   health_check_http_port         = each.value.http_health_check_port
   health_check_http_request_path = try(each.value.http_health_check_request_path, "/php/login.php")
