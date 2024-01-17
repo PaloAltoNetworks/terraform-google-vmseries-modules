@@ -1,3 +1,11 @@
+> [!WARNING]
+> This repository is now considered archived, and all future development will take place at our new location. For more details see https://github.com/PaloAltoNetworks/terraform-google-vmseries-modules/issues/236
+
+> [!IMPORTANT]
+> #### New Modules
+> - GitHub - https://github.com/PaloAltoNetworks/terraform-google-swfw-modules
+> - Terraform Registry - https://registry.terraform.io/modules/PaloAltoNetworks/swfw-modules/google/latest
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/PaloAltoNetworks/terraform-google-vmseries-modules?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/PaloAltoNetworks/terraform-modules-vmseries-ci-workflows?style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/PaloAltoNetworks/terraform-google-vmseries-modules/release_ci.yml?style=flat-square)
